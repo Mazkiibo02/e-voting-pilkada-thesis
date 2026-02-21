@@ -7,6 +7,7 @@ export interface Voter {
   hasVoted: boolean;
   votedFor?: string;
   anomaly?: string;
+  tps?: string;
 }
 
 export interface Candidate {
@@ -28,19 +29,20 @@ const ADMIN_KEY = 'evoting_admin';
 // Initialize mock data
 export const initializeMockData = () => {
   if (!localStorage.getItem(VOTERS_KEY)) {
+    const tpsOptions = ['TPS 01', 'TPS 02', 'TPS 03'];
     const mockVoters: Voter[] = [
-      { nik: '3301012001850001', name: 'Budi Santoso', dob: '1985-01-20', hasVoted: false },
-      { nik: '3301022002900002', name: 'Siti Aminah', dob: '1990-02-20', hasVoted: false },
-      { nik: '3301032003920003', name: 'Ahmad Wijaya', dob: '1992-03-20', hasVoted: false },
-      { nik: '3301042004880004', name: 'Dewi Lestari', dob: '1988-04-20', hasVoted: false },
-      { nik: '3301052005910005', name: 'Eko Prasetyo', dob: '1991-05-20', hasVoted: false },
-      { nik: '3301062006930006', name: 'Fitri Handayani', dob: '1993-06-20', hasVoted: false },
-      { nik: '3301072007890007', name: 'Gunawan Setiawan', dob: '1989-07-20', hasVoted: false },
+      { nik: '3301012001850001', name: 'Budi Santoso', dob: '1985-01-20', hasVoted: false, tps: 'TPS 01' },
+      { nik: '3301022002900002', name: 'Siti Aminah', dob: '1990-02-20', hasVoted: false, tps: 'TPS 01' },
+      { nik: '3301032003920003', name: 'Ahmad Wijaya', dob: '1992-03-20', hasVoted: false, tps: 'TPS 01' },
+      { nik: '3301042004880004', name: 'Dewi Lestari', dob: '1988-04-20', hasVoted: false, tps: 'TPS 02' },
+      { nik: '3301052005910005', name: 'Eko Prasetyo', dob: '1991-05-20', hasVoted: false, tps: 'TPS 02' },
+      { nik: '3301062006930006', name: 'Fitri Handayani', dob: '1993-06-20', hasVoted: false, tps: 'TPS 02' },
+      { nik: '3301072007890007', name: 'Gunawan Setiawan', dob: '1989-07-20', hasVoted: false, tps: 'TPS 03' },
       // Duplicate NIK for anomaly detection
-      { nik: '3301012001850001', name: 'Budi Palsu', dob: '1985-01-20', hasVoted: false, anomaly: 'Duplicate NIK' },
+      { nik: '3301012001850001', name: 'Budi Palsu', dob: '1985-01-20', hasVoted: false, anomaly: 'Duplicate NIK', tps: 'TPS 01' },
       // Invalid age for anomaly detection
-      { nik: '3301082008200008', name: 'Anak Kecil', dob: '2020-08-20', hasVoted: false, anomaly: 'Invalid Age' },
-      { nik: '3301092009190009', name: 'Orang Tua', dob: '1900-09-20', hasVoted: false, anomaly: 'Invalid Age' },
+      { nik: '3301082008200008', name: 'Anak Kecil', dob: '2020-08-20', hasVoted: false, anomaly: 'Invalid Age', tps: 'TPS 03' },
+      { nik: '3301092009190009', name: 'Orang Tua', dob: '1900-09-20', hasVoted: false, anomaly: 'Invalid Age', tps: 'TPS 03' },
     ];
     localStorage.setItem(VOTERS_KEY, JSON.stringify(mockVoters));
   }
@@ -161,6 +163,43 @@ export const getStatistics = () => {
     candidates: candidates.map(c => ({
       name: c.name,
       votes: c.voteCount,
+    })),
+  };
+};
+
+// Get unique TPS list
+export const getTpsList = (): string[] => {
+  const voters = getVoters();
+  const tpsSet = new Set(voters.map(v => v.tps).filter(Boolean) as string[]);
+  return Array.from(tpsSet).sort();
+};
+
+// Get statistics filtered by TPS
+export const getStatisticsByTps = (tps?: string) => {
+  const voters = getVoters();
+  const candidates = getCandidates();
+  const filteredVoters = tps ? voters.filter(v => v.tps === tps) : voters;
+  
+  // Count votes per candidate from filtered voters
+  const voteCounts: Record<string, number> = {};
+  candidates.forEach(c => { voteCounts[c.id] = 0; });
+  filteredVoters.forEach(v => {
+    if (v.hasVoted && v.votedFor) {
+      voteCounts[v.votedFor] = (voteCounts[v.votedFor] || 0) + 1;
+    }
+  });
+
+  const totalVotes = filteredVoters.filter(v => v.hasVoted).length;
+
+  return {
+    totalRegistered: filteredVoters.length,
+    totalVotes,
+    participation: filteredVoters.length > 0 ? ((totalVotes / filteredVoters.length) * 100).toFixed(1) : '0',
+    candidates: candidates.map(c => ({
+      id: c.id,
+      name: c.name,
+      votes: tps ? voteCounts[c.id] : c.voteCount,
+      percentage: totalVotes > 0 ? (((tps ? voteCounts[c.id] : c.voteCount) / totalVotes) * 100).toFixed(1) : '0',
     })),
   };
 };
