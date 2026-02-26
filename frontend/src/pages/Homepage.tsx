@@ -44,13 +44,12 @@ import {
   RefreshCw,
   User,
 } from "lucide-react";
-import {
-  getCandidates,
-  getVoters,
-  getTpsList,
-  getStatisticsByTps,
-  initializeMockData,
-} from "@/lib/storage";
+
+type Candidate = {
+  id: number;
+  name: string;
+  voteCount: number;
+};
 
 const CHART_COLORS = [
   "hsl(215, 70%, 50%)",
@@ -63,46 +62,91 @@ const CHART_COLORS = [
 const ELECTION_STATUS = "active" as "active" | "finished";
 
 const Homepage = () => {
-  const [selectedTps, setSelectedTps] = useState<string>("all");
-  const [tpsList, setTpsList] = useState<string[]>([]);
-  const [stats, setStats] = useState<ReturnType<typeof getStatisticsByTps> | null>(null);
-  const [candidates, setCandidates] = useState<ReturnType<typeof getCandidates>>([]);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  const refreshData = useCallback(() => {
-    initializeMockData();
-    setTpsList(getTpsList());
-    const tpsFilter = selectedTps === "all" ? undefined : selectedTps;
-    setStats(getStatisticsByTps(tpsFilter));
-    setCandidates(getCandidates());
-    setLastUpdated(new Date());
-  }, [selectedTps]);
+  const fetchCandidates = useCallback(async () => {
+    try {
+      const response = await fetch("http://localhost:5000/candidates");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data: Candidate[] = await response.json();
+      setCandidates(data);
+      setError(null);
+      setLastUpdated(new Date());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch candidates");
+      console.error("Error fetching candidates:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
+  // Fetch candidates on component mount
   useEffect(() => {
-    refreshData();
-  }, [refreshData]);
+    fetchCandidates();
+  }, [fetchCandidates]);
 
+  // Auto-refresh every 10 seconds during active election
   useEffect(() => {
     if (ELECTION_STATUS !== "active") return;
-    const interval = setInterval(refreshData, 10000);
+    const interval = setInterval(fetchCandidates, 10000);
     return () => clearInterval(interval);
-  }, [refreshData]);
+  }, [fetchCandidates]);
 
-  if (!stats) return null;
+  // Calculate statistics from candidates data
+  const totalVotes = candidates.reduce((sum, c) => sum + c.voteCount, 0);
+  const candidatesWithPercentage = candidates.map((c) => ({
+    ...c,
+    percentage: totalVotes > 0 ? Math.round((c.voteCount / totalVotes) * 100) : 0,
+  }));
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-muted/30 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-8 text-center">
+            <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+            <p className="text-muted-foreground">Loading candidates data...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-muted/30 flex items-center justify-center">
+        <Card className="w-full max-w-md border-destructive">
+          <CardContent className="p-8">
+            <h3 className="font-semibold text-destructive mb-2">Error Loading Data</h3>
+            <p className="text-sm text-muted-foreground mb-4">{error}</p>
+            <Button onClick={() => fetchCandidates()} className="w-full">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const isFinished = ELECTION_STATUS === "finished";
 
-  const barData = stats.candidates.map((c, i) => ({
+  const barData = candidatesWithPercentage.map((c, i) => ({
     name: c.name.split(",")[0].split(" ").slice(-1)[0],
     fullName: c.name,
-    votes: c.votes,
+    votes: c.voteCount,
     fill: CHART_COLORS[i % CHART_COLORS.length],
   }));
 
-  const pieData = stats.candidates.map((c, i) => ({
+  const pieData = candidatesWithPercentage.map((c, i) => ({
     name: c.name.split(",")[0].split(" ").slice(-1)[0],
     fullName: c.name,
-    value: c.votes,
+    value: c.voteCount,
     percentage: c.percentage,
     fill: CHART_COLORS[i % CHART_COLORS.length],
   }));
@@ -162,9 +206,9 @@ const Homepage = () => {
 
             {/* Stats Row */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard icon={<Vote className="h-5 w-5" />} label="Suara Masuk" value={stats.totalVotes} />
-              <StatCard icon={<Users className="h-5 w-5" />} label="Pemilih Terdaftar" value={stats.totalRegistered} />
-              <StatCard icon={<BarChart3 className="h-5 w-5" />} label="Partisipasi" value={`${stats.participation}%`} />
+              <StatCard icon={<Vote className="h-5 w-5" />} label="Suara Masuk" value={totalVotes} />
+              <StatCard icon={<Users className="h-5 w-5" />} label="Jumlah Kandidat" value={candidates.length} />
+              <StatCard icon={<BarChart3 className="h-5 w-5" />} label="Status" value={isFinished ? "Selesai" : "Berlangsung"} />
               <StatCard
                 icon={<Clock className="h-5 w-5" />}
                 label="Terakhir Diperbarui"
@@ -173,24 +217,6 @@ const Homepage = () => {
             </div>
           </CardContent>
         </Card>
-
-        {/* TPS Filter */}
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-muted-foreground">Filter TPS:</span>
-          <Select value={selectedTps} onValueChange={setSelectedTps}>
-            <SelectTrigger className="w-[180px] bg-background">
-              <SelectValue placeholder="Semua TPS" />
-            </SelectTrigger>
-            <SelectContent className="bg-background">
-              <SelectItem value="all">Semua TPS</SelectItem>
-              {tpsList.map((tps) => (
-                <SelectItem key={tps} value={tps}>
-                  {tps}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -277,39 +303,33 @@ const Homepage = () => {
             Profil Kandidat
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {candidates.map((c, i) => {
-              const stat = stats.candidates.find((s) => s.id === c.id);
-              return (
-                <Card key={c.id} className="shadow-sm hover:shadow-md transition-shadow">
-                  <CardContent className="p-5">
-                    <div className="flex items-center gap-4 mb-3">
-                      <div
-                        className="h-14 w-14 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0"
-                        style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
-                      >
-                        {i + 1}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-semibold text-foreground text-sm leading-tight truncate">{c.name}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">Kandidat No. {i + 1}</p>
-                      </div>
+            {candidatesWithPercentage.map((c, i) => (
+              <Card key={c.id} className="shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-4 mb-3">
+                    <div
+                      className="h-14 w-14 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0"
+                      style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
+                    >
+                      {i + 1}
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-4 line-clamp-2">
-                      {c.description}
-                    </p>
-                    <div className="flex items-center justify-between border-t pt-3">
-                      <div>
-                        <p className="text-2xl font-bold text-foreground">{stat?.votes ?? 0}</p>
-                        <p className="text-xs text-muted-foreground">suara</p>
-                      </div>
-                      <Badge variant="secondary" className="text-sm font-semibold">
-                        {stat?.percentage ?? 0}%
-                      </Badge>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-foreground text-sm leading-tight truncate">{c.name}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Kandidat No. {i + 1}</p>
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                  </div>
+                  <div className="flex items-center justify-between border-t pt-3">
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{c.voteCount}</p>
+                      <p className="text-xs text-muted-foreground">suara</p>
+                    </div>
+                    <Badge variant="secondary" className="text-sm font-semibold">
+                      {c.percentage}%
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
 
@@ -329,17 +349,17 @@ const Homepage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {stats.candidates.map((c, i) => (
+                {candidatesWithPercentage.map((c, i) => (
                   <TableRow key={c.id}>
                     <TableCell className="font-medium">{i + 1}</TableCell>
                     <TableCell>{c.name}</TableCell>
-                    <TableCell className="text-right font-semibold">{c.votes}</TableCell>
+                    <TableCell className="text-right font-semibold">{c.voteCount}</TableCell>
                     <TableCell className="text-right">{c.percentage}%</TableCell>
                   </TableRow>
                 ))}
                 <TableRow className="bg-muted/50 font-semibold">
                   <TableCell colSpan={2}>Total</TableCell>
-                  <TableCell className="text-right">{stats.totalVotes}</TableCell>
+                  <TableCell className="text-right">{totalVotes}</TableCell>
                   <TableCell className="text-right">100%</TableCell>
                 </TableRow>
               </TableBody>
