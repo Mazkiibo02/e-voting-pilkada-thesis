@@ -26,3 +26,8 @@ export const contract = new ethers.Contract(
   artifact.abi,
   wallet
 );
+
+export async function castVote(candidateId: number) {
+  const tx = await contract.castVote(candidateId);
+  await tx.wait(); // tunggu sampai mined
+};

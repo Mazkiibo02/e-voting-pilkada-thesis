@@ -1,0 +1,7002 @@
+[
+  {
+    "tpsId": 1,
+    "registered": 300,
+    "turnout": 300,
+    "candidate1Votes": 295,
+    "candidate2Votes": 5
+  },
+  {
+    "tpsId": 2,
+    "registered": 300,
+    "turnout": 300,
+    "candidate1Votes": 295,
+    "candidate2Votes": 5
+  },
+  {
+    "tpsId": 3,
+    "registered": 300,
+    "turnout": 300,
+    "candidate1Votes": 295,
+    "candidate2Votes": 5
+  },
+  {
+    "tpsId": 4,
+    "registered": 300,
+    "turnout": 300,
+    "candidate1Votes": 295,
+    "candidate2Votes": 5
+  },
+  {
+    "tpsId": 5,
+    "registered": 300,
+    "turnout": 300,
+    "candidate1Votes": 295,
+    "candidate2Votes": 5
+  },
+  {
+    "tpsId": 6,
+    "registered": 300,
+    "turnout": 300,
+    "candidate1Votes": 295,
+    "candidate2Votes": 5
+  },
+  {
+    "tpsId": 7,
+    "registered": 300,
+    "turnout": 300,
+    "candidate1Votes": 295,
+    "candidate2Votes": 5
+  },
+  {
+    "tpsId": 8,
+    "registered": 300,
+    "turnout": 300,
+    "candidate1Votes": 295,
+    "candidate2Votes": 5
+  },
+  {
+    "tpsId": 9,
+    "registered": 300,
+    "turnout": 300,
+    "candidate1Votes": 295,
+    "candidate2Votes": 5
+  },
+  {
+    "tpsId": 10,
+    "registered": 300,
+    "turnout": 300,
+    "candidate1Votes": 295,
+    "candidate2Votes": 5
+  },
+  {
+    "tpsId": 11,
+    "registered": 300,
+    "turnout": 256,
+    "candidate1Votes": 147,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 12,
+    "registered": 300,
+    "turnout": 243,
+    "candidate1Votes": 137,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 13,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 99,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 14,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 102,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 15,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 72,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 16,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 90,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 17,
+    "registered": 300,
+    "turnout": 230,
+    "candidate1Votes": 135,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 18,
+    "registered": 300,
+    "turnout": 265,
+    "candidate1Votes": 118,
+    "candidate2Votes": 147
+  },
+  {
+    "tpsId": 19,
+    "registered": 300,
+    "turnout": 230,
+    "candidate1Votes": 130,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 20,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 115,
+    "candidate2Votes": 133
+  },
+  {
+    "tpsId": 21,
+    "registered": 300,
+    "turnout": 236,
+    "candidate1Votes": 102,
+    "candidate2Votes": 134
+  },
+  {
+    "tpsId": 22,
+    "registered": 300,
+    "turnout": 223,
+    "candidate1Votes": 122,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 23,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 103,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 24,
+    "registered": 300,
+    "turnout": 197,
+    "candidate1Votes": 115,
+    "candidate2Votes": 82
+  },
+  {
+    "tpsId": 25,
+    "registered": 300,
+    "turnout": 258,
+    "candidate1Votes": 139,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 26,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 126,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 27,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 94,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 28,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 102,
+    "candidate2Votes": 146
+  },
+  {
+    "tpsId": 29,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 123,
+    "candidate2Votes": 86
+  },
+  {
+    "tpsId": 30,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 115,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 31,
+    "registered": 300,
+    "turnout": 254,
+    "candidate1Votes": 114,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 32,
+    "registered": 300,
+    "turnout": 260,
+    "candidate1Votes": 152,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 33,
+    "registered": 300,
+    "turnout": 242,
+    "candidate1Votes": 140,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 34,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 78,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 35,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 129,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 36,
+    "registered": 300,
+    "turnout": 244,
+    "candidate1Votes": 119,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 37,
+    "registered": 300,
+    "turnout": 242,
+    "candidate1Votes": 138,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 38,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 92,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 39,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 113,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 40,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 100,
+    "candidate2Votes": 134
+  },
+  {
+    "tpsId": 41,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 115,
+    "candidate2Votes": 137
+  },
+  {
+    "tpsId": 42,
+    "registered": 300,
+    "turnout": 227,
+    "candidate1Votes": 124,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 43,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 113,
+    "candidate2Votes": 82
+  },
+  {
+    "tpsId": 44,
+    "registered": 300,
+    "turnout": 269,
+    "candidate1Votes": 132,
+    "candidate2Votes": 137
+  },
+  {
+    "tpsId": 45,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 132,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 46,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 130,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 47,
+    "registered": 300,
+    "turnout": 192,
+    "candidate1Votes": 100,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 48,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 121,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 49,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 145,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 50,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 107,
+    "candidate2Votes": 73
+  },
+  {
+    "tpsId": 51,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 132,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 52,
+    "registered": 300,
+    "turnout": 198,
+    "candidate1Votes": 103,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 53,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 131,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 54,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 116,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 55,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 139,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 56,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 136,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 57,
+    "registered": 300,
+    "turnout": 206,
+    "candidate1Votes": 114,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 58,
+    "registered": 300,
+    "turnout": 218,
+    "candidate1Votes": 106,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 59,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 103,
+    "candidate2Votes": 149
+  },
+  {
+    "tpsId": 60,
+    "registered": 300,
+    "turnout": 228,
+    "candidate1Votes": 104,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 61,
+    "registered": 300,
+    "turnout": 237,
+    "candidate1Votes": 141,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 62,
+    "registered": 300,
+    "turnout": 196,
+    "candidate1Votes": 94,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 63,
+    "registered": 300,
+    "turnout": 218,
+    "candidate1Votes": 126,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 64,
+    "registered": 300,
+    "turnout": 244,
+    "candidate1Votes": 110,
+    "candidate2Votes": 134
+  },
+  {
+    "tpsId": 65,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 101,
+    "candidate2Votes": 138
+  },
+  {
+    "tpsId": 66,
+    "registered": 300,
+    "turnout": 187,
+    "candidate1Votes": 89,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 67,
+    "registered": 300,
+    "turnout": 258,
+    "candidate1Votes": 136,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 68,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 79,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 69,
+    "registered": 300,
+    "turnout": 192,
+    "candidate1Votes": 98,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 70,
+    "registered": 300,
+    "turnout": 246,
+    "candidate1Votes": 127,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 71,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 112,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 72,
+    "registered": 300,
+    "turnout": 213,
+    "candidate1Votes": 89,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 73,
+    "registered": 300,
+    "turnout": 189,
+    "candidate1Votes": 99,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 74,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 97,
+    "candidate2Votes": 137
+  },
+  {
+    "tpsId": 75,
+    "registered": 300,
+    "turnout": 198,
+    "candidate1Votes": 94,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 76,
+    "registered": 300,
+    "turnout": 186,
+    "candidate1Votes": 95,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 77,
+    "registered": 300,
+    "turnout": 259,
+    "candidate1Votes": 155,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 78,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 134,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 79,
+    "registered": 300,
+    "turnout": 204,
+    "candidate1Votes": 110,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 80,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 107,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 81,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 104,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 82,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 103,
+    "candidate2Votes": 78
+  },
+  {
+    "tpsId": 83,
+    "registered": 300,
+    "turnout": 219,
+    "candidate1Votes": 130,
+    "candidate2Votes": 89
+  },
+  {
+    "tpsId": 84,
+    "registered": 300,
+    "turnout": 236,
+    "candidate1Votes": 105,
+    "candidate2Votes": 131
+  },
+  {
+    "tpsId": 85,
+    "registered": 300,
+    "turnout": 256,
+    "candidate1Votes": 133,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 86,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 96,
+    "candidate2Votes": 133
+  },
+  {
+    "tpsId": 87,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 102,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 88,
+    "registered": 300,
+    "turnout": 264,
+    "candidate1Votes": 111,
+    "candidate2Votes": 153
+  },
+  {
+    "tpsId": 89,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 101,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 90,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 88,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 91,
+    "registered": 300,
+    "turnout": 187,
+    "candidate1Votes": 93,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 92,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 96,
+    "candidate2Votes": 137
+  },
+  {
+    "tpsId": 93,
+    "registered": 300,
+    "turnout": 218,
+    "candidate1Votes": 106,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 94,
+    "registered": 300,
+    "turnout": 259,
+    "candidate1Votes": 148,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 95,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 131,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 96,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 102,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 97,
+    "registered": 300,
+    "turnout": 256,
+    "candidate1Votes": 103,
+    "candidate2Votes": 153
+  },
+  {
+    "tpsId": 98,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 98,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 99,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 110,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 100,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 108,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 101,
+    "registered": 300,
+    "turnout": 230,
+    "candidate1Votes": 108,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 102,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 123,
+    "candidate2Votes": 132
+  },
+  {
+    "tpsId": 103,
+    "registered": 300,
+    "turnout": 212,
+    "candidate1Votes": 112,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 104,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 103,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 105,
+    "registered": 300,
+    "turnout": 269,
+    "candidate1Votes": 134,
+    "candidate2Votes": 135
+  },
+  {
+    "tpsId": 106,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 120,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 107,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 89,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 108,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 111,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 109,
+    "registered": 300,
+    "turnout": 192,
+    "candidate1Votes": 84,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 110,
+    "registered": 300,
+    "turnout": 224,
+    "candidate1Votes": 92,
+    "candidate2Votes": 132
+  },
+  {
+    "tpsId": 111,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 114,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 112,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 121,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 113,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 99,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 114,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 96,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 115,
+    "registered": 300,
+    "turnout": 199,
+    "candidate1Votes": 99,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 116,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 108,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 117,
+    "registered": 300,
+    "turnout": 249,
+    "candidate1Votes": 100,
+    "candidate2Votes": 149
+  },
+  {
+    "tpsId": 118,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 122,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 119,
+    "registered": 300,
+    "turnout": 254,
+    "candidate1Votes": 120,
+    "candidate2Votes": 134
+  },
+  {
+    "tpsId": 120,
+    "registered": 300,
+    "turnout": 199,
+    "candidate1Votes": 87,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 121,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 104,
+    "candidate2Votes": 86
+  },
+  {
+    "tpsId": 122,
+    "registered": 300,
+    "turnout": 267,
+    "candidate1Votes": 112,
+    "candidate2Votes": 155
+  },
+  {
+    "tpsId": 123,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 119,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 124,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 121,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 125,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 97,
+    "candidate2Votes": 85
+  },
+  {
+    "tpsId": 126,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 121,
+    "candidate2Votes": 117
+  },
+  {
+    "tpsId": 127,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 83,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 128,
+    "registered": 300,
+    "turnout": 230,
+    "candidate1Votes": 136,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 129,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 113,
+    "candidate2Votes": 153
+  },
+  {
+    "tpsId": 130,
+    "registered": 300,
+    "turnout": 253,
+    "candidate1Votes": 146,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 131,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 140,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 132,
+    "registered": 300,
+    "turnout": 254,
+    "candidate1Votes": 127,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 133,
+    "registered": 300,
+    "turnout": 245,
+    "candidate1Votes": 127,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 134,
+    "registered": 300,
+    "turnout": 217,
+    "candidate1Votes": 90,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 135,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 119,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 136,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 101,
+    "candidate2Votes": 138
+  },
+  {
+    "tpsId": 137,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 93,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 138,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 98,
+    "candidate2Votes": 84
+  },
+  {
+    "tpsId": 139,
+    "registered": 300,
+    "turnout": 253,
+    "candidate1Votes": 112,
+    "candidate2Votes": 141
+  },
+  {
+    "tpsId": 140,
+    "registered": 300,
+    "turnout": 257,
+    "candidate1Votes": 125,
+    "candidate2Votes": 132
+  },
+  {
+    "tpsId": 141,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 123,
+    "candidate2Votes": 85
+  },
+  {
+    "tpsId": 142,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 105,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 143,
+    "registered": 300,
+    "turnout": 256,
+    "candidate1Votes": 113,
+    "candidate2Votes": 143
+  },
+  {
+    "tpsId": 144,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 94,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 145,
+    "registered": 300,
+    "turnout": 240,
+    "candidate1Votes": 121,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 146,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 90,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 147,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 106,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 148,
+    "registered": 300,
+    "turnout": 185,
+    "candidate1Votes": 83,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 149,
+    "registered": 300,
+    "turnout": 242,
+    "candidate1Votes": 101,
+    "candidate2Votes": 141
+  },
+  {
+    "tpsId": 150,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 148,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 151,
+    "registered": 300,
+    "turnout": 187,
+    "candidate1Votes": 87,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 152,
+    "registered": 300,
+    "turnout": 227,
+    "candidate1Votes": 95,
+    "candidate2Votes": 132
+  },
+  {
+    "tpsId": 153,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 81,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 154,
+    "registered": 300,
+    "turnout": 268,
+    "candidate1Votes": 149,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 155,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 93,
+    "candidate2Votes": 88
+  },
+  {
+    "tpsId": 156,
+    "registered": 300,
+    "turnout": 236,
+    "candidate1Votes": 111,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 157,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 124,
+    "candidate2Votes": 131
+  },
+  {
+    "tpsId": 158,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 112,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 159,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 133,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 160,
+    "registered": 300,
+    "turnout": 246,
+    "candidate1Votes": 136,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 161,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 136,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 162,
+    "registered": 300,
+    "turnout": 263,
+    "candidate1Votes": 123,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 163,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 96,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 164,
+    "registered": 300,
+    "turnout": 254,
+    "candidate1Votes": 145,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 165,
+    "registered": 300,
+    "turnout": 254,
+    "candidate1Votes": 137,
+    "candidate2Votes": 117
+  },
+  {
+    "tpsId": 166,
+    "registered": 300,
+    "turnout": 258,
+    "candidate1Votes": 117,
+    "candidate2Votes": 141
+  },
+  {
+    "tpsId": 167,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 141,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 168,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 83,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 169,
+    "registered": 300,
+    "turnout": 186,
+    "candidate1Votes": 82,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 170,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 94,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 171,
+    "registered": 300,
+    "turnout": 265,
+    "candidate1Votes": 126,
+    "candidate2Votes": 139
+  },
+  {
+    "tpsId": 172,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 97,
+    "candidate2Votes": 129
+  },
+  {
+    "tpsId": 173,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 102,
+    "candidate2Votes": 153
+  },
+  {
+    "tpsId": 174,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 95,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 175,
+    "registered": 300,
+    "turnout": 256,
+    "candidate1Votes": 150,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 176,
+    "registered": 300,
+    "turnout": 218,
+    "candidate1Votes": 111,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 177,
+    "registered": 300,
+    "turnout": 201,
+    "candidate1Votes": 94,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 178,
+    "registered": 300,
+    "turnout": 220,
+    "candidate1Votes": 121,
+    "candidate2Votes": 99
+  },
+  {
+    "tpsId": 179,
+    "registered": 300,
+    "turnout": 254,
+    "candidate1Votes": 130,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 180,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 114,
+    "candidate2Votes": 79
+  },
+  {
+    "tpsId": 181,
+    "registered": 300,
+    "turnout": 254,
+    "candidate1Votes": 107,
+    "candidate2Votes": 147
+  },
+  {
+    "tpsId": 182,
+    "registered": 300,
+    "turnout": 247,
+    "candidate1Votes": 118,
+    "candidate2Votes": 129
+  },
+  {
+    "tpsId": 183,
+    "registered": 300,
+    "turnout": 223,
+    "candidate1Votes": 115,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 184,
+    "registered": 300,
+    "turnout": 186,
+    "candidate1Votes": 93,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 185,
+    "registered": 300,
+    "turnout": 269,
+    "candidate1Votes": 117,
+    "candidate2Votes": 152
+  },
+  {
+    "tpsId": 186,
+    "registered": 300,
+    "turnout": 223,
+    "candidate1Votes": 114,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 187,
+    "registered": 300,
+    "turnout": 244,
+    "candidate1Votes": 144,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 188,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 92,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 189,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 118,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 190,
+    "registered": 300,
+    "turnout": 192,
+    "candidate1Votes": 99,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 191,
+    "registered": 300,
+    "turnout": 243,
+    "candidate1Votes": 140,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 192,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 130,
+    "candidate2Votes": 99
+  },
+  {
+    "tpsId": 193,
+    "registered": 300,
+    "turnout": 212,
+    "candidate1Votes": 120,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 194,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 126,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 195,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 123,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 196,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 111,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 197,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 113,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 198,
+    "registered": 300,
+    "turnout": 206,
+    "candidate1Votes": 104,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 199,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 99,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 200,
+    "registered": 300,
+    "turnout": 267,
+    "candidate1Votes": 147,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 201,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 76,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 202,
+    "registered": 300,
+    "turnout": 256,
+    "candidate1Votes": 153,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 203,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 145,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 204,
+    "registered": 300,
+    "turnout": 235,
+    "candidate1Votes": 128,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 205,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 94,
+    "candidate2Votes": 99
+  },
+  {
+    "tpsId": 206,
+    "registered": 300,
+    "turnout": 254,
+    "candidate1Votes": 150,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 207,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 103,
+    "candidate2Votes": 149
+  },
+  {
+    "tpsId": 208,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 99,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 209,
+    "registered": 300,
+    "turnout": 261,
+    "candidate1Votes": 140,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 210,
+    "registered": 300,
+    "turnout": 228,
+    "candidate1Votes": 98,
+    "candidate2Votes": 130
+  },
+  {
+    "tpsId": 211,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 98,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 212,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 94,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 213,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 102,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 214,
+    "registered": 300,
+    "turnout": 245,
+    "candidate1Votes": 130,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 215,
+    "registered": 300,
+    "turnout": 242,
+    "candidate1Votes": 112,
+    "candidate2Votes": 130
+  },
+  {
+    "tpsId": 216,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 101,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 217,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 111,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 218,
+    "registered": 300,
+    "turnout": 213,
+    "candidate1Votes": 126,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 219,
+    "registered": 300,
+    "turnout": 259,
+    "candidate1Votes": 118,
+    "candidate2Votes": 141
+  },
+  {
+    "tpsId": 220,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 82,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 221,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 99,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 222,
+    "registered": 300,
+    "turnout": 192,
+    "candidate1Votes": 90,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 223,
+    "registered": 300,
+    "turnout": 213,
+    "candidate1Votes": 102,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 224,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 115,
+    "candidate2Votes": 80
+  },
+  {
+    "tpsId": 225,
+    "registered": 300,
+    "turnout": 187,
+    "candidate1Votes": 88,
+    "candidate2Votes": 99
+  },
+  {
+    "tpsId": 226,
+    "registered": 300,
+    "turnout": 201,
+    "candidate1Votes": 114,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 227,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 107,
+    "candidate2Votes": 84
+  },
+  {
+    "tpsId": 228,
+    "registered": 300,
+    "turnout": 268,
+    "candidate1Votes": 125,
+    "candidate2Votes": 143
+  },
+  {
+    "tpsId": 229,
+    "registered": 300,
+    "turnout": 240,
+    "candidate1Votes": 127,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 230,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 114,
+    "candidate2Votes": 79
+  },
+  {
+    "tpsId": 231,
+    "registered": 300,
+    "turnout": 219,
+    "candidate1Votes": 97,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 232,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 97,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 233,
+    "registered": 300,
+    "turnout": 228,
+    "candidate1Votes": 102,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 234,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 104,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 235,
+    "registered": 300,
+    "turnout": 245,
+    "candidate1Votes": 105,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 236,
+    "registered": 300,
+    "turnout": 186,
+    "candidate1Votes": 94,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 237,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 97,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 238,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 84,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 239,
+    "registered": 300,
+    "turnout": 186,
+    "candidate1Votes": 97,
+    "candidate2Votes": 89
+  },
+  {
+    "tpsId": 240,
+    "registered": 300,
+    "turnout": 246,
+    "candidate1Votes": 129,
+    "candidate2Votes": 117
+  },
+  {
+    "tpsId": 241,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 97,
+    "candidate2Votes": 142
+  },
+  {
+    "tpsId": 242,
+    "registered": 300,
+    "turnout": 259,
+    "candidate1Votes": 127,
+    "candidate2Votes": 132
+  },
+  {
+    "tpsId": 243,
+    "registered": 300,
+    "turnout": 261,
+    "candidate1Votes": 143,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 244,
+    "registered": 300,
+    "turnout": 236,
+    "candidate1Votes": 100,
+    "candidate2Votes": 136
+  },
+  {
+    "tpsId": 245,
+    "registered": 300,
+    "turnout": 212,
+    "candidate1Votes": 125,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 246,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 99,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 247,
+    "registered": 300,
+    "turnout": 207,
+    "candidate1Votes": 104,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 248,
+    "registered": 300,
+    "turnout": 186,
+    "candidate1Votes": 81,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 249,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 91,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 250,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 107,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 251,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 132,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 252,
+    "registered": 300,
+    "turnout": 267,
+    "candidate1Votes": 142,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 253,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 118,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 254,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 154,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 255,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 113,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 256,
+    "registered": 300,
+    "turnout": 227,
+    "candidate1Votes": 93,
+    "candidate2Votes": 134
+  },
+  {
+    "tpsId": 257,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 138,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 258,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 124,
+    "candidate2Votes": 117
+  },
+  {
+    "tpsId": 259,
+    "registered": 300,
+    "turnout": 267,
+    "candidate1Votes": 139,
+    "candidate2Votes": 128
+  },
+  {
+    "tpsId": 260,
+    "registered": 300,
+    "turnout": 247,
+    "candidate1Votes": 114,
+    "candidate2Votes": 133
+  },
+  {
+    "tpsId": 261,
+    "registered": 300,
+    "turnout": 246,
+    "candidate1Votes": 123,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 262,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 103,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 263,
+    "registered": 300,
+    "turnout": 225,
+    "candidate1Votes": 126,
+    "candidate2Votes": 99
+  },
+  {
+    "tpsId": 264,
+    "registered": 300,
+    "turnout": 202,
+    "candidate1Votes": 97,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 265,
+    "registered": 300,
+    "turnout": 201,
+    "candidate1Votes": 118,
+    "candidate2Votes": 83
+  },
+  {
+    "tpsId": 266,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 104,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 267,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 150,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 268,
+    "registered": 300,
+    "turnout": 236,
+    "candidate1Votes": 107,
+    "candidate2Votes": 129
+  },
+  {
+    "tpsId": 269,
+    "registered": 300,
+    "turnout": 262,
+    "candidate1Votes": 121,
+    "candidate2Votes": 141
+  },
+  {
+    "tpsId": 270,
+    "registered": 300,
+    "turnout": 235,
+    "candidate1Votes": 133,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 271,
+    "registered": 300,
+    "turnout": 192,
+    "candidate1Votes": 113,
+    "candidate2Votes": 79
+  },
+  {
+    "tpsId": 272,
+    "registered": 300,
+    "turnout": 236,
+    "candidate1Votes": 116,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 273,
+    "registered": 300,
+    "turnout": 231,
+    "candidate1Votes": 98,
+    "candidate2Votes": 133
+  },
+  {
+    "tpsId": 274,
+    "registered": 300,
+    "turnout": 184,
+    "candidate1Votes": 110,
+    "candidate2Votes": 74
+  },
+  {
+    "tpsId": 275,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 95,
+    "candidate2Votes": 138
+  },
+  {
+    "tpsId": 276,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 108,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 277,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 87,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 278,
+    "registered": 300,
+    "turnout": 263,
+    "candidate1Votes": 152,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 279,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 135,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 280,
+    "registered": 300,
+    "turnout": 216,
+    "candidate1Votes": 88,
+    "candidate2Votes": 128
+  },
+  {
+    "tpsId": 281,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 111,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 282,
+    "registered": 300,
+    "turnout": 203,
+    "candidate1Votes": 117,
+    "candidate2Votes": 86
+  },
+  {
+    "tpsId": 283,
+    "registered": 300,
+    "turnout": 207,
+    "candidate1Votes": 93,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 284,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 149,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 285,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 80,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 286,
+    "registered": 300,
+    "turnout": 201,
+    "candidate1Votes": 98,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 287,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 105,
+    "candidate2Votes": 88
+  },
+  {
+    "tpsId": 288,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 114,
+    "candidate2Votes": 134
+  },
+  {
+    "tpsId": 289,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 75,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 290,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 72,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 291,
+    "registered": 300,
+    "turnout": 189,
+    "candidate1Votes": 99,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 292,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 87,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 293,
+    "registered": 300,
+    "turnout": 237,
+    "candidate1Votes": 122,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 294,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 133,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 295,
+    "registered": 300,
+    "turnout": 254,
+    "candidate1Votes": 125,
+    "candidate2Votes": 129
+  },
+  {
+    "tpsId": 296,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 109,
+    "candidate2Votes": 117
+  },
+  {
+    "tpsId": 297,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 111,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 298,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 80,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 299,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 93,
+    "candidate2Votes": 116
+  },
+  {
+    "tpsId": 300,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 127,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 301,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 108,
+    "candidate2Votes": 80
+  },
+  {
+    "tpsId": 302,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 102,
+    "candidate2Votes": 88
+  },
+  {
+    "tpsId": 303,
+    "registered": 300,
+    "turnout": 264,
+    "candidate1Votes": 154,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 304,
+    "registered": 300,
+    "turnout": 196,
+    "candidate1Votes": 82,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 305,
+    "registered": 300,
+    "turnout": 199,
+    "candidate1Votes": 86,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 306,
+    "registered": 300,
+    "turnout": 216,
+    "candidate1Votes": 94,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 307,
+    "registered": 300,
+    "turnout": 236,
+    "candidate1Votes": 115,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 308,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 94,
+    "candidate2Votes": 99
+  },
+  {
+    "tpsId": 309,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 103,
+    "candidate2Votes": 79
+  },
+  {
+    "tpsId": 310,
+    "registered": 300,
+    "turnout": 235,
+    "candidate1Votes": 106,
+    "candidate2Votes": 129
+  },
+  {
+    "tpsId": 311,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 116,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 312,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 89,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 313,
+    "registered": 300,
+    "turnout": 240,
+    "candidate1Votes": 134,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 314,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 125,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 315,
+    "registered": 300,
+    "turnout": 246,
+    "candidate1Votes": 132,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 316,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 129,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 317,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 121,
+    "candidate2Votes": 84
+  },
+  {
+    "tpsId": 318,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 92,
+    "candidate2Votes": 116
+  },
+  {
+    "tpsId": 319,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 132,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 320,
+    "registered": 300,
+    "turnout": 192,
+    "candidate1Votes": 93,
+    "candidate2Votes": 99
+  },
+  {
+    "tpsId": 321,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 122,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 322,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 135,
+    "candidate2Votes": 97
+  },
+  {
+    "tpsId": 323,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 104,
+    "candidate2Votes": 137
+  },
+  {
+    "tpsId": 324,
+    "registered": 300,
+    "turnout": 240,
+    "candidate1Votes": 131,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 325,
+    "registered": 300,
+    "turnout": 185,
+    "candidate1Votes": 101,
+    "candidate2Votes": 84
+  },
+  {
+    "tpsId": 326,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 130,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 327,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 108,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 328,
+    "registered": 300,
+    "turnout": 250,
+    "candidate1Votes": 103,
+    "candidate2Votes": 147
+  },
+  {
+    "tpsId": 329,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 101,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 330,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 97,
+    "candidate2Votes": 83
+  },
+  {
+    "tpsId": 331,
+    "registered": 300,
+    "turnout": 265,
+    "candidate1Votes": 152,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 332,
+    "registered": 300,
+    "turnout": 245,
+    "candidate1Votes": 110,
+    "candidate2Votes": 135
+  },
+  {
+    "tpsId": 333,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 114,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 334,
+    "registered": 300,
+    "turnout": 261,
+    "candidate1Votes": 121,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 335,
+    "registered": 300,
+    "turnout": 213,
+    "candidate1Votes": 126,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 336,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 95,
+    "candidate2Votes": 88
+  },
+  {
+    "tpsId": 337,
+    "registered": 300,
+    "turnout": 228,
+    "candidate1Votes": 126,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 338,
+    "registered": 300,
+    "turnout": 197,
+    "candidate1Votes": 113,
+    "candidate2Votes": 84
+  },
+  {
+    "tpsId": 339,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 94,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 340,
+    "registered": 300,
+    "turnout": 198,
+    "candidate1Votes": 108,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 341,
+    "registered": 300,
+    "turnout": 247,
+    "candidate1Votes": 122,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 342,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 142,
+    "candidate2Votes": 97
+  },
+  {
+    "tpsId": 343,
+    "registered": 300,
+    "turnout": 202,
+    "candidate1Votes": 109,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 344,
+    "registered": 300,
+    "turnout": 268,
+    "candidate1Votes": 156,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 345,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 126,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 346,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 111,
+    "candidate2Votes": 155
+  },
+  {
+    "tpsId": 347,
+    "registered": 300,
+    "turnout": 254,
+    "candidate1Votes": 111,
+    "candidate2Votes": 143
+  },
+  {
+    "tpsId": 348,
+    "registered": 300,
+    "turnout": 244,
+    "candidate1Votes": 129,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 349,
+    "registered": 300,
+    "turnout": 261,
+    "candidate1Votes": 134,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 350,
+    "registered": 300,
+    "turnout": 240,
+    "candidate1Votes": 143,
+    "candidate2Votes": 97
+  },
+  {
+    "tpsId": 351,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 116,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 352,
+    "registered": 300,
+    "turnout": 218,
+    "candidate1Votes": 118,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 353,
+    "registered": 300,
+    "turnout": 244,
+    "candidate1Votes": 137,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 354,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 132,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 355,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 129,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 356,
+    "registered": 300,
+    "turnout": 247,
+    "candidate1Votes": 111,
+    "candidate2Votes": 136
+  },
+  {
+    "tpsId": 357,
+    "registered": 300,
+    "turnout": 206,
+    "candidate1Votes": 114,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 358,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 90,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 359,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 105,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 360,
+    "registered": 300,
+    "turnout": 237,
+    "candidate1Votes": 95,
+    "candidate2Votes": 142
+  },
+  {
+    "tpsId": 361,
+    "registered": 300,
+    "turnout": 268,
+    "candidate1Votes": 143,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 362,
+    "registered": 300,
+    "turnout": 199,
+    "candidate1Votes": 100,
+    "candidate2Votes": 99
+  },
+  {
+    "tpsId": 363,
+    "registered": 300,
+    "turnout": 198,
+    "candidate1Votes": 83,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 364,
+    "registered": 300,
+    "turnout": 261,
+    "candidate1Votes": 142,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 365,
+    "registered": 300,
+    "turnout": 220,
+    "candidate1Votes": 94,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 366,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 99,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 367,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 93,
+    "candidate2Votes": 97
+  },
+  {
+    "tpsId": 368,
+    "registered": 300,
+    "turnout": 220,
+    "candidate1Votes": 116,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 369,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 134,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 370,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 104,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 371,
+    "registered": 300,
+    "turnout": 253,
+    "candidate1Votes": 126,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 372,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 122,
+    "candidate2Votes": 129
+  },
+  {
+    "tpsId": 373,
+    "registered": 300,
+    "turnout": 265,
+    "candidate1Votes": 107,
+    "candidate2Votes": 158
+  },
+  {
+    "tpsId": 374,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 88,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 375,
+    "registered": 300,
+    "turnout": 197,
+    "candidate1Votes": 99,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 376,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 93,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 377,
+    "registered": 300,
+    "turnout": 259,
+    "candidate1Votes": 117,
+    "candidate2Votes": 142
+  },
+  {
+    "tpsId": 378,
+    "registered": 300,
+    "turnout": 189,
+    "candidate1Votes": 107,
+    "candidate2Votes": 82
+  },
+  {
+    "tpsId": 379,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 87,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 380,
+    "registered": 300,
+    "turnout": 253,
+    "candidate1Votes": 119,
+    "candidate2Votes": 134
+  },
+  {
+    "tpsId": 381,
+    "registered": 300,
+    "turnout": 223,
+    "candidate1Votes": 129,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 382,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 127,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 383,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 116,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 384,
+    "registered": 300,
+    "turnout": 223,
+    "candidate1Votes": 100,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 385,
+    "registered": 300,
+    "turnout": 204,
+    "candidate1Votes": 97,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 386,
+    "registered": 300,
+    "turnout": 268,
+    "candidate1Votes": 136,
+    "candidate2Votes": 132
+  },
+  {
+    "tpsId": 387,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 102,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 388,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 90,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 389,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 122,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 390,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 91,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 391,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 94,
+    "candidate2Votes": 89
+  },
+  {
+    "tpsId": 392,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 78,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 393,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 97,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 394,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 112,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 395,
+    "registered": 300,
+    "turnout": 262,
+    "candidate1Votes": 136,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 396,
+    "registered": 300,
+    "turnout": 258,
+    "candidate1Votes": 145,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 397,
+    "registered": 300,
+    "turnout": 260,
+    "candidate1Votes": 107,
+    "candidate2Votes": 153
+  },
+  {
+    "tpsId": 398,
+    "registered": 300,
+    "turnout": 213,
+    "candidate1Votes": 107,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 399,
+    "registered": 300,
+    "turnout": 201,
+    "candidate1Votes": 120,
+    "candidate2Votes": 81
+  },
+  {
+    "tpsId": 400,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 144,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 401,
+    "registered": 300,
+    "turnout": 243,
+    "candidate1Votes": 141,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 402,
+    "registered": 300,
+    "turnout": 256,
+    "candidate1Votes": 110,
+    "candidate2Votes": 146
+  },
+  {
+    "tpsId": 403,
+    "registered": 300,
+    "turnout": 225,
+    "candidate1Votes": 129,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 404,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 129,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 405,
+    "registered": 300,
+    "turnout": 261,
+    "candidate1Votes": 126,
+    "candidate2Votes": 135
+  },
+  {
+    "tpsId": 406,
+    "registered": 300,
+    "turnout": 246,
+    "candidate1Votes": 140,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 407,
+    "registered": 300,
+    "turnout": 250,
+    "candidate1Votes": 130,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 408,
+    "registered": 300,
+    "turnout": 246,
+    "candidate1Votes": 145,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 409,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 115,
+    "candidate2Votes": 80
+  },
+  {
+    "tpsId": 410,
+    "registered": 300,
+    "turnout": 260,
+    "candidate1Votes": 150,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 411,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 78,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 412,
+    "registered": 300,
+    "turnout": 204,
+    "candidate1Votes": 111,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 413,
+    "registered": 300,
+    "turnout": 228,
+    "candidate1Votes": 134,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 414,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 131,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 415,
+    "registered": 300,
+    "turnout": 247,
+    "candidate1Votes": 114,
+    "candidate2Votes": 133
+  },
+  {
+    "tpsId": 416,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 90,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 417,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 120,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 418,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 128,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 419,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 89,
+    "candidate2Votes": 133
+  },
+  {
+    "tpsId": 420,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 116,
+    "candidate2Votes": 89
+  },
+  {
+    "tpsId": 421,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 102,
+    "candidate2Votes": 81
+  },
+  {
+    "tpsId": 422,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 99,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 423,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 131,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 424,
+    "registered": 300,
+    "turnout": 243,
+    "candidate1Votes": 117,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 425,
+    "registered": 300,
+    "turnout": 197,
+    "candidate1Votes": 113,
+    "candidate2Votes": 84
+  },
+  {
+    "tpsId": 426,
+    "registered": 300,
+    "turnout": 196,
+    "candidate1Votes": 116,
+    "candidate2Votes": 80
+  },
+  {
+    "tpsId": 427,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 134,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 428,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 110,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 429,
+    "registered": 300,
+    "turnout": 258,
+    "candidate1Votes": 142,
+    "candidate2Votes": 116
+  },
+  {
+    "tpsId": 430,
+    "registered": 300,
+    "turnout": 268,
+    "candidate1Votes": 112,
+    "candidate2Votes": 156
+  },
+  {
+    "tpsId": 431,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 98,
+    "candidate2Votes": 117
+  },
+  {
+    "tpsId": 432,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 88,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 433,
+    "registered": 300,
+    "turnout": 218,
+    "candidate1Votes": 110,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 434,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 106,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 435,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 112,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 436,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 115,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 437,
+    "registered": 300,
+    "turnout": 260,
+    "candidate1Votes": 122,
+    "candidate2Votes": 138
+  },
+  {
+    "tpsId": 438,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 104,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 439,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 92,
+    "candidate2Votes": 134
+  },
+  {
+    "tpsId": 440,
+    "registered": 300,
+    "turnout": 187,
+    "candidate1Votes": 87,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 441,
+    "registered": 300,
+    "turnout": 256,
+    "candidate1Votes": 106,
+    "candidate2Votes": 150
+  },
+  {
+    "tpsId": 442,
+    "registered": 300,
+    "turnout": 196,
+    "candidate1Votes": 101,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 443,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 104,
+    "candidate2Votes": 144
+  },
+  {
+    "tpsId": 444,
+    "registered": 300,
+    "turnout": 269,
+    "candidate1Votes": 138,
+    "candidate2Votes": 131
+  },
+  {
+    "tpsId": 445,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 84,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 446,
+    "registered": 300,
+    "turnout": 218,
+    "candidate1Votes": 103,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 447,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 123,
+    "candidate2Votes": 143
+  },
+  {
+    "tpsId": 448,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 89,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 449,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 82,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 450,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 113,
+    "candidate2Votes": 82
+  },
+  {
+    "tpsId": 451,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 152,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 452,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 100,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 453,
+    "registered": 300,
+    "turnout": 201,
+    "candidate1Votes": 112,
+    "candidate2Votes": 89
+  },
+  {
+    "tpsId": 454,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 99,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 455,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 109,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 456,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 84,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 457,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 99,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 458,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 76,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 459,
+    "registered": 300,
+    "turnout": 267,
+    "candidate1Votes": 159,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 460,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 134,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 461,
+    "registered": 300,
+    "turnout": 250,
+    "candidate1Votes": 149,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 462,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 92,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 463,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 107,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 464,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 142,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 465,
+    "registered": 300,
+    "turnout": 192,
+    "candidate1Votes": 110,
+    "candidate2Votes": 82
+  },
+  {
+    "tpsId": 466,
+    "registered": 300,
+    "turnout": 204,
+    "candidate1Votes": 92,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 467,
+    "registered": 300,
+    "turnout": 265,
+    "candidate1Votes": 153,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 468,
+    "registered": 300,
+    "turnout": 265,
+    "candidate1Votes": 155,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 469,
+    "registered": 300,
+    "turnout": 213,
+    "candidate1Votes": 109,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 470,
+    "registered": 300,
+    "turnout": 213,
+    "candidate1Votes": 126,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 471,
+    "registered": 300,
+    "turnout": 268,
+    "candidate1Votes": 107,
+    "candidate2Votes": 161
+  },
+  {
+    "tpsId": 472,
+    "registered": 300,
+    "turnout": 269,
+    "candidate1Votes": 145,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 473,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 118,
+    "candidate2Votes": 148
+  },
+  {
+    "tpsId": 474,
+    "registered": 300,
+    "turnout": 216,
+    "candidate1Votes": 128,
+    "candidate2Votes": 88
+  },
+  {
+    "tpsId": 475,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 100,
+    "candidate2Votes": 81
+  },
+  {
+    "tpsId": 476,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 105,
+    "candidate2Votes": 146
+  },
+  {
+    "tpsId": 477,
+    "registered": 300,
+    "turnout": 216,
+    "candidate1Votes": 105,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 478,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 148,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 479,
+    "registered": 300,
+    "turnout": 223,
+    "candidate1Votes": 109,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 480,
+    "registered": 300,
+    "turnout": 249,
+    "candidate1Votes": 136,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 481,
+    "registered": 300,
+    "turnout": 264,
+    "candidate1Votes": 107,
+    "candidate2Votes": 157
+  },
+  {
+    "tpsId": 482,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 96,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 483,
+    "registered": 300,
+    "turnout": 189,
+    "candidate1Votes": 108,
+    "candidate2Votes": 81
+  },
+  {
+    "tpsId": 484,
+    "registered": 300,
+    "turnout": 243,
+    "candidate1Votes": 119,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 485,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 84,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 486,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 93,
+    "candidate2Votes": 128
+  },
+  {
+    "tpsId": 487,
+    "registered": 300,
+    "turnout": 262,
+    "candidate1Votes": 109,
+    "candidate2Votes": 153
+  },
+  {
+    "tpsId": 488,
+    "registered": 300,
+    "turnout": 260,
+    "candidate1Votes": 106,
+    "candidate2Votes": 154
+  },
+  {
+    "tpsId": 489,
+    "registered": 300,
+    "turnout": 249,
+    "candidate1Votes": 129,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 490,
+    "registered": 300,
+    "turnout": 257,
+    "candidate1Votes": 150,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 491,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 118,
+    "candidate2Votes": 82
+  },
+  {
+    "tpsId": 492,
+    "registered": 300,
+    "turnout": 244,
+    "candidate1Votes": 109,
+    "candidate2Votes": 135
+  },
+  {
+    "tpsId": 493,
+    "registered": 300,
+    "turnout": 261,
+    "candidate1Votes": 151,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 494,
+    "registered": 300,
+    "turnout": 231,
+    "candidate1Votes": 115,
+    "candidate2Votes": 116
+  },
+  {
+    "tpsId": 495,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 116,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 496,
+    "registered": 300,
+    "turnout": 230,
+    "candidate1Votes": 104,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 497,
+    "registered": 300,
+    "turnout": 220,
+    "candidate1Votes": 125,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 498,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 108,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 499,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 90,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 500,
+    "registered": 300,
+    "turnout": 262,
+    "candidate1Votes": 144,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 501,
+    "registered": 300,
+    "turnout": 245,
+    "candidate1Votes": 126,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 502,
+    "registered": 300,
+    "turnout": 263,
+    "candidate1Votes": 135,
+    "candidate2Votes": 128
+  },
+  {
+    "tpsId": 503,
+    "registered": 300,
+    "turnout": 184,
+    "candidate1Votes": 91,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 504,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 97,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 505,
+    "registered": 300,
+    "turnout": 196,
+    "candidate1Votes": 83,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 506,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 98,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 507,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 91,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 508,
+    "registered": 300,
+    "turnout": 260,
+    "candidate1Votes": 118,
+    "candidate2Votes": 142
+  },
+  {
+    "tpsId": 509,
+    "registered": 300,
+    "turnout": 263,
+    "candidate1Votes": 114,
+    "candidate2Votes": 149
+  },
+  {
+    "tpsId": 510,
+    "registered": 300,
+    "turnout": 213,
+    "candidate1Votes": 121,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 511,
+    "registered": 300,
+    "turnout": 235,
+    "candidate1Votes": 106,
+    "candidate2Votes": 129
+  },
+  {
+    "tpsId": 512,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 103,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 513,
+    "registered": 300,
+    "turnout": 224,
+    "candidate1Votes": 91,
+    "candidate2Votes": 133
+  },
+  {
+    "tpsId": 514,
+    "registered": 300,
+    "turnout": 250,
+    "candidate1Votes": 137,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 515,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 144,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 516,
+    "registered": 300,
+    "turnout": 269,
+    "candidate1Votes": 115,
+    "candidate2Votes": 154
+  },
+  {
+    "tpsId": 517,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 98,
+    "candidate2Votes": 83
+  },
+  {
+    "tpsId": 518,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 121,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 519,
+    "registered": 300,
+    "turnout": 249,
+    "candidate1Votes": 106,
+    "candidate2Votes": 143
+  },
+  {
+    "tpsId": 520,
+    "registered": 300,
+    "turnout": 187,
+    "candidate1Votes": 79,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 521,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 112,
+    "candidate2Votes": 82
+  },
+  {
+    "tpsId": 522,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 95,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 523,
+    "registered": 300,
+    "turnout": 245,
+    "candidate1Votes": 123,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 524,
+    "registered": 300,
+    "turnout": 187,
+    "candidate1Votes": 103,
+    "candidate2Votes": 84
+  },
+  {
+    "tpsId": 525,
+    "registered": 300,
+    "turnout": 262,
+    "candidate1Votes": 138,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 526,
+    "registered": 300,
+    "turnout": 247,
+    "candidate1Votes": 121,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 527,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 128,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 528,
+    "registered": 300,
+    "turnout": 262,
+    "candidate1Votes": 120,
+    "candidate2Votes": 142
+  },
+  {
+    "tpsId": 529,
+    "registered": 300,
+    "turnout": 265,
+    "candidate1Votes": 115,
+    "candidate2Votes": 150
+  },
+  {
+    "tpsId": 530,
+    "registered": 300,
+    "turnout": 244,
+    "candidate1Votes": 119,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 531,
+    "registered": 300,
+    "turnout": 197,
+    "candidate1Votes": 94,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 532,
+    "registered": 300,
+    "turnout": 263,
+    "candidate1Votes": 151,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 533,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 98,
+    "candidate2Votes": 131
+  },
+  {
+    "tpsId": 534,
+    "registered": 300,
+    "turnout": 217,
+    "candidate1Votes": 129,
+    "candidate2Votes": 88
+  },
+  {
+    "tpsId": 535,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 120,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 536,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 102,
+    "candidate2Votes": 131
+  },
+  {
+    "tpsId": 537,
+    "registered": 300,
+    "turnout": 249,
+    "candidate1Votes": 101,
+    "candidate2Votes": 148
+  },
+  {
+    "tpsId": 538,
+    "registered": 300,
+    "turnout": 256,
+    "candidate1Votes": 152,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 539,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 95,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 540,
+    "registered": 300,
+    "turnout": 245,
+    "candidate1Votes": 120,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 541,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 111,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 542,
+    "registered": 300,
+    "turnout": 268,
+    "candidate1Votes": 135,
+    "candidate2Votes": 133
+  },
+  {
+    "tpsId": 543,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 106,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 544,
+    "registered": 300,
+    "turnout": 207,
+    "candidate1Votes": 105,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 545,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 81,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 546,
+    "registered": 300,
+    "turnout": 224,
+    "candidate1Votes": 128,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 547,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 94,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 548,
+    "registered": 300,
+    "turnout": 267,
+    "candidate1Votes": 113,
+    "candidate2Votes": 154
+  },
+  {
+    "tpsId": 549,
+    "registered": 300,
+    "turnout": 224,
+    "candidate1Votes": 111,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 550,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 99,
+    "candidate2Votes": 81
+  },
+  {
+    "tpsId": 551,
+    "registered": 300,
+    "turnout": 249,
+    "candidate1Votes": 120,
+    "candidate2Votes": 129
+  },
+  {
+    "tpsId": 552,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 96,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 553,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 103,
+    "candidate2Votes": 138
+  },
+  {
+    "tpsId": 554,
+    "registered": 300,
+    "turnout": 246,
+    "candidate1Votes": 107,
+    "candidate2Votes": 139
+  },
+  {
+    "tpsId": 555,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 139,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 556,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 95,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 557,
+    "registered": 300,
+    "turnout": 184,
+    "candidate1Votes": 99,
+    "candidate2Votes": 85
+  },
+  {
+    "tpsId": 558,
+    "registered": 300,
+    "turnout": 249,
+    "candidate1Votes": 123,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 559,
+    "registered": 300,
+    "turnout": 204,
+    "candidate1Votes": 114,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 560,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 88,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 561,
+    "registered": 300,
+    "turnout": 268,
+    "candidate1Votes": 144,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 562,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 103,
+    "candidate2Votes": 85
+  },
+  {
+    "tpsId": 563,
+    "registered": 300,
+    "turnout": 196,
+    "candidate1Votes": 81,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 564,
+    "registered": 300,
+    "turnout": 235,
+    "candidate1Votes": 139,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 565,
+    "registered": 300,
+    "turnout": 220,
+    "candidate1Votes": 128,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 566,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 86,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 567,
+    "registered": 300,
+    "turnout": 187,
+    "candidate1Votes": 106,
+    "candidate2Votes": 81
+  },
+  {
+    "tpsId": 568,
+    "registered": 300,
+    "turnout": 227,
+    "candidate1Votes": 102,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 569,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 88,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 570,
+    "registered": 300,
+    "turnout": 250,
+    "candidate1Votes": 127,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 571,
+    "registered": 300,
+    "turnout": 184,
+    "candidate1Votes": 81,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 572,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 117,
+    "candidate2Votes": 83
+  },
+  {
+    "tpsId": 573,
+    "registered": 300,
+    "turnout": 249,
+    "candidate1Votes": 115,
+    "candidate2Votes": 134
+  },
+  {
+    "tpsId": 574,
+    "registered": 300,
+    "turnout": 213,
+    "candidate1Votes": 112,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 575,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 105,
+    "candidate2Votes": 129
+  },
+  {
+    "tpsId": 576,
+    "registered": 300,
+    "turnout": 184,
+    "candidate1Votes": 78,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 577,
+    "registered": 300,
+    "turnout": 186,
+    "candidate1Votes": 95,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 578,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 104,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 579,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 107,
+    "candidate2Votes": 84
+  },
+  {
+    "tpsId": 580,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 121,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 581,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 97,
+    "candidate2Votes": 84
+  },
+  {
+    "tpsId": 582,
+    "registered": 300,
+    "turnout": 268,
+    "candidate1Votes": 142,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 583,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 83,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 584,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 112,
+    "candidate2Votes": 99
+  },
+  {
+    "tpsId": 585,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 95,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 586,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 109,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 587,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 143,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 588,
+    "registered": 300,
+    "turnout": 224,
+    "candidate1Votes": 134,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 589,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 100,
+    "candidate2Votes": 148
+  },
+  {
+    "tpsId": 590,
+    "registered": 300,
+    "turnout": 249,
+    "candidate1Votes": 137,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 591,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 91,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 592,
+    "registered": 300,
+    "turnout": 212,
+    "candidate1Votes": 87,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 593,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 108,
+    "candidate2Votes": 133
+  },
+  {
+    "tpsId": 594,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 110,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 595,
+    "registered": 300,
+    "turnout": 235,
+    "candidate1Votes": 132,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 596,
+    "registered": 300,
+    "turnout": 217,
+    "candidate1Votes": 89,
+    "candidate2Votes": 128
+  },
+  {
+    "tpsId": 597,
+    "registered": 300,
+    "turnout": 247,
+    "candidate1Votes": 107,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 598,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 83,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 599,
+    "registered": 300,
+    "turnout": 228,
+    "candidate1Votes": 130,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 600,
+    "registered": 300,
+    "turnout": 269,
+    "candidate1Votes": 142,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 601,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 112,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 602,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 123,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 603,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 114,
+    "candidate2Votes": 86
+  },
+  {
+    "tpsId": 604,
+    "registered": 300,
+    "turnout": 262,
+    "candidate1Votes": 155,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 605,
+    "registered": 300,
+    "turnout": 219,
+    "candidate1Votes": 104,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 606,
+    "registered": 300,
+    "turnout": 245,
+    "candidate1Votes": 114,
+    "candidate2Votes": 131
+  },
+  {
+    "tpsId": 607,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 80,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 608,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 87,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 609,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 144,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 610,
+    "registered": 300,
+    "turnout": 230,
+    "candidate1Votes": 134,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 611,
+    "registered": 300,
+    "turnout": 196,
+    "candidate1Votes": 108,
+    "candidate2Votes": 88
+  },
+  {
+    "tpsId": 612,
+    "registered": 300,
+    "turnout": 250,
+    "candidate1Votes": 109,
+    "candidate2Votes": 141
+  },
+  {
+    "tpsId": 613,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 105,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 614,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 148,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 615,
+    "registered": 300,
+    "turnout": 235,
+    "candidate1Votes": 136,
+    "candidate2Votes": 99
+  },
+  {
+    "tpsId": 616,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 98,
+    "candidate2Votes": 84
+  },
+  {
+    "tpsId": 617,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 105,
+    "candidate2Votes": 129
+  },
+  {
+    "tpsId": 618,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 111,
+    "candidate2Votes": 80
+  },
+  {
+    "tpsId": 619,
+    "registered": 300,
+    "turnout": 253,
+    "candidate1Votes": 150,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 620,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 129,
+    "candidate2Votes": 97
+  },
+  {
+    "tpsId": 621,
+    "registered": 300,
+    "turnout": 185,
+    "candidate1Votes": 76,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 622,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 108,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 623,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 108,
+    "candidate2Votes": 158
+  },
+  {
+    "tpsId": 624,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 115,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 625,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 81,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 626,
+    "registered": 300,
+    "turnout": 260,
+    "candidate1Votes": 128,
+    "candidate2Votes": 132
+  },
+  {
+    "tpsId": 627,
+    "registered": 300,
+    "turnout": 245,
+    "candidate1Votes": 108,
+    "candidate2Votes": 137
+  },
+  {
+    "tpsId": 628,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 141,
+    "candidate2Votes": 97
+  },
+  {
+    "tpsId": 629,
+    "registered": 300,
+    "turnout": 245,
+    "candidate1Votes": 121,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 630,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 96,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 631,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 136,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 632,
+    "registered": 300,
+    "turnout": 224,
+    "candidate1Votes": 123,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 633,
+    "registered": 300,
+    "turnout": 220,
+    "candidate1Votes": 109,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 634,
+    "registered": 300,
+    "turnout": 244,
+    "candidate1Votes": 135,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 635,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 120,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 636,
+    "registered": 300,
+    "turnout": 207,
+    "candidate1Votes": 84,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 637,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 113,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 638,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 112,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 639,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 118,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 640,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 101,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 641,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 148,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 642,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 111,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 643,
+    "registered": 300,
+    "turnout": 198,
+    "candidate1Votes": 102,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 644,
+    "registered": 300,
+    "turnout": 198,
+    "candidate1Votes": 114,
+    "candidate2Votes": 84
+  },
+  {
+    "tpsId": 645,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 104,
+    "candidate2Votes": 77
+  },
+  {
+    "tpsId": 646,
+    "registered": 300,
+    "turnout": 253,
+    "candidate1Votes": 116,
+    "candidate2Votes": 137
+  },
+  {
+    "tpsId": 647,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 111,
+    "candidate2Votes": 99
+  },
+  {
+    "tpsId": 648,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 112,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 649,
+    "registered": 300,
+    "turnout": 250,
+    "candidate1Votes": 126,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 650,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 111,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 651,
+    "registered": 300,
+    "turnout": 224,
+    "candidate1Votes": 116,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 652,
+    "registered": 300,
+    "turnout": 265,
+    "candidate1Votes": 137,
+    "candidate2Votes": 128
+  },
+  {
+    "tpsId": 653,
+    "registered": 300,
+    "turnout": 258,
+    "candidate1Votes": 140,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 654,
+    "registered": 300,
+    "turnout": 216,
+    "candidate1Votes": 88,
+    "candidate2Votes": 128
+  },
+  {
+    "tpsId": 655,
+    "registered": 300,
+    "turnout": 263,
+    "candidate1Votes": 154,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 656,
+    "registered": 300,
+    "turnout": 216,
+    "candidate1Votes": 103,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 657,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 110,
+    "candidate2Votes": 131
+  },
+  {
+    "tpsId": 658,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 111,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 659,
+    "registered": 300,
+    "turnout": 236,
+    "candidate1Votes": 95,
+    "candidate2Votes": 141
+  },
+  {
+    "tpsId": 660,
+    "registered": 300,
+    "turnout": 268,
+    "candidate1Votes": 141,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 661,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 81,
+    "candidate2Votes": 99
+  },
+  {
+    "tpsId": 662,
+    "registered": 300,
+    "turnout": 256,
+    "candidate1Votes": 143,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 663,
+    "registered": 300,
+    "turnout": 245,
+    "candidate1Votes": 133,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 664,
+    "registered": 300,
+    "turnout": 228,
+    "candidate1Votes": 122,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 665,
+    "registered": 300,
+    "turnout": 263,
+    "candidate1Votes": 120,
+    "candidate2Votes": 143
+  },
+  {
+    "tpsId": 666,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 105,
+    "candidate2Votes": 150
+  },
+  {
+    "tpsId": 667,
+    "registered": 300,
+    "turnout": 198,
+    "candidate1Votes": 91,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 668,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 102,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 669,
+    "registered": 300,
+    "turnout": 249,
+    "candidate1Votes": 127,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 670,
+    "registered": 300,
+    "turnout": 264,
+    "candidate1Votes": 134,
+    "candidate2Votes": 130
+  },
+  {
+    "tpsId": 671,
+    "registered": 300,
+    "turnout": 247,
+    "candidate1Votes": 125,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 672,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 106,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 673,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 115,
+    "candidate2Votes": 80
+  },
+  {
+    "tpsId": 674,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 106,
+    "candidate2Votes": 75
+  },
+  {
+    "tpsId": 675,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 111,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 676,
+    "registered": 300,
+    "turnout": 256,
+    "candidate1Votes": 136,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 677,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 86,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 678,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 105,
+    "candidate2Votes": 85
+  },
+  {
+    "tpsId": 679,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 113,
+    "candidate2Votes": 77
+  },
+  {
+    "tpsId": 680,
+    "registered": 300,
+    "turnout": 262,
+    "candidate1Votes": 114,
+    "candidate2Votes": 148
+  },
+  {
+    "tpsId": 681,
+    "registered": 300,
+    "turnout": 261,
+    "candidate1Votes": 128,
+    "candidate2Votes": 133
+  },
+  {
+    "tpsId": 682,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 108,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 683,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 75,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 684,
+    "registered": 300,
+    "turnout": 260,
+    "candidate1Votes": 108,
+    "candidate2Votes": 152
+  },
+  {
+    "tpsId": 685,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 83,
+    "candidate2Votes": 117
+  },
+  {
+    "tpsId": 686,
+    "registered": 300,
+    "turnout": 242,
+    "candidate1Votes": 129,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 687,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 114,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 688,
+    "registered": 300,
+    "turnout": 219,
+    "candidate1Votes": 113,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 689,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 133,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 690,
+    "registered": 300,
+    "turnout": 198,
+    "candidate1Votes": 113,
+    "candidate2Votes": 85
+  },
+  {
+    "tpsId": 691,
+    "registered": 300,
+    "turnout": 244,
+    "candidate1Votes": 117,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 692,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 147,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 693,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 141,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 694,
+    "registered": 300,
+    "turnout": 189,
+    "candidate1Votes": 88,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 695,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 103,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 696,
+    "registered": 300,
+    "turnout": 265,
+    "candidate1Votes": 150,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 697,
+    "registered": 300,
+    "turnout": 264,
+    "candidate1Votes": 134,
+    "candidate2Votes": 130
+  },
+  {
+    "tpsId": 698,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 115,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 699,
+    "registered": 300,
+    "turnout": 230,
+    "candidate1Votes": 117,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 700,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 91,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 701,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 135,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 702,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 84,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 703,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 87,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 704,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 107,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 705,
+    "registered": 300,
+    "turnout": 236,
+    "candidate1Votes": 122,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 706,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 84,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 707,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 123,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 708,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 106,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 709,
+    "registered": 300,
+    "turnout": 268,
+    "candidate1Votes": 109,
+    "candidate2Votes": 159
+  },
+  {
+    "tpsId": 710,
+    "registered": 300,
+    "turnout": 202,
+    "candidate1Votes": 91,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 711,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 127,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 712,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 142,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 713,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 80,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 714,
+    "registered": 300,
+    "turnout": 199,
+    "candidate1Votes": 106,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 715,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 113,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 716,
+    "registered": 300,
+    "turnout": 189,
+    "candidate1Votes": 110,
+    "candidate2Votes": 79
+  },
+  {
+    "tpsId": 717,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 113,
+    "candidate2Votes": 81
+  },
+  {
+    "tpsId": 718,
+    "registered": 300,
+    "turnout": 256,
+    "candidate1Votes": 122,
+    "candidate2Votes": 134
+  },
+  {
+    "tpsId": 719,
+    "registered": 300,
+    "turnout": 264,
+    "candidate1Votes": 156,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 720,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 120,
+    "candidate2Votes": 128
+  },
+  {
+    "tpsId": 721,
+    "registered": 300,
+    "turnout": 244,
+    "candidate1Votes": 121,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 722,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 102,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 723,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 122,
+    "candidate2Votes": 89
+  },
+  {
+    "tpsId": 724,
+    "registered": 300,
+    "turnout": 250,
+    "candidate1Votes": 123,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 725,
+    "registered": 300,
+    "turnout": 237,
+    "candidate1Votes": 122,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 726,
+    "registered": 300,
+    "turnout": 228,
+    "candidate1Votes": 96,
+    "candidate2Votes": 132
+  },
+  {
+    "tpsId": 727,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 102,
+    "candidate2Votes": 131
+  },
+  {
+    "tpsId": 728,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 95,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 729,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 117,
+    "candidate2Votes": 149
+  },
+  {
+    "tpsId": 730,
+    "registered": 300,
+    "turnout": 207,
+    "candidate1Votes": 86,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 731,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 81,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 732,
+    "registered": 300,
+    "turnout": 247,
+    "candidate1Votes": 102,
+    "candidate2Votes": 145
+  },
+  {
+    "tpsId": 733,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 94,
+    "candidate2Votes": 135
+  },
+  {
+    "tpsId": 734,
+    "registered": 300,
+    "turnout": 259,
+    "candidate1Votes": 110,
+    "candidate2Votes": 149
+  },
+  {
+    "tpsId": 735,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 101,
+    "candidate2Votes": 79
+  },
+  {
+    "tpsId": 736,
+    "registered": 300,
+    "turnout": 185,
+    "candidate1Votes": 102,
+    "candidate2Votes": 83
+  },
+  {
+    "tpsId": 737,
+    "registered": 300,
+    "turnout": 261,
+    "candidate1Votes": 138,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 738,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 135,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 739,
+    "registered": 300,
+    "turnout": 224,
+    "candidate1Votes": 116,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 740,
+    "registered": 300,
+    "turnout": 203,
+    "candidate1Votes": 114,
+    "candidate2Votes": 89
+  },
+  {
+    "tpsId": 741,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 126,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 742,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 78,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 743,
+    "registered": 300,
+    "turnout": 269,
+    "candidate1Votes": 146,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 744,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 131,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 745,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 107,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 746,
+    "registered": 300,
+    "turnout": 263,
+    "candidate1Votes": 124,
+    "candidate2Votes": 139
+  },
+  {
+    "tpsId": 747,
+    "registered": 300,
+    "turnout": 185,
+    "candidate1Votes": 79,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 748,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 102,
+    "candidate2Votes": 137
+  },
+  {
+    "tpsId": 749,
+    "registered": 300,
+    "turnout": 242,
+    "candidate1Votes": 98,
+    "candidate2Votes": 144
+  },
+  {
+    "tpsId": 750,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 123,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 751,
+    "registered": 300,
+    "turnout": 212,
+    "candidate1Votes": 117,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 752,
+    "registered": 300,
+    "turnout": 219,
+    "candidate1Votes": 125,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 753,
+    "registered": 300,
+    "turnout": 198,
+    "candidate1Votes": 102,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 754,
+    "registered": 300,
+    "turnout": 186,
+    "candidate1Votes": 96,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 755,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 139,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 756,
+    "registered": 300,
+    "turnout": 264,
+    "candidate1Votes": 139,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 757,
+    "registered": 300,
+    "turnout": 186,
+    "candidate1Votes": 98,
+    "candidate2Votes": 88
+  },
+  {
+    "tpsId": 758,
+    "registered": 300,
+    "turnout": 247,
+    "candidate1Votes": 138,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 759,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 102,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 760,
+    "registered": 300,
+    "turnout": 216,
+    "candidate1Votes": 119,
+    "candidate2Votes": 97
+  },
+  {
+    "tpsId": 761,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 101,
+    "candidate2Votes": 81
+  },
+  {
+    "tpsId": 762,
+    "registered": 300,
+    "turnout": 201,
+    "candidate1Votes": 118,
+    "candidate2Votes": 83
+  },
+  {
+    "tpsId": 763,
+    "registered": 300,
+    "turnout": 258,
+    "candidate1Votes": 127,
+    "candidate2Votes": 131
+  },
+  {
+    "tpsId": 764,
+    "registered": 300,
+    "turnout": 184,
+    "candidate1Votes": 107,
+    "candidate2Votes": 77
+  },
+  {
+    "tpsId": 765,
+    "registered": 300,
+    "turnout": 244,
+    "candidate1Votes": 104,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 766,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 96,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 767,
+    "registered": 300,
+    "turnout": 258,
+    "candidate1Votes": 108,
+    "candidate2Votes": 150
+  },
+  {
+    "tpsId": 768,
+    "registered": 300,
+    "turnout": 231,
+    "candidate1Votes": 131,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 769,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 100,
+    "candidate2Votes": 152
+  },
+  {
+    "tpsId": 770,
+    "registered": 300,
+    "turnout": 251,
+    "candidate1Votes": 109,
+    "candidate2Votes": 142
+  },
+  {
+    "tpsId": 771,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 120,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 772,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 120,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 773,
+    "registered": 300,
+    "turnout": 261,
+    "candidate1Votes": 140,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 774,
+    "registered": 300,
+    "turnout": 216,
+    "candidate1Votes": 112,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 775,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 106,
+    "candidate2Votes": 132
+  },
+  {
+    "tpsId": 776,
+    "registered": 300,
+    "turnout": 212,
+    "candidate1Votes": 122,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 777,
+    "registered": 300,
+    "turnout": 187,
+    "candidate1Votes": 111,
+    "candidate2Votes": 76
+  },
+  {
+    "tpsId": 778,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 137,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 779,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 117,
+    "candidate2Votes": 117
+  },
+  {
+    "tpsId": 780,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 141,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 781,
+    "registered": 300,
+    "turnout": 247,
+    "candidate1Votes": 136,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 782,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 90,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 783,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 101,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 784,
+    "registered": 300,
+    "turnout": 218,
+    "candidate1Votes": 95,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 785,
+    "registered": 300,
+    "turnout": 263,
+    "candidate1Votes": 114,
+    "candidate2Votes": 149
+  },
+  {
+    "tpsId": 786,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 98,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 787,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 103,
+    "candidate2Votes": 135
+  },
+  {
+    "tpsId": 788,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 122,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 789,
+    "registered": 300,
+    "turnout": 196,
+    "candidate1Votes": 107,
+    "candidate2Votes": 89
+  },
+  {
+    "tpsId": 790,
+    "registered": 300,
+    "turnout": 230,
+    "candidate1Votes": 125,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 791,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 101,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 792,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 85,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 793,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 134,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 794,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 111,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 795,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 85,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 796,
+    "registered": 300,
+    "turnout": 259,
+    "candidate1Votes": 125,
+    "candidate2Votes": 134
+  },
+  {
+    "tpsId": 797,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 124,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 798,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 138,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 799,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 107,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 800,
+    "registered": 300,
+    "turnout": 258,
+    "candidate1Votes": 128,
+    "candidate2Votes": 130
+  },
+  {
+    "tpsId": 801,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 74,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 802,
+    "registered": 300,
+    "turnout": 201,
+    "candidate1Votes": 99,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 803,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 132,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 804,
+    "registered": 300,
+    "turnout": 243,
+    "candidate1Votes": 106,
+    "candidate2Votes": 137
+  },
+  {
+    "tpsId": 805,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 145,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 806,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 94,
+    "candidate2Votes": 116
+  },
+  {
+    "tpsId": 807,
+    "registered": 300,
+    "turnout": 197,
+    "candidate1Votes": 83,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 808,
+    "registered": 300,
+    "turnout": 203,
+    "candidate1Votes": 85,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 809,
+    "registered": 300,
+    "turnout": 264,
+    "candidate1Votes": 109,
+    "candidate2Votes": 155
+  },
+  {
+    "tpsId": 810,
+    "registered": 300,
+    "turnout": 203,
+    "candidate1Votes": 110,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 811,
+    "registered": 300,
+    "turnout": 246,
+    "candidate1Votes": 115,
+    "candidate2Votes": 131
+  },
+  {
+    "tpsId": 812,
+    "registered": 300,
+    "turnout": 202,
+    "candidate1Votes": 101,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 813,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 95,
+    "candidate2Votes": 138
+  },
+  {
+    "tpsId": 814,
+    "registered": 300,
+    "turnout": 238,
+    "candidate1Votes": 116,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 815,
+    "registered": 300,
+    "turnout": 230,
+    "candidate1Votes": 118,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 816,
+    "registered": 300,
+    "turnout": 206,
+    "candidate1Votes": 109,
+    "candidate2Votes": 97
+  },
+  {
+    "tpsId": 817,
+    "registered": 300,
+    "turnout": 236,
+    "candidate1Votes": 104,
+    "candidate2Votes": 132
+  },
+  {
+    "tpsId": 818,
+    "registered": 300,
+    "turnout": 254,
+    "candidate1Votes": 104,
+    "candidate2Votes": 150
+  },
+  {
+    "tpsId": 819,
+    "registered": 300,
+    "turnout": 204,
+    "candidate1Votes": 115,
+    "candidate2Votes": 89
+  },
+  {
+    "tpsId": 820,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 94,
+    "candidate2Votes": 88
+  },
+  {
+    "tpsId": 821,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 89,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 822,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 100,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 823,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 83,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 824,
+    "registered": 300,
+    "turnout": 263,
+    "candidate1Votes": 152,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 825,
+    "registered": 300,
+    "turnout": 227,
+    "candidate1Votes": 127,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 826,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 92,
+    "candidate2Votes": 117
+  },
+  {
+    "tpsId": 827,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 122,
+    "candidate2Votes": 144
+  },
+  {
+    "tpsId": 828,
+    "registered": 300,
+    "turnout": 197,
+    "candidate1Votes": 88,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 829,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 91,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 830,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 98,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 831,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 89,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 832,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 83,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 833,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 90,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 834,
+    "registered": 300,
+    "turnout": 216,
+    "candidate1Votes": 95,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 835,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 122,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 836,
+    "registered": 300,
+    "turnout": 260,
+    "candidate1Votes": 152,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 837,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 77,
+    "candidate2Votes": 106
+  },
+  {
+    "tpsId": 838,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 108,
+    "candidate2Votes": 86
+  },
+  {
+    "tpsId": 839,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 88,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 840,
+    "registered": 300,
+    "turnout": 186,
+    "candidate1Votes": 90,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 841,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 144,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 842,
+    "registered": 300,
+    "turnout": 230,
+    "candidate1Votes": 99,
+    "candidate2Votes": 131
+  },
+  {
+    "tpsId": 843,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 96,
+    "candidate2Votes": 86
+  },
+  {
+    "tpsId": 844,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 99,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 845,
+    "registered": 300,
+    "turnout": 269,
+    "candidate1Votes": 121,
+    "candidate2Votes": 148
+  },
+  {
+    "tpsId": 846,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 85,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 847,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 104,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 848,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 96,
+    "candidate2Votes": 85
+  },
+  {
+    "tpsId": 849,
+    "registered": 300,
+    "turnout": 258,
+    "candidate1Votes": 153,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 850,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 101,
+    "candidate2Votes": 133
+  },
+  {
+    "tpsId": 851,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 96,
+    "candidate2Votes": 85
+  },
+  {
+    "tpsId": 852,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 136,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 853,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 131,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 854,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 116,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 855,
+    "registered": 300,
+    "turnout": 187,
+    "candidate1Votes": 97,
+    "candidate2Votes": 90
+  },
+  {
+    "tpsId": 856,
+    "registered": 300,
+    "turnout": 214,
+    "candidate1Votes": 93,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 857,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 110,
+    "candidate2Votes": 80
+  },
+  {
+    "tpsId": 858,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 108,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 859,
+    "registered": 300,
+    "turnout": 182,
+    "candidate1Votes": 95,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 860,
+    "registered": 300,
+    "turnout": 265,
+    "candidate1Votes": 155,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 861,
+    "registered": 300,
+    "turnout": 220,
+    "candidate1Votes": 99,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 862,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 91,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 863,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 113,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 864,
+    "registered": 300,
+    "turnout": 235,
+    "candidate1Votes": 97,
+    "candidate2Votes": 138
+  },
+  {
+    "tpsId": 865,
+    "registered": 300,
+    "turnout": 246,
+    "candidate1Votes": 117,
+    "candidate2Votes": 129
+  },
+  {
+    "tpsId": 866,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 123,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 867,
+    "registered": 300,
+    "turnout": 204,
+    "candidate1Votes": 118,
+    "candidate2Votes": 86
+  },
+  {
+    "tpsId": 868,
+    "registered": 300,
+    "turnout": 240,
+    "candidate1Votes": 143,
+    "candidate2Votes": 97
+  },
+  {
+    "tpsId": 869,
+    "registered": 300,
+    "turnout": 212,
+    "candidate1Votes": 110,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 870,
+    "registered": 300,
+    "turnout": 243,
+    "candidate1Votes": 134,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 871,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 115,
+    "candidate2Votes": 80
+  },
+  {
+    "tpsId": 872,
+    "registered": 300,
+    "turnout": 264,
+    "candidate1Votes": 118,
+    "candidate2Votes": 146
+  },
+  {
+    "tpsId": 873,
+    "registered": 300,
+    "turnout": 262,
+    "candidate1Votes": 155,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 874,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 138,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 875,
+    "registered": 300,
+    "turnout": 257,
+    "candidate1Votes": 110,
+    "candidate2Votes": 147
+  },
+  {
+    "tpsId": 876,
+    "registered": 300,
+    "turnout": 210,
+    "candidate1Votes": 123,
+    "candidate2Votes": 87
+  },
+  {
+    "tpsId": 877,
+    "registered": 300,
+    "turnout": 187,
+    "candidate1Votes": 95,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 878,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 154,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 879,
+    "registered": 300,
+    "turnout": 237,
+    "candidate1Votes": 109,
+    "candidate2Votes": 128
+  },
+  {
+    "tpsId": 880,
+    "registered": 300,
+    "turnout": 223,
+    "candidate1Votes": 128,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 881,
+    "registered": 300,
+    "turnout": 228,
+    "candidate1Votes": 132,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 882,
+    "registered": 300,
+    "turnout": 192,
+    "candidate1Votes": 106,
+    "candidate2Votes": 86
+  },
+  {
+    "tpsId": 883,
+    "registered": 300,
+    "turnout": 202,
+    "candidate1Votes": 92,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 884,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 83,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 885,
+    "registered": 300,
+    "turnout": 253,
+    "candidate1Votes": 135,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 886,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 103,
+    "candidate2Votes": 129
+  },
+  {
+    "tpsId": 887,
+    "registered": 300,
+    "turnout": 266,
+    "candidate1Votes": 131,
+    "candidate2Votes": 135
+  },
+  {
+    "tpsId": 888,
+    "registered": 300,
+    "turnout": 194,
+    "candidate1Votes": 97,
+    "candidate2Votes": 97
+  },
+  {
+    "tpsId": 889,
+    "registered": 300,
+    "turnout": 249,
+    "candidate1Votes": 126,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 890,
+    "registered": 300,
+    "turnout": 225,
+    "candidate1Votes": 99,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 891,
+    "registered": 300,
+    "turnout": 258,
+    "candidate1Votes": 145,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 892,
+    "registered": 300,
+    "turnout": 235,
+    "candidate1Votes": 122,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 893,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 80,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 894,
+    "registered": 300,
+    "turnout": 236,
+    "candidate1Votes": 127,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 895,
+    "registered": 300,
+    "turnout": 261,
+    "candidate1Votes": 112,
+    "candidate2Votes": 149
+  },
+  {
+    "tpsId": 896,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 88,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 897,
+    "registered": 300,
+    "turnout": 203,
+    "candidate1Votes": 90,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 898,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 89,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 899,
+    "registered": 300,
+    "turnout": 257,
+    "candidate1Votes": 141,
+    "candidate2Votes": 116
+  },
+  {
+    "tpsId": 900,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 104,
+    "candidate2Votes": 151
+  },
+  {
+    "tpsId": 901,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 119,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 902,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 115,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 903,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 123,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 904,
+    "registered": 300,
+    "turnout": 229,
+    "candidate1Votes": 106,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 905,
+    "registered": 300,
+    "turnout": 196,
+    "candidate1Votes": 105,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 906,
+    "registered": 300,
+    "turnout": 189,
+    "candidate1Votes": 91,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 907,
+    "registered": 300,
+    "turnout": 187,
+    "candidate1Votes": 78,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 908,
+    "registered": 300,
+    "turnout": 263,
+    "candidate1Votes": 131,
+    "candidate2Votes": 132
+  },
+  {
+    "tpsId": 909,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 101,
+    "candidate2Votes": 147
+  },
+  {
+    "tpsId": 910,
+    "registered": 300,
+    "turnout": 181,
+    "candidate1Votes": 101,
+    "candidate2Votes": 80
+  },
+  {
+    "tpsId": 911,
+    "registered": 300,
+    "turnout": 250,
+    "candidate1Votes": 114,
+    "candidate2Votes": 136
+  },
+  {
+    "tpsId": 912,
+    "registered": 300,
+    "turnout": 243,
+    "candidate1Votes": 124,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 913,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 109,
+    "candidate2Votes": 84
+  },
+  {
+    "tpsId": 914,
+    "registered": 300,
+    "turnout": 202,
+    "candidate1Votes": 116,
+    "candidate2Votes": 86
+  },
+  {
+    "tpsId": 915,
+    "registered": 300,
+    "turnout": 205,
+    "candidate1Votes": 113,
+    "candidate2Votes": 92
+  },
+  {
+    "tpsId": 916,
+    "registered": 300,
+    "turnout": 198,
+    "candidate1Votes": 97,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 917,
+    "registered": 300,
+    "turnout": 262,
+    "candidate1Votes": 125,
+    "candidate2Votes": 137
+  },
+  {
+    "tpsId": 918,
+    "registered": 300,
+    "turnout": 244,
+    "candidate1Votes": 143,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 919,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 104,
+    "candidate2Votes": 96
+  },
+  {
+    "tpsId": 920,
+    "registered": 300,
+    "turnout": 218,
+    "candidate1Votes": 123,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 921,
+    "registered": 300,
+    "turnout": 265,
+    "candidate1Votes": 134,
+    "candidate2Votes": 131
+  },
+  {
+    "tpsId": 922,
+    "registered": 300,
+    "turnout": 260,
+    "candidate1Votes": 119,
+    "candidate2Votes": 141
+  },
+  {
+    "tpsId": 923,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 119,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 924,
+    "registered": 300,
+    "turnout": 192,
+    "candidate1Votes": 98,
+    "candidate2Votes": 94
+  },
+  {
+    "tpsId": 925,
+    "registered": 300,
+    "turnout": 189,
+    "candidate1Votes": 87,
+    "candidate2Votes": 102
+  },
+  {
+    "tpsId": 926,
+    "registered": 300,
+    "turnout": 225,
+    "candidate1Votes": 118,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 927,
+    "registered": 300,
+    "turnout": 217,
+    "candidate1Votes": 116,
+    "candidate2Votes": 101
+  },
+  {
+    "tpsId": 928,
+    "registered": 300,
+    "turnout": 226,
+    "candidate1Votes": 117,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 929,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 96,
+    "candidate2Votes": 136
+  },
+  {
+    "tpsId": 930,
+    "registered": 300,
+    "turnout": 207,
+    "candidate1Votes": 116,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 931,
+    "registered": 300,
+    "turnout": 203,
+    "candidate1Votes": 103,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 932,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 115,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 933,
+    "registered": 300,
+    "turnout": 240,
+    "candidate1Votes": 96,
+    "candidate2Votes": 144
+  },
+  {
+    "tpsId": 934,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 88,
+    "candidate2Votes": 95
+  },
+  {
+    "tpsId": 935,
+    "registered": 300,
+    "turnout": 206,
+    "candidate1Votes": 109,
+    "candidate2Votes": 97
+  },
+  {
+    "tpsId": 936,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 116,
+    "candidate2Votes": 79
+  },
+  {
+    "tpsId": 937,
+    "registered": 300,
+    "turnout": 234,
+    "candidate1Votes": 121,
+    "candidate2Votes": 113
+  },
+  {
+    "tpsId": 938,
+    "registered": 300,
+    "turnout": 252,
+    "candidate1Votes": 114,
+    "candidate2Votes": 138
+  },
+  {
+    "tpsId": 939,
+    "registered": 300,
+    "turnout": 219,
+    "candidate1Votes": 104,
+    "candidate2Votes": 115
+  },
+  {
+    "tpsId": 940,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 92,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 941,
+    "registered": 300,
+    "turnout": 242,
+    "candidate1Votes": 119,
+    "candidate2Votes": 123
+  },
+  {
+    "tpsId": 942,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 111,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 943,
+    "registered": 300,
+    "turnout": 262,
+    "candidate1Votes": 122,
+    "candidate2Votes": 140
+  },
+  {
+    "tpsId": 944,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 109,
+    "candidate2Votes": 130
+  },
+  {
+    "tpsId": 945,
+    "registered": 300,
+    "turnout": 259,
+    "candidate1Votes": 150,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 946,
+    "registered": 300,
+    "turnout": 188,
+    "candidate1Votes": 109,
+    "candidate2Votes": 79
+  },
+  {
+    "tpsId": 947,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 96,
+    "candidate2Votes": 119
+  },
+  {
+    "tpsId": 948,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 84,
+    "candidate2Votes": 107
+  },
+  {
+    "tpsId": 949,
+    "registered": 300,
+    "turnout": 269,
+    "candidate1Votes": 139,
+    "candidate2Votes": 130
+  },
+  {
+    "tpsId": 950,
+    "registered": 300,
+    "turnout": 260,
+    "candidate1Votes": 140,
+    "candidate2Votes": 120
+  },
+  {
+    "tpsId": 951,
+    "registered": 300,
+    "turnout": 183,
+    "candidate1Votes": 105,
+    "candidate2Votes": 78
+  },
+  {
+    "tpsId": 952,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 113,
+    "candidate2Votes": 78
+  },
+  {
+    "tpsId": 953,
+    "registered": 300,
+    "turnout": 218,
+    "candidate1Votes": 102,
+    "candidate2Votes": 116
+  },
+  {
+    "tpsId": 954,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 82,
+    "candidate2Votes": 111
+  },
+  {
+    "tpsId": 955,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 104,
+    "candidate2Votes": 117
+  },
+  {
+    "tpsId": 956,
+    "registered": 300,
+    "turnout": 222,
+    "candidate1Votes": 125,
+    "candidate2Votes": 97
+  },
+  {
+    "tpsId": 957,
+    "registered": 300,
+    "turnout": 221,
+    "candidate1Votes": 107,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 958,
+    "registered": 300,
+    "turnout": 195,
+    "candidate1Votes": 106,
+    "candidate2Votes": 89
+  },
+  {
+    "tpsId": 959,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 87,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 960,
+    "registered": 300,
+    "turnout": 189,
+    "candidate1Votes": 75,
+    "candidate2Votes": 114
+  },
+  {
+    "tpsId": 961,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 100,
+    "candidate2Votes": 148
+  },
+  {
+    "tpsId": 962,
+    "registered": 300,
+    "turnout": 261,
+    "candidate1Votes": 139,
+    "candidate2Votes": 122
+  },
+  {
+    "tpsId": 963,
+    "registered": 300,
+    "turnout": 220,
+    "candidate1Votes": 129,
+    "candidate2Votes": 91
+  },
+  {
+    "tpsId": 964,
+    "registered": 300,
+    "turnout": 198,
+    "candidate1Votes": 95,
+    "candidate2Votes": 103
+  },
+  {
+    "tpsId": 965,
+    "registered": 300,
+    "turnout": 232,
+    "candidate1Votes": 102,
+    "candidate2Votes": 130
+  },
+  {
+    "tpsId": 966,
+    "registered": 300,
+    "turnout": 190,
+    "candidate1Votes": 90,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 967,
+    "registered": 300,
+    "turnout": 260,
+    "candidate1Votes": 135,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 968,
+    "registered": 300,
+    "turnout": 212,
+    "candidate1Votes": 88,
+    "candidate2Votes": 124
+  },
+  {
+    "tpsId": 969,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 86,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 970,
+    "registered": 300,
+    "turnout": 202,
+    "candidate1Votes": 97,
+    "candidate2Votes": 105
+  },
+  {
+    "tpsId": 971,
+    "registered": 300,
+    "turnout": 243,
+    "candidate1Votes": 117,
+    "candidate2Votes": 126
+  },
+  {
+    "tpsId": 972,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 133,
+    "candidate2Votes": 108
+  },
+  {
+    "tpsId": 973,
+    "registered": 300,
+    "turnout": 246,
+    "candidate1Votes": 121,
+    "candidate2Votes": 125
+  },
+  {
+    "tpsId": 974,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 108,
+    "candidate2Votes": 83
+  },
+  {
+    "tpsId": 975,
+    "registered": 300,
+    "turnout": 193,
+    "candidate1Votes": 81,
+    "candidate2Votes": 112
+  },
+  {
+    "tpsId": 976,
+    "registered": 300,
+    "turnout": 216,
+    "candidate1Votes": 112,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 977,
+    "registered": 300,
+    "turnout": 233,
+    "candidate1Votes": 115,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 978,
+    "registered": 300,
+    "turnout": 191,
+    "candidate1Votes": 91,
+    "candidate2Votes": 100
+  },
+  {
+    "tpsId": 979,
+    "registered": 300,
+    "turnout": 245,
+    "candidate1Votes": 103,
+    "candidate2Votes": 142
+  },
+  {
+    "tpsId": 980,
+    "registered": 300,
+    "turnout": 215,
+    "candidate1Votes": 117,
+    "candidate2Votes": 98
+  },
+  {
+    "tpsId": 981,
+    "registered": 300,
+    "turnout": 216,
+    "candidate1Votes": 86,
+    "candidate2Votes": 130
+  },
+  {
+    "tpsId": 982,
+    "registered": 300,
+    "turnout": 235,
+    "candidate1Votes": 118,
+    "candidate2Votes": 117
+  },
+  {
+    "tpsId": 983,
+    "registered": 300,
+    "turnout": 206,
+    "candidate1Votes": 85,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 984,
+    "registered": 300,
+    "turnout": 259,
+    "candidate1Votes": 120,
+    "candidate2Votes": 139
+  },
+  {
+    "tpsId": 985,
+    "registered": 300,
+    "turnout": 248,
+    "candidate1Votes": 100,
+    "candidate2Votes": 148
+  },
+  {
+    "tpsId": 986,
+    "registered": 300,
+    "turnout": 200,
+    "candidate1Votes": 82,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 987,
+    "registered": 300,
+    "turnout": 255,
+    "candidate1Votes": 104,
+    "candidate2Votes": 151
+  },
+  {
+    "tpsId": 988,
+    "registered": 300,
+    "turnout": 241,
+    "candidate1Votes": 103,
+    "candidate2Votes": 138
+  },
+  {
+    "tpsId": 989,
+    "registered": 300,
+    "turnout": 211,
+    "candidate1Votes": 84,
+    "candidate2Votes": 127
+  },
+  {
+    "tpsId": 990,
+    "registered": 300,
+    "turnout": 209,
+    "candidate1Votes": 91,
+    "candidate2Votes": 118
+  },
+  {
+    "tpsId": 991,
+    "registered": 300,
+    "turnout": 216,
+    "candidate1Votes": 123,
+    "candidate2Votes": 93
+  },
+  {
+    "tpsId": 992,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 118,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 993,
+    "registered": 300,
+    "turnout": 208,
+    "candidate1Votes": 99,
+    "candidate2Votes": 109
+  },
+  {
+    "tpsId": 994,
+    "registered": 300,
+    "turnout": 250,
+    "candidate1Votes": 146,
+    "candidate2Votes": 104
+  },
+  {
+    "tpsId": 995,
+    "registered": 300,
+    "turnout": 180,
+    "candidate1Votes": 98,
+    "candidate2Votes": 82
+  },
+  {
+    "tpsId": 996,
+    "registered": 300,
+    "turnout": 201,
+    "candidate1Votes": 118,
+    "candidate2Votes": 83
+  },
+  {
+    "tpsId": 997,
+    "registered": 300,
+    "turnout": 212,
+    "candidate1Votes": 91,
+    "candidate2Votes": 121
+  },
+  {
+    "tpsId": 998,
+    "registered": 300,
+    "turnout": 236,
+    "candidate1Votes": 126,
+    "candidate2Votes": 110
+  },
+  {
+    "tpsId": 999,
+    "registered": 300,
+    "turnout": 239,
+    "candidate1Votes": 101,
+    "candidate2Votes": 138
+  },
+  {
+    "tpsId": 1000,
+    "registered": 300,
+    "turnout": 228,
+    "candidate1Votes": 124,
+    "candidate2Votes": 104
+  }
+]

@@ -4,55 +4,38 @@ pragma solidity ^0.8.20;
 contract EVoting {
 
     struct Candidate {
-        uint id;
+        uint256 id;
         string name;
-        uint voteCount;
     }
 
-    address public owner;
-    bool public electionActive;
+    uint256 public candidateCount;
+    uint256 public tpsCount;
 
-    mapping(uint => Candidate) public candidates;
-    mapping(address => bool) public hasVoted;
+    mapping(uint256 => Candidate) public candidates;
 
-    uint public candidatesCount;
+    // votes[tpsId][candidateId] = jumlah suara
+    mapping(uint256 => mapping(uint256 => uint256)) public votes;
 
-    event VoteCast(address indexed voter, uint candidateId);
-    event ElectionStatusChanged(bool status);
+    event VoteCast(
+        uint256 indexed tpsId,
+        uint256 indexed candidateId,
+        uint256 timestamp
+    );
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner");
-        _;
+    function addCandidate(string memory _name) public {
+        candidateCount++;
+        candidates[candidateCount] = Candidate(candidateCount, _name);
     }
 
-    constructor() {
-        owner = msg.sender;
-        electionActive = true;
+    function castVote(uint256 _tpsId, uint256 _candidateId) public {
+        require(_candidateId > 0 && _candidateId <= candidateCount, "Invalid candidate");
+
+        votes[_tpsId][_candidateId] += 1;
+
+        emit VoteCast(_tpsId, _candidateId, block.timestamp);
     }
 
-    function addCandidate(string memory _name) public onlyOwner {
-        candidatesCount++;
-        candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);
-    }
-
-    function castVote(uint _candidateId) public {
-        require(electionActive, "Election closed");
-        require(!hasVoted[msg.sender], "Already voted");
-        require(_candidateId > 0 && _candidateId <= candidatesCount, "Invalid candidate");
-
-        hasVoted[msg.sender] = true;
-        candidates[_candidateId].voteCount++;
-
-        emit VoteCast(msg.sender, _candidateId);
-    }
-
-    function endElection() public onlyOwner {
-        electionActive = false;
-        emit ElectionStatusChanged(false);
-    }
-
-    function getCandidate(uint _id) public view returns (uint, string memory, uint) {
-        Candidate memory c = candidates[_id];
-        return (c.id, c.name, c.voteCount);
+    function getVotes(uint256 _tpsId, uint256 _candidateId) public view returns (uint256) {
+        return votes[_tpsId][_candidateId];
     }
 }
