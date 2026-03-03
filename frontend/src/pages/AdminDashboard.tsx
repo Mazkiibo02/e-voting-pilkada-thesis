@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { getStatistics, getVoters, resetAllData, type Voter } from '@/lib/storage';
+import { getStatistics, getStatisticsByTps, getTpsList, getVoters, resetAllData, type Voter } from '@/lib/storage';
 import { toast } from 'sonner';
 import { Shield, Users, Vote, AlertTriangle, LogOut, RotateCcw } from 'lucide-react';
 import {
@@ -24,10 +24,16 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [voters, setVoters] = useState<Voter[]>([]);
   const [stats, setStats] = useState<any>(null);
+  const [tpsList, setTpsList] = useState<string[]>([]);
+  const [selectedTps, setSelectedTps] = useState<string | null>(null);
 
-  const loadData = () => {
-    setVoters(getVoters());
-    setStats(getStatistics());
+  const loadData = (tps?: string) => {
+    const voterList = getVoters();
+    const filteredVoters = tps ? voterList.filter(v => v.tps === tps) : voterList;
+    setVoters(filteredVoters);
+    
+    const statsData = tps ? getStatisticsByTps(tps) : getStatistics();
+    setStats(statsData);
   };
 
   useEffect(() => {
@@ -37,13 +43,21 @@ const AdminDashboard = () => {
       return;
     }
     
+    const tps = getTpsList();
+    setTpsList(tps);
     loadData();
   }, [navigate]);
 
   const handleReset = () => {
     resetAllData();
+    setSelectedTps(null);
     loadData();
     toast.success('Semua data telah direset');
+  };
+
+  const handleTpsChange = (tps: string | null) => {
+    setSelectedTps(tps);
+    loadData(tps ?? undefined);
   };
 
   const handleLogout = () => {
@@ -64,7 +78,7 @@ const AdminDashboard = () => {
           <div className="flex items-center gap-3">
             <Shield className="h-8 w-8" />
             <div>
-              <h1 className="text-xl font-bold">e-Voting Pilkades Krandon 2025</h1>
+              <h1 className="text-xl font-bold">Simulasi Sistem E-Voting</h1>
               <p className="text-sm opacity-90">Dashboard Administrator</p>
             </div>
           </div>
@@ -76,15 +90,48 @@ const AdminDashboard = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        {/* TPS Filter */}
+        <div className="mb-6 p-4 bg-card border rounded-lg">
+          <p className="text-sm font-medium mb-2">Filter Berdasarkan TPS:</p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={selectedTps === null ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleTpsChange(null)}
+            >
+              Semua TPS
+            </Button>
+            {tpsList.map((tps) => (
+              <Button
+                key={tps}
+                variant={selectedTps === tps ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleTpsChange(tps)}
+              >
+                {tps}
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {/* Statistics Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
+          {selectedTps && (
+            <Card className="md:col-span-3 bg-blue-50 border-blue-200">
+              <CardContent className="pt-6">
+                <p className="text-sm font-medium text-blue-900">
+                  Menampilkan data untuk: <span className="font-bold">{selectedTps}</span>
+                </p>
+              </CardContent>
+            </Card>
+          )}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Pemilih</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalVoters}</div>
+              <div className="text-2xl font-bold">{selectedTps && stats.totalRegistered ? stats.totalRegistered : stats.totalVoters}</div>
               <p className="text-xs text-muted-foreground">Terdaftar dalam DPT</p>
             </CardContent>
           </Card>
@@ -97,7 +144,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalVotes}</div>
               <p className="text-xs text-muted-foreground">
-                {((stats.totalVotes / stats.totalVoters) * 100).toFixed(1)}% partisipasi
+                {selectedTps && stats.participation ? `${stats.participation}%` : `${((stats.totalVotes / stats.totalVoters) * 100).toFixed(1)}%`} partisipasi
               </p>
             </CardContent>
           </Card>
@@ -235,7 +282,7 @@ const AdminDashboard = () => {
       </main>
 
       <footer className="text-center text-sm text-muted-foreground py-8">
-        Prototype e-Voting System – Desa Krandon 2025
+        Simulasi Sistem E-Voting – 2025
       </footer>
     </div>
   );

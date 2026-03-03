@@ -159,7 +159,7 @@ const Homepage = () => {
           <div className="flex items-center gap-2.5">
             <Shield className="h-6 w-6" />
             <span className="font-bold text-sm md:text-base tracking-tight">
-              e-Voting Desa Krandon
+              Simulasi Sistem E-Voting
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -184,12 +184,12 @@ const Homepage = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div>
                 <p className="text-xs font-medium text-primary uppercase tracking-widest mb-1">
-                  Pemilihan Kepala Desa
+                  Simulasi Voting
                 </p>
                 <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-                  Desa Krandon
+                  Sistem E-Voting
                 </h1>
-                <p className="text-muted-foreground mt-1">Periode 2025 – 2031</p>
+                <p className="text-muted-foreground mt-1">Platform Demonstrasi 2025</p>
               </div>
               <div className="flex items-center gap-3">
                 {isFinished ? (
@@ -387,7 +387,7 @@ const Homepage = () => {
 
         {/* Footer */}
         <div className="text-center text-xs text-muted-foreground py-4 border-t">
-          Prototype e-Voting Blockchain — Desa Krandon 2025
+          Simulasi Sistem E-Voting Blockchain — 2025
         </div>
       </div>
     </div>

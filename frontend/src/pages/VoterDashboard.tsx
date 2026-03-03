@@ -59,7 +59,7 @@ const VoterDashboard = () => {
           <div className="flex items-center gap-3">
             <Vote className="h-8 w-8" />
             <div>
-              <h1 className="text-xl font-bold">e-Voting Pilkades Krandon 2025</h1>
+              <h1 className="text-xl font-bold">Simulasi Sistem E-Voting</h1>
               <p className="text-sm opacity-90">Dashboard Pemilih</p>
             </div>
           </div>
@@ -130,16 +130,16 @@ const VoterDashboard = () => {
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                Anda telah memilih pada Pilkades Desa Krandon 2025. Hasil pemilihan akan diumumkan setelah periode pemilihan berakhir.
+                Anda telah memilih pada simulasi sistem e-voting ini. Hasil pemilihan akan diumumkan setelah periode pemilihan berakhir.
               </p>
             </CardContent>
           </Card>
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>Pilih Calon Kepala Desa</CardTitle>
+              <CardTitle>Pilih Calon Pemimpin</CardTitle>
               <CardDescription>
-                Pilih salah satu calon kepala desa. Anda hanya dapat memilih satu kali.
+                Pilih salah satu calon. Anda hanya dapat memilih satu kali.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -188,7 +188,7 @@ const VoterDashboard = () => {
       </main>
 
       <footer className="text-center text-sm text-muted-foreground py-8">
-        Prototype e-Voting System – Desa Krandon 2025
+        Simulasi Sistem E-Voting – 2025
       </footer>
     </div>
   );

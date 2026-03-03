@@ -38,4 +38,14 @@ contract EVoting {
     function getVotes(uint256 _tpsId, uint256 _candidateId) public view returns (uint256) {
         return votes[_tpsId][_candidateId];
     }
+
+    function candidatesCount() public view returns (uint256) {
+        return candidateCount;
+    }
+
+    function getCandidate(uint256 _id) public view returns (uint256, string memory, uint256) {
+        require(_id > 0 && _id <= candidateCount, "Invalid candidate ID");
+        Candidate memory candidate = candidates[_id];
+        return (_id, candidate.name, 0); // voteCount is always 0 from contract, votes stored by TPS
+    }
 }

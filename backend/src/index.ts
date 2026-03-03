@@ -58,6 +58,8 @@ app.listen(PORT, () => {
 app.get("/candidates", async (req, res) => {
   try {
     const count = await contract.candidatesCount();
+    console.log("Candidate count:", count.toString());
+
     const candidates = [];
 
     for (let i = 1; i <= Number(count); i++) {
@@ -71,6 +73,7 @@ app.get("/candidates", async (req, res) => {
 
     res.json(candidates);
   } catch (error) {
+    console.error("ERROR FETCH CANDIDATES:", error);
     res.status(500).json({ error: "Failed to fetch candidates" });
   }
 });

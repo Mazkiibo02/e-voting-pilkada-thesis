@@ -68,10 +68,10 @@ const Login = () => {
             </div>
           </div>
           <h1 className="text-3xl font-bold text-primary mb-2">
-            Sistem e-Voting Pilkades
+            Simulasi Sistem E-Voting
           </h1>
           <p className="text-muted-foreground">
-            Desa Krandon 2025
+            Platform Voting Aman & Transparan
           </p>
         </div>
 
@@ -163,7 +163,7 @@ const Login = () => {
         </Tabs>
 
         <footer className="text-center text-sm text-muted-foreground mt-8">
-          Prototype e-Voting System – Desa Krandon 2025
+          Simulasi Sistem E-Voting – 2025
         </footer>
       </div>
     </div>

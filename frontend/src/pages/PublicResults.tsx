@@ -109,9 +109,9 @@ const PublicResults = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-                  Hasil Pemilihan Kepala Desa Krandon
+                  Hasil Simulasi Sistem E-Voting
                 </h1>
-                <p className="text-muted-foreground mt-1">Periode 2025 – 2031</p>
+                <p className="text-muted-foreground mt-1">Platform Demonstrasi 2025</p>
               </div>
               <div>
                 {isFinished ? (
@@ -294,7 +294,7 @@ const PublicResults = () => {
 
         {/* Footer */}
         <div className="text-center text-xs text-muted-foreground py-4 border-t">
-          Prototype e-Voting Blockchain — Desa Krandon 2025
+          Simulasi Sistem E-Voting Blockchain — 2025
         </div>
       </div>
     </div>
