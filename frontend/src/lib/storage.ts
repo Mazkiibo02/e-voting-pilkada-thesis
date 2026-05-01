@@ -89,11 +89,11 @@ export const updateVoter = (nik: string, updates: Partial<Voter>) => {
 export const detectAnomalies = (): void => {
   const voters = getVoters();
   const nikCounts: { [key: string]: number } = {};
-  
+
   voters.forEach(voter => {
     // Count NIK duplicates
     nikCounts[voter.nik] = (nikCounts[voter.nik] || 0) + 1;
-    
+
     // Check age validity
     const age = new Date().getFullYear() - new Date(voter.dob).getFullYear();
     if (age < 17 || age > 120) {
@@ -104,7 +104,7 @@ export const detectAnomalies = (): void => {
       delete voter.anomaly;
     }
   });
-  
+
   localStorage.setItem(VOTERS_KEY, JSON.stringify(voters));
 };
 
@@ -155,7 +155,7 @@ export const resetAllData = () => {
 export const getStatistics = () => {
   const voters = getVoters();
   const candidates = getCandidates();
-  
+
   return {
     totalVoters: voters.length,
     totalVotes: voters.filter(v => v.hasVoted).length,
@@ -179,7 +179,7 @@ export const getStatisticsByTps = (tps?: string) => {
   const voters = getVoters();
   const candidates = getCandidates();
   const filteredVoters = tps ? voters.filter(v => v.tps === tps) : voters;
-  
+
   // Count votes per candidate from filtered voters
   const voteCounts: Record<string, number> = {};
   candidates.forEach(c => { voteCounts[c.id] = 0; });
