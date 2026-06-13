@@ -8,6 +8,10 @@ import cors from "cors";
 import { contract } from "./services/blockchain";
 import authRoutes from "./routes/auth";
 import voteRoutes from "./routes/votes";
+import electionsRoutes from "./routes/elections";
+import tpsRoutes from "./routes/tps";
+import candidatePairsRoutes from "./routes/candidatePairs";
+import votersRoutes from "./routes/voters";
 
 
 const app = express();
@@ -16,6 +20,10 @@ app.use(express.json());
 
 app.use("/auth", authRoutes);
 app.use("/vote", voteRoutes);
+app.use("/elections", electionsRoutes);
+app.use("/tps", tpsRoutes);
+app.use("/candidate-pairs", candidatePairsRoutes);
+app.use("/voters", votersRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "E-Voting Backend Running" });
