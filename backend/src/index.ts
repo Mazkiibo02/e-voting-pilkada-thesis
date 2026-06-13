@@ -12,6 +12,7 @@ import electionsRoutes from "./routes/elections";
 import tpsRoutes from "./routes/tps";
 import candidatePairsRoutes from "./routes/candidatePairs";
 import votersRoutes from "./routes/voters";
+import votingSessionsRoutes from "./routes/votingSessions";
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.use("/elections", electionsRoutes);
 app.use("/tps", tpsRoutes);
 app.use("/candidate-pairs", candidatePairsRoutes);
 app.use("/voters", votersRoutes);
+app.use("/voting-sessions", votingSessionsRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "E-Voting Backend Running" });

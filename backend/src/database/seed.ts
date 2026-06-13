@@ -60,7 +60,7 @@ function seed() {
         "GOVERNOR",
         "Demo Region",
         "2026-07-01",
-        "READY",
+        "DRAFT",
       ];
       const electionResult = electionStmt.run(...electionInfo);
       electionId = Number(electionResult.lastInsertRowid);
@@ -70,9 +70,9 @@ function seed() {
         `INSERT INTO tps (election_id, tps_number, tps_code, province, city_regency, district, village, address, registered_voters_total, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       );
       const tpsList = [
-        [electionId, "001", "TPS-001", "DemoProv", "DemoCity", "DemoDistrict", "DemoVillage", "Near Hall", 100, "NOT_STARTED"],
-        [electionId, "002", "TPS-002", "DemoProv", "DemoCity", "DemoDistrict", "DemoVillage", "Community Center", 120, "NOT_STARTED"],
-        [electionId, "003", "TPS-003", "DemoProv", "DemoCity", "DemoDistrict", "DemoVillage", "School", 90, "NOT_STARTED"],
+        [electionId, "001", "TPS-001", "DemoProv", "DemoCity", "DemoDistrict", "DemoVillage", "Near Hall", 100, "DRAFT"],
+        [electionId, "002", "TPS-002", "DemoProv", "DemoCity", "DemoDistrict", "DemoVillage", "Community Center", 120, "DRAFT"],
+        [electionId, "003", "TPS-003", "DemoProv", "DemoCity", "DemoDistrict", "DemoVillage", "School", 90, "DRAFT"],
       ];
       for (const t of tpsList) {
         const r = tpsStmt.run(...t);
@@ -96,7 +96,7 @@ function seed() {
         const tpsId = tpsIds[i];
         for (let j = 1; j <= 6; j++) {
           const demoNik = `demo-${tpsId}-${j}`;
-          voterStmt.run(electionId, tpsId, `DEMO-${tpsId}-${j}`, hash(demoNik), `Demo Voter ${tpsId}-${j}`, j % 2 === 0 ? "F" : "M", 1980 + (j % 30), "NOT_VERIFIED", 0);
+          voterStmt.run(electionId, tpsId, `DEMO-${tpsId}-${j}`, hash(demoNik), `Demo Voter ${tpsId}-${j}`, j % 2 === 0 ? "F" : "M", 1980 + (j % 30), "UNVERIFIED", 0);
         }
       }
       console.log(`Seeded elections (id: ${electionId}) and ${tpsIds.length} TPS.`);
