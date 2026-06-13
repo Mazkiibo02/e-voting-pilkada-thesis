@@ -1,8 +1,14 @@
+import path from "path";
+import dotenv from "dotenv";
+
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
 import express from "express";
 import cors from "cors";
 import { contract } from "./services/blockchain";
 import authRoutes from "./routes/auth";
 import voteRoutes from "./routes/votes";
+
 
 const app = express();
 app.use(cors());

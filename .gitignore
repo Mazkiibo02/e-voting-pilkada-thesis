@@ -26,5 +26,9 @@ dist-ssr
 # Backend SQLite and uploads
 backend/data/*.sqlite
 backend/data/*.sqlite-journal
+backend/data/*.sqlite-shm
+backend/data/*.sqlite-wal
 backend/data/*.db
 backend/uploads/
+backend/.env
+
