@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "db:init": "ts-node src/database/migrate.ts",
+    "db:seed": "ts-node src/database/seed.ts",
+    "db:reset": "ts-node src/database/seed.ts --reset"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +19,7 @@
     "ethers": "^6.16.0",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3"
+    
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
@@ -23,6 +27,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.3.0",
     "ts-node-dev": "^2.0.0",
+    "ts-node": "^10.9.1",
     "typescript": "^5.9.3"
   }
 }
