@@ -83,43 +83,10 @@ const ChasilPreview = () => {
     };
   }, [candidates, stats]);
 
-  const handleDownload = () => {
-    const lines = [
-      'C.Hasil-KWK-inspired TPS Result Form',
-      '--------------------------------------',
-      `Nama Pemilihan: ${previewData.electionName}`,
-      `Jenis Pemilihan: ${previewData.electionType}`,
-      `Wilayah: ${previewData.region.province}, ${previewData.region.city}, ${previewData.region.district}, ${previewData.region.village}`,
-      `Tanggal Pemungutan Suara: ${previewData.votingDate}`,
-      `TPS: ${previewData.tpsNumber} (${previewData.tpsCode})`,
-      `Ketua KPPS: ${previewData.officerName}`,
-      `Waktu Pemungutan: ${previewData.votingStart} - ${previewData.votingEnd}`,
-      `Waktu Penghitungan: ${previewData.countingStart} - ${previewData.countingEnd}`,
-      '',
-      'Hasil Suara per Pasangan Calon:',
-      ...previewData.candidates.map((row) => `No ${row.ballotNumber}: ${row.names} (${row.party}) - ${row.votes} suara`),
-      '',
-      `Total Pemilih Terdaftar: ${previewData.totalRegistered}`,
-      `Total Pemilih Terverifikasi: ${previewData.totalVerified}`,
-      `Total Suara Sah: ${previewData.totalValid}`,
-      `Total Suara Tidak Sah: ${previewData.totalInvalid}`,
-      `Total Suara Masuk: ${previewData.totalVotes}`,
-      '',
-      `ID Dokumen: ${previewData.documentId}`,
-      `Hash Dokumen: ${previewData.documentHash}`,
-      `Hash Transaksi Blockchain: ${previewData.blockchainTx}`,
-      '',
-      'Catatan: Dokumen ini adalah form hasil TPS C.Hasil-KWK-inspirasi untuk tujuan prototipe akademis saja dan bukan dokumen resmi KPU.',
-    ];
-
-    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `CHASIL-KWK-TPS-${previewData.tpsNumber.replace(/\s+/g, '')}.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
+  const handlePrint = () => {
+    window.print();
   };
+
 
   const handleFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUploadConfirmed(false);
@@ -154,7 +121,7 @@ const ChasilPreview = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-primary text-primary-foreground shadow-md">
+      <header className="no-print bg-primary text-primary-foreground shadow-md">
         <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <h1 className="text-xl font-bold">Preview Dokumen C.Hasil-KWK</h1>
@@ -164,16 +131,16 @@ const ChasilPreview = () => {
             <Button variant="secondary" size="sm" onClick={() => navigate('/admin')}>
               Kembali ke Dashboard
             </Button>
-            <Button size="sm" onClick={handleDownload}>
+            <Button size="sm" onClick={handlePrint}>
               <FileDown className="mr-2 h-4 w-4" />
-              Unduh Mock Dokumen
+              Cetak / Simpan PDF
             </Button>
           </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-8 space-y-8">
-        <Card>
+        <Card className="printable-area">
           <CardHeader>
             <CardTitle>Pratinjau C.Hasil-KWK-inspired TPS Result Form</CardTitle>
             <CardDescription>
@@ -332,7 +299,7 @@ const ChasilPreview = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="no-print">
           <CardHeader>
             <CardTitle>Pratinjau File Tanda Tangan Sebelum Upload</CardTitle>
             <CardDescription>Simulasi seleksi file PDF atau gambar sebelum mengonfirmasi upload.</CardDescription>

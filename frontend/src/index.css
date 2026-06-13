@@ -110,3 +110,65 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+@media print {
+  :root {
+    color: #000 !important;
+    background: #fff !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .printable-area {
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    border: none !important;
+    color: #000 !important;
+  }
+
+  .printable-area * {
+    color: #000 !important;
+    background: transparent !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .printable-area .bg-white,
+  .printable-area .bg-slate-50,
+  .printable-area .bg-background,
+  .printable-area .bg-primary,
+  .printable-area .bg-secondary {
+    background: #fff !important;
+  }
+
+  .printable-area .shadow-sm,
+  .printable-area .shadow-md {
+    box-shadow: none !important;
+  }
+
+  .printable-area .border {
+    border-color: #000 !important;
+  }
+
+  .printable-area section,
+  .printable-area .rounded-xl,
+  .printable-area .grid,
+  .printable-area .divide-y {
+    page-break-inside: avoid !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+}
