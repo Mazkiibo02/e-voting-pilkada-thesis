@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { getCandidates, updateVoter, updateCandidateVote, type Voter, type Candidate } from '@/lib/storage';
 import { toast } from 'sonner';
-import { Shield, CheckCircle2, AlertTriangle, LogOut, Vote } from 'lucide-react';
+import { Shield, CheckCircle2, LogOut, Vote } from 'lucide-react';
 
 const VoterDashboard = () => {
   const navigate = useNavigate();
@@ -93,19 +93,7 @@ const VoterDashboard = () => {
                 <Shield className="h-3 w-3" />
                 Terverifikasi Blockchain
               </Badge>
-              
-              {voter.anomaly ? (
-                <Badge variant="destructive" className="flex items-center gap-1">
-                  <AlertTriangle className="h-3 w-3" />
-                  Anomali Terdeteksi: {voter.anomaly}
-                </Badge>
-              ) : (
-                <Badge className="flex items-center gap-1 bg-success text-success-foreground">
-                  <CheckCircle2 className="h-3 w-3" />
-                  AI Check: Tidak Ada Anomali
-                </Badge>
-              )}
-              
+
               {voter.hasVoted && (
                 <Badge className="flex items-center gap-1 bg-success text-success-foreground">
                   <CheckCircle2 className="h-3 w-3" />

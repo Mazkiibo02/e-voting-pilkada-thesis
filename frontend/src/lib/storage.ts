@@ -6,7 +6,6 @@ export interface Voter {
   dob: string;
   hasVoted: boolean;
   votedFor?: string;
-  anomaly?: string;
   tps?: string;
 }
 
@@ -38,11 +37,10 @@ export const initializeMockData = () => {
       { nik: '3301052005910005', name: 'Eko Prasetyo', dob: '1991-05-20', hasVoted: false, tps: 'TPS 02' },
       { nik: '3301062006930006', name: 'Fitri Handayani', dob: '1993-06-20', hasVoted: false, tps: 'TPS 02' },
       { nik: '3301072007890007', name: 'Gunawan Setiawan', dob: '1989-07-20', hasVoted: false, tps: 'TPS 03' },
-      // Duplicate NIK for anomaly detection
-      { nik: '3301012001850001', name: 'Budi Palsu', dob: '1985-01-20', hasVoted: false, anomaly: 'Duplicate NIK', tps: 'TPS 01' },
-      // Invalid age for anomaly detection
-      { nik: '3301082008200008', name: 'Anak Kecil', dob: '2020-08-20', hasVoted: false, anomaly: 'Invalid Age', tps: 'TPS 03' },
-      { nik: '3301092009190009', name: 'Orang Tua', dob: '1900-09-20', hasVoted: false, anomaly: 'Invalid Age', tps: 'TPS 03' },
+      // Duplicate NIK sample for data diversity
+      { nik: '3301012001850001', name: 'Budi Palsu', dob: '1985-01-20', hasVoted: false, tps: 'TPS 01' },
+      { nik: '3301082008200008', name: 'Anak Kecil', dob: '2020-08-20', hasVoted: false, tps: 'TPS 03' },
+      { nik: '3301092009190009', name: 'Orang Tua', dob: '1900-09-20', hasVoted: false, tps: 'TPS 03' },
     ];
     localStorage.setItem(VOTERS_KEY, JSON.stringify(mockVoters));
   }
@@ -86,28 +84,6 @@ export const updateVoter = (nik: string, updates: Partial<Voter>) => {
   }
 };
 
-export const detectAnomalies = (): void => {
-  const voters = getVoters();
-  const nikCounts: { [key: string]: number } = {};
-
-  voters.forEach(voter => {
-    // Count NIK duplicates
-    nikCounts[voter.nik] = (nikCounts[voter.nik] || 0) + 1;
-
-    // Check age validity
-    const age = new Date().getFullYear() - new Date(voter.dob).getFullYear();
-    if (age < 17 || age > 120) {
-      voter.anomaly = 'Invalid Age';
-    } else if (nikCounts[voter.nik] > 1) {
-      voter.anomaly = 'Duplicate NIK';
-    } else {
-      delete voter.anomaly;
-    }
-  });
-
-  localStorage.setItem(VOTERS_KEY, JSON.stringify(voters));
-};
-
 // Candidate operations
 export const getCandidates = (): Candidate[] => {
   const data = localStorage.getItem(CANDIDATES_KEY);
@@ -148,7 +124,6 @@ export const resetAllData = () => {
   localStorage.removeItem(VOTERS_KEY);
   localStorage.removeItem(CANDIDATES_KEY);
   initializeMockData();
-  detectAnomalies();
 };
 
 // Statistics
@@ -159,7 +134,6 @@ export const getStatistics = () => {
   return {
     totalVoters: voters.length,
     totalVotes: voters.filter(v => v.hasVoted).length,
-    totalAnomalies: voters.filter(v => v.anomaly).length,
     candidates: candidates.map(c => ({
       name: c.name,
       votes: c.voteCount,

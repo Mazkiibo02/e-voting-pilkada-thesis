@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getVoterByNIK, validateAdmin, initializeMockData, detectAnomalies } from '@/lib/storage';
+import { getVoterByNIK, validateAdmin, initializeMockData } from '@/lib/storage';
 import { toast } from 'sonner';
 import { Shield, Vote } from 'lucide-react';
 
@@ -19,7 +19,6 @@ const Login = () => {
   // Initialize data on component mount
   useState(() => {
     initializeMockData();
-    detectAnomalies();
   });
 
   const handleVoterLogin = (e: React.FormEvent) => {

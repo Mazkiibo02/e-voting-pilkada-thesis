@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { getStatistics, getStatisticsByTps, getTpsList, getVoters, resetAllData, type Voter } from '@/lib/storage';
 import { toast } from 'sonner';
-import { Shield, Users, Vote, AlertTriangle, LogOut, RotateCcw } from 'lucide-react';
+import { Shield, Users, Vote, LogOut, RotateCcw } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -149,16 +149,6 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Anomali Terdeteksi</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalAnomalies}</div>
-              <p className="text-xs text-muted-foreground">Memerlukan verifikasi</p>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Charts */}
@@ -245,12 +235,11 @@ const AdminDashboard = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>NIK</TableHead>
-                    <TableHead>Nama</TableHead>
-                    <TableHead>Tanggal Lahir</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Anomali</TableHead>
-                  </TableRow>
+                      <TableHead>NIK</TableHead>
+                      <TableHead>Nama</TableHead>
+                      <TableHead>Tanggal Lahir</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
                 </TableHeader>
                 <TableBody>
                   {voters.map((voter) => (
@@ -265,13 +254,7 @@ const AdminDashboard = () => {
                           <Badge variant="outline">Belum Memilih</Badge>
                         )}
                       </TableCell>
-                      <TableCell>
-                        {voter.anomaly ? (
-                          <Badge variant="destructive">{voter.anomaly}</Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-success">Normal</Badge>
-                        )}
-                      </TableCell>
+                      
                     </TableRow>
                   ))}
                 </TableBody>

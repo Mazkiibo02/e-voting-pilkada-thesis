@@ -3,40 +3,30 @@
     "nik": "3301010001",
     "name": "Ahmad",
     "age": 25,
-    "is_voted": true,
-    "cluster": -1,
-    "anomaly": true
+    "is_voted": true
   },
   {
     "nik": "3301010002",
     "name": "Budi",
     "age": 45,
-    "is_voted": false,
-    "cluster": -1,
-    "anomaly": true
+    "is_voted": false
   },
   {
     "nik": "3301010003",
     "name": "Citra",
     "age": 17,
-    "is_voted": false,
-    "cluster": -1,
-    "anomaly": true
+    "is_voted": false
   },
   {
     "nik": "3301010004",
     "name": "Dina",
     "age": 5,
-    "is_voted": false,
-    "cluster": -1,
-    "anomaly": true
+    "is_voted": false
   },
   {
     "nik": "3301010005",
     "name": "Eko",
     "age": 130,
-    "is_voted": false,
-    "cluster": -1,
-    "anomaly": true
+    "is_voted": false
   }
 ]
