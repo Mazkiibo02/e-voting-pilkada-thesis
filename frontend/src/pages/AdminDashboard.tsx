@@ -92,25 +92,33 @@ const AdminDashboard = () => {
       <main className="container mx-auto px-4 py-8">
         {/* TPS Filter */}
         <div className="mb-6 p-4 bg-card border rounded-lg">
-          <p className="text-sm font-medium mb-2">Filter Berdasarkan TPS:</p>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant={selectedTps === null ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleTpsChange(null)}
-            >
-              Semua TPS
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-medium mb-2">Filter Berdasarkan TPS:</p>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={selectedTps === null ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handleTpsChange(null)}
+                >
+                  Semua TPS
+                </Button>
+                {tpsList.map((tps) => (
+                  <Button
+                    key={tps}
+                    variant={selectedTps === tps ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleTpsChange(tps)}
+                  >
+                    {tps}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <Button size="sm" onClick={() => navigate('/admin/chasil-preview')}>
+              <Shield className="mr-2 h-4 w-4" />
+              Preview C.Hasil
             </Button>
-            {tpsList.map((tps) => (
-              <Button
-                key={tps}
-                variant={selectedTps === tps ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleTpsChange(tps)}
-              >
-                {tps}
-              </Button>
-            ))}
           </div>
         </div>
 

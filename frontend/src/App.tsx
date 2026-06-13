@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import VoterDashboard from "./pages/VoterDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import PublicResults from "./pages/PublicResults";
+import ChasilPreview from "./pages/ChasilPreview";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/voter" element={<VoterDashboard />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/chasil-preview" element={<ChasilPreview />} />
           <Route path="/results" element={<PublicResults />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
