@@ -9,7 +9,7 @@
 2. Blockchain & Setup
 3. Smart Contract EVoting.sol
 4. Implementasi TPS
-5. Algoritma K-Means & Deteksi Anomali
+5. (Historical) K-Means & Deteksi Anomali (removed from scope)
 6. Database & Penyimpanan Data
 7. Arsitektur & Alur Sistem End-to-End
 8. Catatan Implementasi
@@ -17,7 +17,7 @@
 ---
 
 ## 🌐 Deskripsi Umum
-Sistem prototipe e‑voting untuk Pilkades (Pemilihan Kepala Desa) yang memadukan teknologi **blockchain Ethereum**, **backend Node.js/TypeScript**, dan **frontend React** dengan fitur **deteksi anomali berbasis machine learning (K-Means)**.
+Sistem prototipe e‑voting untuk Pilkades (Pemilihan Kepala Desa) yang memadukan teknologi **blockchain Ethereum**, **backend Node.js/TypeScript**, dan **frontend React**. NOTE: anomaly detection (K-Means) was explored in earlier work but is REMOVED FROM CURRENT SCOPE and is documented here only for historical/contextual purposes.
 
 ```
 / (root)
@@ -194,7 +194,7 @@ const tx = await contract.castVote(tpsId, Number(candidateId));
   },
   // ... 1000 TPS total
   
-  // Anomali (first 10 TPS)
+  // Historical: Anomaly examples (first 10 TPS) — for analysis only, removed from current scope
   {
     "tpsId": 1,
     "registered": 300,
@@ -212,150 +212,16 @@ const tx = await contract.castVote(tpsId, Number(candidateId));
 | Registered per TPS | 300 | 300 | 300 | Fixed |
 | Turnout Rate | 60% | 90% | 75% | `0.6 + Math.random() * 0.3` |
 | Candidate1 Ratio | 40% | 60% | 50% | `0.4 + Math.random() * 0.2` |
-| Anomali TPS | 10 | 10 | 10 | Hardcoded first 10 TPS |
+| Anomali TPS | 10 | 10 | 10 | Historical: hardcoded first 10 TPS (removed from scope) |
 
 ---
 
-## 🤖 Algoritma K-Means & Deteksi Anomali
+## Historical: K-Means & Anomaly Detection (REMOVED FROM SCOPE)
 
-### Lokasi & Implementasi
+The following section documents historical design notes and exploratory implementation details about K-Means clustering and anomaly detection that were considered during earlier phases of the project. Per the current product decision, anomaly detection and K-Means are REMOVED FROM THE ACTIVE SCOPE and must not be reintroduced. See `PRD.md` and `ARCHITECTURE_E_VOTING.md` for the formal guardrails and decision records.
 
-| Lokasi | File | Fungsi | Input | Output |
-|--------|------|--------|-------|--------|
-| **Backend** | `backend/src/services/kmeansTPS.ts` | `runKMeansTPS(data, k=2)` | Array TPS | Array dengan `anomaly` flag |
-| **Backend Route** | `backend/src/routes/anomaly.ts` | `GET /anomaly` | - | JSON anomali report |
-| **Frontend** | `frontend/src/lib/storage.ts` | `detectAnomalies()` | - | Mark voter anomali |
+This document retains the historical description only for traceability and academic analysis. There is no active anomaly endpoint, service, or UI in the current scope; any file references in older docs are archival.
 
-### Feature Engineering untuk K-Means
-
-**Input Features (2D)**: 
-
-```typescript
-const point = [
-  d.turnout / d.registered,        // Feature 1: Turnout Ratio (0.0 - 1.0)
-  d.candidate1Votes / d.turnout    // Feature 2: Candidate1 Vote Share (0.0 - 1.0)
-];
-```
-
-**Visualisasi 2D**:
-```
-Y-axis (Candidate1 Ratio)
-  1.0 |  ★ ★ ★  (anomali cluster)
-      |
-  0.5 |    ○ ○ ○ ○
-      |  ○ ○ ○ ○
-  0.0 |________________
-      0.6      0.9     1.0  X-axis (Turnout Ratio)
-```
-
-### Algoritma K-Means: Pseudocode
-
-```typescript
-function runKMeansTPS(data, k = 2) {
-  // 1. INISIALISASI: centroid = first k points
-  let centroids = data.slice(0, k).map(d => [
-    d.turnout / d.registered,
-    d.candidate1Votes / d.turnout
-  ]);
-
-  // 2. ITERASI: 10 kali assignment & update
-  let iterations = 10;
-  while (iterations--) {
-    
-    // Assignment Phase: setiap point ke centroid terdekat
-    data.forEach(d => {
-      const point = [d.turnout / d.registered, d.candidate1Votes / d.turnout];
-      const distances = centroids.map(c =>
-        Math.sqrt((point[0] - c[0])² + (point[1] - c[1])²)
-      );
-      d.cluster = distances.indexOf(Math.min(...distances));
-    });
-
-    // Update Phase: hitung centroid baru
-    centroids = centroids.map((_, i) => {
-      const clusterPoints = data.filter(d => d.cluster === i);
-      if (clusterPoints.length === 0) return centroids[i];
-      
-      const avgTurnout = clusterPoints.reduce((sum, d) => 
-        sum + d.turnout / d.registered, 0) / clusterPoints.length;
-      
-      const avgRatio = clusterPoints.reduce((sum, d) => 
-        sum + d.candidate1Votes / d.turnout, 0) / clusterPoints.length;
-      
-      return [avgTurnout, avgRatio];
-    });
-  }
-
-  // 3. ANOMALI DETECTION: cluster terkecil = anomali
-  const clusterCounts = {};
-  data.forEach(d => {
-    clusterCounts[d.cluster] = (clusterCounts[d.cluster] || 0) + 1;
-  });
-  
-  const anomalyCluster = Object.entries(clusterCounts)
-    .sort((a, b) => a[1] - b[1])[0][0];
-  
-  // 4. RETURN: mark anomali
-  return data.map(d => ({
-    ...d,
-    anomaly: d.cluster == anomalyCluster
-  }));
-}
-```
-
-### Output Contoh Deteksi Anomali
-
-**GET /anomaly response**:
-
-```json
-{
-  "totalTPS": 1000,
-  "totalAnomaly": 10,
-  "anomalyPercentage": "1.00%",
-  "anomalies": [
-    {
-      "tpsId": 1,
-      "registered": 300,
-      "turnout": 300,
-      "candidate1Votes": 295,
-      "candidate2Votes": 5,
-      "cluster": 0,
-      "anomaly": true
-    },
-    // ... first 20 anomalies
-  ]
-}
-```
-
-### Deteksi Anomali Pemilih (Frontend)
-
-**File**: `frontend/src/lib/storage.ts` - `detectAnomalies()`
-
-```typescript
-export const detectAnomalies = (): void => {
-  const voters = getVoters();
-  const nikCounts = {};
-  
-  voters.forEach(voter => {
-    // Check 1: Hitung NIK duplicates
-    nikCounts[voter.nik] = (nikCounts[voter.nik] || 0) + 1;
-    
-    // Check 2: Validasi umur (17-120 tahun)
-    const age = new Date().getFullYear() - new Date(voter.dob).getFullYear();
-    if (age < 17 || age > 120) {
-      voter.anomaly = 'Invalid Age';
-    } else if (nikCounts[voter.nik] > 1) {
-      voter.anomaly = 'Duplicate NIK';
-    } else {
-      delete voter.anomaly;
-    }
-  });
-};
-```
-
-**Jenis Anomali Pemilih**:
-1. **Duplicate NIK**: NIK muncul 2x atau lebih
-2. **Invalid Age**: Umur < 17 tahun atau > 120 tahun
 
 ---
 
@@ -382,7 +248,7 @@ export const detectAnomalies = (): void => {
     "dob": "1985-01-20",
     "hasVoted": false,
     "votedFor": null,
-    "anomaly": null,
+    "anomaly": null,  // Historical: field used in earlier analysis; not an active feature
     "tps": "TPS 01",
     "cluster": -1
   }
@@ -395,9 +261,9 @@ export const detectAnomalies = (): void => {
 - `dob`: Date of birth (YYYY-MM-DD)
 - `hasVoted`: Boolean status voting
 - `votedFor`: Candidate ID yang dipilih
-- `anomaly`: String alasan anomali (atau null jika normal)
+-- `anomaly`: String alasan anomali (atau null jika normal). Historical: retained in sample data for analysis only; not part of current feature set.
 - `tps`: Lokasi TPS (string reference)
-- `cluster`: K-Means cluster assignment
+-- `cluster`: K-Means cluster assignment. Historical: this field may appear in sample data but K-Means clustering is REMOVED FROM CURRENT SCOPE.
 
 ### Schema tps.json (Generated)
 
@@ -444,12 +310,12 @@ export const detectAnomalies = (): void => {
 Backend Starting
   ↓
 (1) generateTPSData(1000)  
-    → Generate 1000 TPS mock data dengan distribusi normal + 10 anomali
-    → Write ke voters.json, tps.json
+    → Generate 1000 TPS mock data with some historical anomaly examples (for analysis only)
+    → Write to `voters.json`, `tps.json`
   ↓
-(2) runKMeansTPS(voters)
-    → K-Means clustering 2 cluster
-    → Mark anomali dalam data
+  (2) NOTE: historical simulation step (removed from active scope)
+    - Earlier exploratory step: `runKMeansTPS(voters)` would cluster TPS and mark anomalies
+    - This clustering/marking is no longer part of the active product scope and should not be reintroduced
   ↓
 (3) Express server listening :5000
     → Ready untuk auth & vote requests
@@ -783,12 +649,12 @@ POST /auth/login                 → JWT token (NIK only)
 POST /vote                       → Submit vote (requires JWT)
 GET  /candidates                 → List semua kandidat
 GET  /candidates/:id             → Detail kandidat
-GET  /anomaly                    → TPS anomaly analysis (K-Means)
+// Note: anomaly endpoint was part of earlier exploratory work and is REMOVED FROM CURRENT SCOPE
 ```
 
 ✅ **Services**:
 - 📊 `generateTPSData()` - simulasi 1000 TPS dengan distribusi normal
-- 🤖 `runKMeansTPS()` - K-Means clustering 2 cluster
+// `runKMeansTPS()` (historical) - previously used for K-Means clustering in exploratory simulations. REMOVED FROM CURRENT SCOPE.
 - 🔗 Blockchain integration via Ethers.js
 
 ---
