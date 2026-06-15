@@ -1,65 +1,44 @@
-import { Router } from "express";
-import fs from "fs";
-import path from "path";
-import { verifyToken, AuthRequest } from "../middleware/auth";
-import { contract } from "../services/blockchain";
+import { Router, Request, Response } from "express";
+import { VotesService, VoteError } from "../services/votes";
 
 const router = Router();
 
-const votersPath = path.join(__dirname, "../data/voters.json");
-
-router.post("/", verifyToken, async (req: AuthRequest, res) => {
+/**
+ * POST /votes/cast
+ * Casts a vote locally using a temporary voting session ID and candidate pair ID.
+ * This endpoint is public/unauthenticated as it's meant for physical voting booth devices
+ * using active session validation.
+ */
+router.post("/cast", async (req: Request, res: Response) => {
   try {
-    const { candidateId } = req.body;
-    const nik = req.user?.nik;
+    const { sessionId, candidatePairId } = req.body;
 
-    if (!candidateId || isNaN(Number(candidateId))) {
-      return res.status(400).json({ message: "Valid candidateId required" });
+    if (
+      sessionId === undefined ||
+      candidatePairId === undefined ||
+      isNaN(Number(sessionId)) ||
+      isNaN(Number(candidatePairId))
+    ) {
+      return res.status(400).json({
+        message: "sessionId and candidatePairId are required and must be valid numbers",
+      });
     }
 
-    if (!nik) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+    const sId = Number(sessionId);
+    const cpId = Number(candidatePairId);
 
-    console.log("Incoming vote request:");
-    console.log("NIK:", nik);
-    console.log("Candidate ID:", candidateId);
+    const result = VotesService.castVote(sId, cpId);
 
-    const voters = JSON.parse(fs.readFileSync(votersPath, "utf-8"));
-    const voterIndex = voters.findIndex((v: any) => v.nik === nik);
-
-    if (voterIndex === -1) {
-      return res.status(404).json({ message: "Voter not found" });
-    }
-
-    if (voters[voterIndex].is_voted) {
-      return res.status(400).json({ message: "Already voted" });
-    }
-
-    // 🔹 TPS Simulation
-    const tpsId = 1;
-
-    console.log("Sending transaction to blockchain...");
-    console.log("TPS:", tpsId);
-
-    const tx = await contract.castVote(tpsId, Number(candidateId));
-    console.log("Transaction hash:", tx.hash);
-
-    await tx.wait();
-    console.log("Transaction confirmed.");
-
-    // Update voter status (off-chain)
-    voters[voterIndex].is_voted = true;
-    fs.writeFileSync(votersPath, JSON.stringify(voters, null, 2));
-
-    res.json({
-      message: "Vote successful",
-      transactionHash: tx.hash
+    return res.json({
+      message: "Vote cast successfully",
+      data: result,
     });
-
   } catch (error: any) {
-    console.error("Vote error:", error.message);
-    res.status(500).json({ message: "Vote failed" });
+    if (error instanceof VoteError) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    console.error("Error casting vote:", error);
+    return res.status(500).json({ message: "An unexpected error occurred" });
   }
 });
 

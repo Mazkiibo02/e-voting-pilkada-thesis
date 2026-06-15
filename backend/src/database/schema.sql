@@ -104,6 +104,8 @@ CREATE TABLE IF NOT EXISTS votes (
   FOREIGN KEY (session_id) REFERENCES voting_sessions(id) ON DELETE SET NULL
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_votes_session_id ON votes(session_id);
+
 CREATE TABLE IF NOT EXISTS tps_recaps (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   election_id INTEGER NOT NULL,

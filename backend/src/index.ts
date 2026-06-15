@@ -20,6 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/auth", authRoutes);
+app.use("/votes", voteRoutes);
 app.use("/vote", voteRoutes);
 app.use("/elections", electionsRoutes);
 app.use("/tps", tpsRoutes);
