@@ -4,11 +4,21 @@
 
 **Website E-Voting Pilkada Berbasis Blockchain**
 
+## Document Date
+
+2026-06-15
+
 ## Document Purpose
 
-This PRD is the primary product and engineering reference for the ongoing refactor and development of the e-voting project. The project already has an existing codebase and a partially working implementation. All future code changes by any coding agent must follow this document.
+This PRD is the primary product and engineering reference for the ongoing refactor and development of the e-voting project.
 
-This PRD is intended to prevent implementation drift, especially drift back into the previous anomaly detection and K-Means direction.
+This version reflects implementation progress completed through:
+
+```txt
+feat/chasil-backend-document-generation
+```
+
+All future code changes by any coding agent must follow this document and `ARCHITECTURE_E_VOTING.md`.
 
 ---
 
@@ -16,1049 +26,417 @@ This PRD is intended to prevent implementation drift, especially drift back into
 
 The system is a **Pilkada-level e-voting web application** that preserves the physical TPS voting process while replacing paper-based candidate selection, manual vote counting, and slow result reporting with a secure, local-first digital voting workflow.
 
-The system must support:
+The system supports or is designed to support:
 
-- Physical TPS operation.
-- In-person voter verification by KPPS officers.
-- Digital voting through a tablet or other voting booth device.
-- Local-first voting and vote counting.
-- Automatic TPS result recap.
-- Downloadable C.Hasil-KWK-inspired TPS result form.
-- Wet-signature workflow by TPS officers and witnesses.
-- Upload of the signed result document.
-- Document hash generation.
-- Final TPS result anchoring to blockchain.
-- Witness verification by party/candidate witnesses.
-- Public transparency dashboard.
+1. Physical TPS operation.
+2. In-person voter verification by KPPS officers.
+3. Digital voting through a tablet or voting booth device.
+4. Local-first voting and vote counting.
+5. Automatic TPS result recap.
+6. C.Hasil-KWK-inspired TPS result form generation.
+7. Wet-signature workflow by KPPS and witnesses.
+8. Upload of signed result document.
+9. SHA-256 document hash generation.
+10. Final TPS result anchoring to blockchain.
+11. Witness verification.
+12. Public transparency dashboard.
 
-The system must be designed for **Pilkada**, not village head elections.
+The system is designed for **Pilkada**, not village head elections.
 
 ---
 
-## 2. Background and Problem Statement
+## 2. Current Implementation Status
 
-The conventional Pilkada workflow depends heavily on printed documents, manual vote counting, physical result transport, and result recapitulation workflows. These processes may cause:
+### 2.1 Completed
 
-- Slow result reporting.
-- Potential manual counting errors.
-- High operational dependency on physical documents.
-- Limited immediate public transparency.
-- Difficulty verifying whether uploaded result documents were altered after submission.
-- High operational workload for KPPS.
+| Capability | Status |
+|---|---|
+| Remove K-Means/anomaly runtime scope | Done |
+| SQLite database foundation | Done using Node `node:sqlite` |
+| Role-based auth | Done for `ADMIN`, `KPPS`, `WITNESS` |
+| Election management backend | Done |
+| TPS management backend | Done |
+| Candidate pair management backend | Done |
+| DPT/voter management backend | Done |
+| Temporary voting session backend | Done |
+| Booth polling backend | Done |
+| Local vote casting backend | Done |
+| Booth/tablet voting UI | Done |
+| TPS recap generation and validation | Done |
+| Frontend C.Hasil preview workflow | Done |
+| Backend C.Hasil-KWK-inspired form generation | Done as print-ready HTML |
 
-The proposed system does not eliminate TPS, KPPS, or witnesses. Instead, it strengthens the TPS process by digitizing voting, recapitulation, document generation, witness verification, document hashing, and public result publication.
+### 2.2 Pending
 
-The system is inspired by the function of Sirekap and C.Hasil-KWK reporting, but it is not an official KPU application and must not claim to produce legally official KPU documents.
+| Capability | Status |
+|---|---|
+| Signed form upload | Pending |
+| SHA-256 hash generation for uploaded signed form | Pending |
+| Witness verification workflow | Pending |
+| Audit log service and deterministic audit hash | Pending |
+| Blockchain finalization | Pending |
+| Public result dashboard backed by final data | Pending |
+| Full frontend role-based dashboards | Pending |
+| Legacy localStorage voter flow cleanup | Pending |
+| Formal automated tests | Pending |
+| README/demo script update | Pending |
 
 ---
 
 ## 3. Product Goals
 
-1. **Preserve the physical TPS model**
-   - Voters still come to TPS.
-   - KPPS still verifies voters.
-   - Voting is still performed privately in a voting booth.
-
-2. **Replace paper candidate selection with digital voting**
-   - Candidate pair ballots are displayed on a tablet or voting booth device.
-   - Voters cast their vote digitally.
-
-3. **Improve recapitulation speed**
-   - Votes are counted automatically by the local TPS system.
-   - TPS recap is generated immediately after voting closes.
-
-4. **Improve transparency**
-   - Public users can view results per TPS.
-   - Public users can view finalization status.
-   - Public users can view document hashes.
-
-5. **Improve auditability**
-   - System records audit logs for important election events.
-   - Final TPS results and hashes are anchored to blockchain.
-
-6. **Reduce selected operational costs**
-   - Reduce document duplication.
-   - Reduce physical result transport.
-   - Reduce manual recap workload.
-   - Support conservative KPPS reduction scenario.
-
-7. **Protect voter privacy**
-   - Do not store real personal voter data permanently.
-   - Do not store personal voter data on blockchain.
-   - Use temporary voting sessions instead of permanent voter login accounts.
+1. Preserve the physical TPS model.
+2. Replace paper candidate selection with digital booth voting.
+3. Improve TPS recap speed and accuracy.
+4. Improve transparency through public result and hash visibility.
+5. Improve auditability through logs, document hashes, and blockchain anchoring.
+6. Protect voter privacy.
+7. Keep implementation realistic for an undergraduate thesis prototype.
 
 ---
 
-## 4. Non-Goals
+## 4. Non-Goals and Hard Prohibitions
 
-The system must not implement the following:
+The system must not implement or reintroduce:
 
-1. **No anomaly detection**
-   - Do not implement K-Means clustering.
-   - Do not implement TPS anomaly detection.
-   - Remove any existing anomaly detection references from UI, API, routes, services, or documentation.
-
-2. **No full online remote voting**
-   - Voters must not vote from personal devices at home.
-   - Voting must happen at TPS after KPPS verification.
-
-3. **No permanent voter login**
-   - Voters do not have permanent usernames or passwords.
-   - Voters vote through temporary TPS voting sessions created by KPPS.
-
-4. **No direct storage of personal voter data on blockchain**
-   - Never store NIK, name, birth date, address, phone number, or voter identity on blockchain.
-
-5. **No claim of official KPU legal document**
-   - The generated result form is inspired by C.Hasil-KWK structure.
-   - It is not an official KPU legal document.
-
-6. **No claim of full forensic image tampering detection**
-   - The system verifies integrity after upload using hashing and blockchain anchoring.
-   - The system does not claim it can fully detect Photoshop or pre-upload manipulation.
-
-7. **No total rewrite unless necessary**
-   - The current project is already partially implemented.
-   - Refactor incrementally and preserve working code where possible.
+1. K-Means clustering.
+2. TPS anomaly detection.
+3. Full remote online voting.
+4. Permanent voter login accounts.
+5. Raw personal voter data on blockchain.
+6. Uploaded document files on blockchain.
+7. Claims that generated forms are official KPU legal forms.
+8. Claims that hashing can detect all pre-upload image manipulation.
+9. A full rewrite without clear need.
 
 ---
 
-## 5. Current Project Context
+## 5. Target User Roles
 
-The current project has the following known structure:
+### 5.1 ADMIN
+
+Can:
+
+1. Login.
+2. Manage elections.
+3. Manage TPS.
+4. Manage candidate pairs.
+5. Manage DPT/voters.
+6. Manage users later.
+7. Create and monitor voting sessions.
+8. Generate and validate recaps.
+9. Generate and download C.Hasil-KWK-inspired forms.
+10. Upload signed form later.
+11. Monitor witness verification later.
+12. Finalize TPS to blockchain later.
+
+### 5.2 KPPS
+
+Can:
+
+1. Login.
+2. Access assigned TPS only.
+3. Verify voter against DPT.
+4. Create temporary voting session.
+5. Cancel/expire session.
+6. Generate assigned TPS recap.
+7. Generate/download assigned TPS result form.
+8. Upload signed form later.
+9. Finalize assigned TPS later if allowed.
+
+### 5.3 WITNESS
+
+Current:
 
 ```txt
-backend/
-blockchain/
-frontend/
-package.json
-package-lock.json
-start-all.js
-demo.js
-README.md
+Role exists in auth seed data.
+Full workflow pending.
 ```
 
-Known technology stack:
+Target:
 
-```txt
-Frontend:
-- React
-- Vite
-- React Router v6
-- TypeScript / TSX currently exists in frontend files
+1. Login.
+2. View assigned TPS recap.
+3. View signed form and hash.
+4. Approve or object.
+5. Upload objection evidence.
+6. Never modify vote totals.
 
-Backend:
-- Node.js
-- Express
-- TypeScript
+### 5.4 Voter
 
-Blockchain:
-- Solidity
-- Hardhat
-- ethers.js
+The voter is not a dashboard user.
 
-Package Manager:
-- npm
-```
+The voter can:
 
-Current implementation already includes partial voting, backend API, blockchain integration, candidate dashboard, dummy voter seeding, and demo automation.
+1. Come physically to TPS.
+2. Be verified by KPPS.
+3. Vote only through temporary voting session on booth device.
+4. Select and confirm one candidate pair.
 
-The refactor must transform the existing system into the Pilkada local-first e-voting architecture described in this PRD.
+The voter cannot:
+
+1. Login permanently.
+2. Access admin/KPPS/witness dashboards.
+3. Vote remotely from personal device.
+
+### 5.5 Public / Observer
+
+Target public users can:
+
+1. View election results.
+2. View TPS recap.
+3. View finalization status.
+4. View document hash and blockchain transaction hash after finalization.
+
+Public users cannot modify data or view DPT/personal voter data.
 
 ---
 
-## 6. Target Architecture
+## 6. Current Core Flow
 
-The recommended architecture is **hybrid local-first**.
-
-### 6.1 Local TPS Layer
-
-The local TPS layer handles the core voting process:
+The implemented core flow is now:
 
 ```txt
-KPPS Officer App
-    -> Local Backend
-        -> Voting Booth Device
-        -> Local Vote Storage
-        -> TPS Recap Generator
-        -> Result Form Generator
+ADMIN/KPPS login
+-> Admin manages election/TPS/candidate/DPT data
+-> KPPS/Admin creates temporary voting session
+-> Booth polls active session
+-> Booth displays candidate pairs
+-> Voter selects candidate pair
+-> Voter confirms vote
+-> Backend stores vote locally in SQLite
+-> Backend marks session USED
+-> Backend marks voter has_voted true
+-> TPS is closed by authorized user
+-> Backend generates and validates TPS recap
+-> Backend generates C.Hasil-KWK-inspired print-ready HTML result form
+-> Form can be previewed/downloaded/printed
 ```
 
-Responsibilities:
-
-- Voter verification using local DPT data.
-- Temporary voting session creation.
-- Voting booth activation.
-- Vote casting.
-- One-vote-only enforcement.
-- Local vote counting.
-- TPS result generation.
-- Form download.
-- Signed form upload.
-- Document hash generation.
-
-### 6.2 Central / Public Layer
-
-For the current thesis/demo implementation, the central layer may run inside the same backend but must be separated logically by module.
-
-Responsibilities:
-
-- Admin monitoring.
-- Public result dashboard.
-- Witness verification.
-- TPS finalization.
-- Blockchain anchoring.
-
-### 6.3 Blockchain Layer
-
-Blockchain must only store final, non-sensitive election records:
-
-- TPS ID.
-- Election ID.
-- Candidate vote totals.
-- Total registered voters.
-- Total verified voters.
-- Total valid votes.
-- Total invalid votes if supported.
-- Document hash.
-- Audit log hash.
-- Finalization timestamp.
-
-Blockchain must not store personal voter data.
-
----
-
-## 7. Recommended Database
-
-For the current thesis/demo version, use:
+Pending continuation:
 
 ```txt
-SQLite
-```
-
-Reason:
-
-- Lightweight.
-- Easy to run locally.
-- Suitable for local-first TPS simulation.
-- No external database server required.
-- Better than memory arrays.
-- Easier to migrate later to MySQL or PostgreSQL.
-
-Future production-like migration can use:
-
-```txt
-Local TPS: SQLite
-Central Server: PostgreSQL or MySQL
+Signed form upload
+-> SHA-256 hash generation
+-> Witness verification
+-> Audit hash generation
+-> Blockchain finalization
+-> Public transparency dashboard
 ```
 
 ---
 
-## 8. User Roles and Permissions
+## 7. Technical Product Requirements
 
-### 8.1 Authenticated Roles
+### 7.1 Database
 
-#### 1. Admin Pusat
+Use SQLite for thesis/demo local-first implementation.
 
-Permissions:
-
-- Login to admin dashboard.
-- Manage election data.
-- Manage TPS data.
-- Manage candidate pair data.
-- Manage voter/DPT data.
-- Manage user accounts.
-- Monitor voting results.
-- Monitor TPS status.
-- View uploaded TPS result documents.
-- View witness verification status.
-- View blockchain finalization status.
-
-#### 2. Petugas TPS / KPPS
-
-Permissions:
-
-- Login to TPS officer dashboard.
-- Verify voter data against DPT.
-- Grant voting access.
-- Manage active TPS voting session.
-- Close TPS voting session.
-- Generate TPS recap.
-- Download/print TPS result form.
-- Upload signed TPS result form.
-- Finalize TPS result if allowed.
-- View local TPS result and document hash.
-
-#### 3. Saksi Parpol / Saksi Pasangan Calon
-
-Permissions:
-
-- Login to witness dashboard.
-- View assigned TPS recap.
-- Check vote count consistency.
-- Approve TPS result.
-- Submit objection.
-- Upload objection evidence.
-- Add digital witness verification/signature.
-- View uploaded result form and hash.
-
-### 8.2 Unauthenticated Actors
-
-#### 4. Voter / Pemilih
-
-Permissions:
-
-- Vote only after KPPS grants temporary access.
-- Select candidate pair.
-- Confirm vote.
-- Cannot login permanently.
-- Cannot access dashboards.
-
-#### 5. Publik / Observer
-
-Permissions:
-
-- View public election result.
-- View recap per TPS.
-- View TPS finalization status.
-- View document hash.
-- No login required.
-- Cannot modify any data.
-
----
-
-## 9. End-to-End Election Flow
-
-### 9.1 Before Voting Day
-
-1. Admin creates election.
-2. Admin creates TPS data.
-3. Admin creates candidate pair data.
-4. Admin imports or seeds DPT/voter data.
-5. Admin creates KPPS user accounts.
-6. Admin creates witness accounts and assigns them to TPS or candidate pair.
-7. Admin prepares the election session.
-
-### 9.2 Voter Arrival and Verification
-
-1. Voter comes physically to TPS.
-2. Voter goes to verification desk.
-3. KPPS officer inputs voter identity information.
-4. System checks voter against local DPT.
-5. If voter is valid and has not voted:
-   - system creates a temporary voting session.
-   - system marks the voter as verified or present.
-6. If voter is invalid or has already voted:
-   - system rejects voting access.
-
-### 9.3 Voting Booth Flow
-
-1. Voting booth device waits for an active session.
-2. Voting booth checks session status using polling.
-3. When KPPS grants access, the booth displays candidate pairs.
-4. Voter selects one candidate pair.
-5. Voter confirms selection.
-6. System stores vote locally.
-7. System marks the session as used.
-8. System prevents the same voter/session from voting again.
-9. Booth returns to waiting mode.
-
-### 9.4 TPS Closing and Recap
-
-1. KPPS closes TPS voting session.
-2. System counts all valid votes.
-3. System generates TPS recap.
-4. System validates:
-   - total valid votes equals total candidate votes.
-   - total votes does not exceed verified voters.
-   - verified voters does not exceed DPT.
-   - each session is used at most once.
-5. System generates C.Hasil-KWK-inspired TPS result form.
-6. KPPS downloads and prints the result form.
-7. KPPS and relevant witnesses sign the printed form manually.
-
-### 9.5 Signed Form Upload
-
-1. KPPS scans or photographs the signed result form.
-2. KPPS uploads the signed result form to the system.
-3. System stores the uploaded file.
-4. System calculates file hash.
-5. System associates the hash with the TPS result.
-6. System shows uploaded document preview and hash.
-
-### 9.6 Witness Verification
-
-1. Witness logs in.
-2. Witness views assigned TPS recap.
-3. Witness checks:
-   - DPT count.
-   - verified voter count.
-   - valid vote count.
-   - candidate pair vote totals.
-   - uploaded result form.
-   - document hash.
-4. Witness may approve the result.
-5. Witness may submit objection.
-6. Witness may upload objection evidence.
-7. System records witness status in audit log.
-
-Witness approval is recommended but finalization must not depend on all witnesses approving, because some witnesses may be absent or may refuse to respond. The system must record all witness statuses.
-
-### 9.7 Finalization and Blockchain Anchoring
-
-1. TPS result is finalized by authorized user.
-2. System generates audit log hash.
-3. System sends final TPS result and hashes to blockchain.
-4. Blockchain stores immutable final TPS record.
-5. System stores blockchain transaction hash.
-6. Public result page displays TPS final status and hash data.
-
----
-
-## 10. C.Hasil-KWK-Inspired Result Form Requirements
-
-The system must generate a downloadable PDF result form inspired by the Pilkada C.Hasil-KWK structure.
-
-### 10.1 Important Naming Rule
-
-Use this wording in UI and code comments:
+Current implementation uses:
 
 ```txt
-C.Hasil-KWK-inspired TPS Result Form
+node:sqlite / DatabaseSync
+backend/data/evoting.sqlite
 ```
 
-Avoid claiming:
+Database file must remain ignored by Git.
+
+Required tables include:
 
 ```txt
-Official KPU C.Hasil-KWK Form
+elections
+tps
+candidate_pairs
+voters
+users
+voting_sessions
+votes
+tps_recaps
+tps_recap_candidate_totals
+documents
+witness_verifications
+blockchain_records
+audit_logs
 ```
 
-### 10.2 Form Must Be Auto-Filled
+### 7.2 Authentication
 
-The generated form must be automatically filled from system data.
-
-Required fields:
-
-#### Election Metadata
-
-- Election name.
-- Election type:
-  - Governor and Vice Governor.
-  - Mayor and Vice Mayor.
-  - Regent and Vice Regent.
-- Province.
-- City/regency.
-- District.
-- Village/subdistrict.
-- TPS number.
-- TPS code.
-- Voting date.
-- Voting start time.
-- Voting end time.
-- Counting start time.
-- Counting end time.
-
-#### Officer Metadata
-
-- KPPS officer name.
-- Officer role.
-- Optional device/session ID.
-- TPS assignment.
-
-#### Voter and Participation Data
-
-- Total DPT voters.
-- DPT male count.
-- DPT female count.
-- Verified/present voters.
-- Present male count.
-- Present female count.
-- DPTb count if supported.
-- DPK count if supported.
-- Voters with disabilities if supported.
-
-#### Digital Voting Usage Data
-
-Because this is an e-voting system, adapt the paper ballot section into digital voting usage data:
-
-- Total voting rights available.
-- Total voting sessions created.
-- Total voting sessions used.
-- Total cancelled/invalid sessions if supported.
-- Total unused voting rights.
-
-#### Candidate Pair Vote Result
-
-For every candidate pair:
-
-- Candidate pair number.
-- Candidate 1 full name with title.
-- Candidate 2 full name with title.
-- Supporting party or supporting coalition if available.
-- Total valid votes.
-- Vote total in words if supported.
-
-#### Valid and Invalid Vote Summary
-
-- Total valid votes.
-- Total invalid votes if supported.
-- Total valid + invalid votes.
-- Validation status.
-
-#### Signature Areas
-
-The PDF must include signature areas for:
-
-- KPPS chair.
-- KPPS members if needed.
-- Witnesses from candidate pairs or supporting parties.
-- Optional supervisor/Panwascam/Panwaskel placeholder if needed for simulation.
-
-#### Security and Verification Area
-
-The PDF must include:
-
-- QR code for document verification.
-- Document ID.
-- TPS result hash.
-- Generated timestamp.
-- System signature placeholder if implemented.
-- Blockchain transaction hash after finalization if already available.
-
-### 10.3 Download, Print, Sign, Upload Flow
-
-The form workflow must be:
+System-user login is implemented through:
 
 ```txt
-Generate recap
--> Download PDF form
--> Print form
--> Manual wet signature by KPPS/witnesses
--> Scan or photograph signed form
--> Upload signed form
--> Generate file hash
--> Store file hash
--> Finalize TPS result
--> Anchor hash and result to blockchain
+POST /auth/login
+GET  /auth/me
+POST /auth/logout
 ```
 
-### 10.4 Document Integrity Limitation
+JWT payload must contain only safe system-user claims:
 
-The system can verify that an uploaded document has not changed after upload by comparing hashes. The system does not guarantee that the image or scan was not manipulated before upload.
-
----
-
-## 11. Data Privacy and Data Retention
-
-### 11.1 Personal Data Rules
-
-Never store real citizen data in the demo.
-
-For development:
-
-- Use synthetic DPT seed data only.
-- Use fictional names, NIK-like identifiers, and birth dates.
-- Do not use real NIK, phone numbers, addresses, or identities.
-
-### 11.2 Voter Identity Storage
-
-The system may temporarily process voter identity for verification.
-
-Permanent storage must minimize sensitive information:
-
-Recommended:
-
-- Store synthetic voter ID.
-- Store hashed NIK-like identifier if needed.
-- Store TPS assignment.
-- Store verification status.
-- Store voted status.
-
-Avoid storing:
-
-- Real NIK.
-- Real phone number.
-- Real address.
-- Real family data.
-- Personal voter identity on blockchain.
-
-### 11.3 Post-Election Data Purge
-
-The system should support a post-election data destruction concept:
-
-```txt
-Finalize election
--> purge temporary voting sessions
--> purge temporary identity verification cache
--> retain anonymized election result
--> retain audit hash
--> retain document hash
--> retain blockchain transaction hash
+```json
+{
+  "sub": "user id",
+  "role": "ADMIN | KPPS | WITNESS",
+  "assignedTpsId": "number | null"
+}
 ```
 
-This is a digital equivalent of limiting sensitive voter data retention.
+JWT must not contain voter personal data.
 
----
+### 7.3 Election/TPS/Candidate/DPT Management
 
-## 12. Voting Session Requirements
+Backend APIs must support ADMIN CRUD and KPPS restricted reads.
 
-Voters must not login using permanent accounts.
-
-Instead:
-
-1. KPPS verifies the voter.
-2. Backend creates a temporary voting session.
-3. Voting booth polls for active session.
-4. Voting booth receives only session data, not personal voter data.
-5. Session expires after a short time or after vote is cast.
-6. Session cannot be reused.
-7. Each voter can only receive one valid used session.
-
-Recommended polling interval:
+Implemented resource groups:
 
 ```txt
-1 to 2 seconds
+/elections
+/tps
+/candidate-pairs
+/voters
 ```
 
-WebSocket may be implemented later, but polling is the recommended first implementation for stability and simplicity.
+Voter privacy rules:
 
----
+1. Never store raw NIK.
+2. Hash NIK-like demo input server-side.
+3. Prefer `voter_code` for visible demo identity.
+4. Do not expose `nik_hash` by default.
+5. Do not expose DPT publicly.
 
-## 13. Vote Storage Rules
+### 7.4 Temporary Voting Session
 
-During TPS operation, votes are stored locally in the backend database.
-
-Each vote record must:
-
-- Belong to an election.
-- Belong to a TPS.
-- Belong to one candidate pair.
-- Be linked to a temporary session ID.
-- Not expose voter personal data.
-- Be immutable after cast.
-- Be counted only once.
-
-The system must enforce:
+Implemented endpoints:
 
 ```txt
-one valid session = maximum one vote
+POST /voting-sessions
+GET  /voting-sessions
+GET  /voting-sessions/:id
+GET  /voting-sessions/booth/:boothId/active
+POST /voting-sessions/:id/cancel
+POST /voting-sessions/:id/expire
 ```
 
----
-
-## 14. Recap Validation Rules
-
-Before TPS can be finalized, the system must validate:
+Session statuses:
 
 ```txt
-total_candidate_votes == total_valid_votes
-total_valid_votes <= total_verified_voters
-total_verified_voters <= total_registered_voters
-each_session_used_at_most_once == true
-signed_result_form_uploaded == true
-document_hash_exists == true
-```
-
-If witness approval is implemented, finalization can proceed even if not all witnesses approve, but the system must store witness status.
-
----
-
-## 15. Blockchain Requirements
-
-### 15.1 Blockchain Scope
-
-Blockchain is used for anchoring final TPS result integrity, not for storing all raw votes or personal data.
-
-### 15.2 Data to Store On-Chain
-
-The smart contract should store:
-
-- Election ID.
-- TPS ID.
-- Candidate pair IDs.
-- Candidate vote totals.
-- Total registered voters.
-- Total verified voters.
-- Total valid votes.
-- Total invalid votes if supported.
-- Document hash.
-- Audit log hash.
-- Finalized by address/account.
-- Finalization timestamp.
-
-### 15.3 Data Not Allowed On-Chain
-
-Never store:
-
-- Voter NIK.
-- Voter name.
-- Voter birth date.
-- Voter address.
-- Phone number.
-- Uploaded document file.
-- Raw audit log.
-- Vote linked to voter identity.
-
-### 15.4 Smart Contract Behavior
-
-The smart contract must:
-
-- Allow finalizing a TPS only once.
-- Reject duplicate TPS finalization.
-- Allow reading finalized TPS result.
-- Emit an event when TPS is finalized.
-- Store hashes as strings or bytes32.
-- Avoid unnecessary complex logic.
-
----
-
-## 16. Witness Verification Requirements
-
-Witness verification is an important part of the Pilkada process.
-
-Witnesses must be able to:
-
-- Login.
-- View assigned TPS.
-- View candidate pair result.
-- View total registered voters.
-- View total verified voters.
-- View total valid votes.
-- View uploaded signed form.
-- View document hash.
-- Approve result.
-- Submit objection.
-- Upload evidence.
-- Add digital verification/signature.
-
-Witnesses must not be able to:
-
-- Modify vote count.
-- Modify voter data.
-- Modify candidate data.
-- Modify uploaded TPS form.
-- Finalize blockchain result unless explicitly allowed later.
-
-Witness statuses:
-
-```txt
-PENDING
-APPROVED
-OBJECTED
-ABSENT
-NO_RESPONSE
-```
-
----
-
-## 17. Public Transparency Requirements
-
-Public users must be able to view:
-
-- Election overview.
-- Candidate pair list.
-- Total votes per candidate pair.
-- Result per TPS.
-- TPS finalization status.
-- Uploaded result document metadata.
-- Document hash.
-- Blockchain transaction hash if available.
-
-Public users must not be able to:
-
-- View personal voter data.
-- View sensitive KPPS personal data.
-- Modify any data.
-- Download private internal audit logs.
-- See raw DPT data.
-
----
-
-## 18. Suggested Backend Modules
-
-The backend should be organized by modules:
-
-```txt
-backend/src/
-  app.ts
-  server.ts
-  config/
-  database/
-  modules/
-    auth/
-    users/
-    elections/
-    tps/
-    candidates/
-    voters/
-    voting-sessions/
-    votes/
-    recap/
-    documents/
-    witnesses/
-    blockchain/
-    audit/
-  middleware/
-  utils/
-```
-
-### 18.1 Module Responsibilities
-
-#### auth
-
-- Login for admin, KPPS, and witness.
-- JWT-based authentication.
-- Role-based authorization.
-
-#### users
-
-- User management.
-- Role assignment.
-
-#### elections
-
-- Election setup.
-- Election type.
-- Election status.
-
-#### tps
-
-- TPS creation.
-- TPS status.
-- TPS assignment.
-
-#### candidates
-
-- Candidate pair data.
-- Full names with academic/professional titles.
-- Party/supporting coalition data.
-
-#### voters
-
-- DPT data.
-- Synthetic voter seed.
-- Verification status.
-- Hashed identity if needed.
-
-#### voting-sessions
-
-- Temporary session creation.
-- Session expiration.
-- Session used status.
-- Booth polling endpoint.
-
-#### votes
-
-- Cast vote.
-- Prevent duplicate vote.
-- Store local vote.
-
-#### recap
-
-- Generate TPS recap.
-- Validate result consistency.
-- Prepare result data for PDF.
-
-#### documents
-
-- Generate C.Hasil-KWK-inspired PDF.
-- Upload signed form.
-- Generate file hash.
-- Store document metadata.
-
-#### witnesses
-
-- Witness assignment.
-- Witness approval.
-- Witness objection.
-- Evidence upload.
-
-#### blockchain
-
-- Load contract ABI.
-- Connect to local Hardhat provider.
-- Submit final TPS result.
-- Store transaction hash.
-
-#### audit
-
-- Record important events.
-- Generate audit log hash.
-
----
-
-## 19. Suggested Frontend Structure
-
-```txt
-frontend/src/
-  app/
-  routes/
-  layouts/
-  pages/
-    admin/
-    officer/
-    booth/
-    witness/
-    public/
-  components/
-  features/
-    auth/
-    elections/
-    tps/
-    candidates/
-    voters/
-    voting/
-    recap/
-    documents/
-    witnesses/
-    dashboard/
-  services/
-  stores/
-  utils/
-```
-
-### 19.1 Main Pages
-
-#### Admin
-
-- Login page.
-- Dashboard.
-- Election management.
-- TPS management.
-- Candidate pair management.
-- Voter/DPT management.
-- User management.
-- Result monitoring.
-- TPS status monitoring.
-
-#### Officer / KPPS
-
-- Login page.
-- TPS dashboard.
-- Voter verification page.
-- Grant voting access page.
-- TPS session management.
-- TPS recap page.
-- Download result form page.
-- Upload signed form page.
-- Finalization page.
-
-#### Booth
-
-- Waiting screen.
-- Candidate pair selection screen.
-- Vote confirmation screen.
-- Vote success screen.
-- Session expired screen.
-
-#### Witness
-
-- Login page.
-- Assigned TPS list.
-- TPS recap detail.
-- Document preview/hash.
-- Approve result.
-- Submit objection.
-- Upload evidence.
-
-#### Public
-
-- Public result dashboard.
-- Result per TPS.
-- Candidate pair result.
-- Finalization status.
-- Document hash viewer.
-
----
-
-## 20. Suggested API Endpoints
-
-Endpoint names may be adjusted based on current project conventions.
-
-```txt
-POST   /api/auth/login
-
-GET    /api/elections
-POST   /api/elections
-GET    /api/elections/:id
-
-GET    /api/tps
-POST   /api/tps
-GET    /api/tps/:id
-PATCH  /api/tps/:id/status
-
-GET    /api/candidates
-POST   /api/candidates
-PATCH  /api/candidates/:id
-
-GET    /api/voters
-POST   /api/voters/seed
-POST   /api/voters/verify
-
-POST   /api/voting-sessions
-GET    /api/voting-sessions/booth/:boothId/active
-POST   /api/voting-sessions/:id/cancel
-
-POST   /api/votes/cast
-
-GET    /api/recap/tps/:tpsId
-POST   /api/recap/tps/:tpsId/generate
-
-GET    /api/documents/tps/:tpsId/form
-POST   /api/documents/tps/:tpsId/upload-signed
-GET    /api/documents/tps/:tpsId/hash
-
-GET    /api/witness/tps
-POST   /api/witness/tps/:tpsId/approve
-POST   /api/witness/tps/:tpsId/object
-POST   /api/witness/tps/:tpsId/evidence
-
-POST   /api/finalization/tps/:tpsId
-GET    /api/finalization/tps/:tpsId
-
-GET    /api/public/results
-GET    /api/public/results/tps/:tpsId
-```
-
----
-
-## 21. Required Status Values
-
-### Election Status
-
-```txt
-DRAFT
-READY
-OPEN
-CLOSED
-FINALIZED
-```
-
-### TPS Status
-
-```txt
-NOT_STARTED
-OPEN
-CLOSED
-RECAP_GENERATED
-FORM_DOWNLOADED
-SIGNED_FORM_UPLOADED
-WITNESS_REVIEW
-FINALIZED
-BLOCKCHAIN_ANCHORED
-```
-
-### Voting Session Status
-
-```txt
-PENDING
 ACTIVE
 USED
 EXPIRED
 CANCELLED
 ```
 
-### Witness Status
+Rules:
+
+1. Session is created after KPPS/Admin verification.
+2. KPPS is restricted to assigned TPS.
+3. Booth polling returns no personal voter data.
+4. Session cannot be reused.
+5. Expired/cancelled/used sessions cannot cast votes.
+
+### 7.5 Vote Storage
+
+Implemented endpoint:
+
+```txt
+POST /votes/cast
+```
+
+Rules:
+
+1. Vote must use an active non-expired session.
+2. Candidate pair must belong to same election.
+3. Voter must belong to same election/TPS.
+4. `votes.session_id` must be unique.
+5. Vote insert, session update, and voter update must happen atomically.
+6. No blockchain call during vote casting.
+7. No personal voter data in response.
+
+### 7.6 TPS Recap
+
+Implemented endpoints:
+
+```txt
+GET  /recaps/tps/:tpsId
+POST /recaps/tps/:tpsId/generate
+POST /recaps/tps/:tpsId/validate
+GET  /recaps/elections/:electionId
+```
+
+Validation rules:
+
+1. Sum of candidate pair totals equals total valid votes.
+2. Total valid votes <= total verified voters.
+3. Total verified voters <= total registered voters.
+4. Each voting session is used at most once.
+5. Each used session has exactly one vote.
+6. Each vote matches session election/TPS.
+7. Candidate pair belongs to the election.
+8. `has_voted` consistency is checked.
+
+### 7.7 C.Hasil-KWK-Inspired Form
+
+Current backend implementation generates print-ready HTML, not a native binary PDF.
+
+Implemented endpoints:
+
+```txt
+POST /documents/tps/:tpsId/chasil/generate
+GET  /documents/tps/:tpsId/chasil/preview
+GET  /documents/:documentId/download
+GET  /documents/tps/:tpsId
+```
+
+The document must be named:
+
+```txt
+C.Hasil-KWK-inspired TPS Result Form
+```
+
+Required disclaimer:
+
+```txt
+Dokumen ini merupakan formulir hasil TPS yang terinspirasi dari C.Hasil-KWK untuk kebutuhan prototipe akademik dan bukan formulir resmi KPU.
+```
+
+Current generation strategy:
+
+1. Generate print-ready HTML.
+2. Store generated file outside frontend public folder.
+3. Store metadata in SQLite.
+4. Allow preview and download.
+5. Support browser print/Save as PDF.
+
+Pending:
+
+1. Signed form upload.
+2. SHA-256 upload hash.
+3. Blockchain transaction hash after finalization.
+
+### 7.8 Signed Form Upload and Hashing
+
+Pending next implementation.
+
+Required endpoint:
+
+```txt
+POST /documents/tps/:tpsId/upload-signed
+```
+
+Requirements:
+
+1. Accept PDF/JPG/JPEG/PNG.
+2. Validate MIME type.
+3. Validate file size.
+4. Store securely outside public folder.
+5. Compute SHA-256 hash from uploaded bytes.
+6. Store hash and file metadata.
+7. Return safe metadata.
+8. Explain limitation: hash verifies post-upload integrity, not pre-upload authenticity.
+
+### 7.9 Witness Verification
+
+Pending.
+
+Required statuses:
 
 ```txt
 PENDING
@@ -1068,12 +446,89 @@ ABSENT
 NO_RESPONSE
 ```
 
-### Document Status
+Witness must never modify vote totals.
+
+### 7.10 Blockchain Finalization
+
+Pending.
+
+Blockchain must only store final TPS-level result and hashes:
+
+1. Election ID.
+2. TPS ID.
+3. Candidate pair IDs and vote totals.
+4. Total registered voters.
+5. Total verified voters.
+6. Total valid votes.
+7. Total invalid votes.
+8. Document hash.
+9. Audit log hash.
+10. Finalization timestamp.
+11. Finalized by account/address.
+
+Blockchain must not store voter identity or uploaded files.
+
+---
+
+## 8. Status Values
+
+### Election
 
 ```txt
-NOT_GENERATED
+DRAFT
+ACTIVE
+CLOSED
+ARCHIVED
+```
+
+### TPS
+
+```txt
+DRAFT
+OPEN
+CLOSED
+RECAP_GENERATED
+DOCUMENT_UPLOADED
+WITNESS_VERIFICATION
+FINALIZED
+BLOCKCHAIN_ANCHORED
+```
+
+### Voter Verification
+
+```txt
+UNVERIFIED
+VERIFIED
+REJECTED
+```
+
+### Voting Session
+
+```txt
+ACTIVE
+USED
+EXPIRED
+CANCELLED
+```
+
+### Recap Validation
+
+```txt
+VALID
+INVALID
+```
+
+### Document
+
+Current implemented:
+
+```txt
 GENERATED
-DOWNLOADED
+```
+
+Future values may include:
+
+```txt
 SIGNED_UPLOADED
 HASHED
 ANCHOR_READY
@@ -1082,319 +537,111 @@ ANCHORED
 
 ---
 
-## 22. Refactor Plan
+## 9. API Contract Summary
 
-### Phase 1: Remove Anomaly Detection Context
+Current backend uses no `/api` prefix.
 
-- Remove anomaly detection UI.
-- Remove anomaly API endpoints.
-- Remove K-Means references.
-- Remove unused anomaly data services.
-- Update navigation and labels.
+```txt
+/auth
+/elections
+/tps
+/candidate-pairs
+/voters
+/voting-sessions
+/votes
+/recaps
+/documents
+```
 
-### Phase 2: Add Database Layer
+Future APIs:
 
-- Add SQLite.
-- Add migrations or schema initialization.
-- Move away from memory-only state.
-- Seed synthetic Pilkada data.
+```txt
+/witness
+/finalization
+/public
+/audit
+```
 
-### Phase 3: Role-Based Auth
-
-- Implement admin, KPPS, and witness roles.
-- Protect routes by role.
-- Keep public routes open.
-
-### Phase 4: TPS Officer Flow
-
-- Implement voter verification.
-- Implement voting access grant.
-- Implement TPS session management.
-
-### Phase 5: Voting Booth Flow
-
-- Implement booth polling.
-- Implement candidate pair display.
-- Implement vote confirmation.
-- Implement one-session-one-vote rule.
-
-### Phase 6: TPS Recap
-
-- Implement automatic recap.
-- Implement validation rules.
-- Implement TPS status transitions.
-
-### Phase 7: C.Hasil-KWK-Inspired Form
-
-- Generate PDF result form.
-- Auto-fill election, TPS, candidate pair, and vote result data.
-- Include signature areas.
-- Include QR/hash fields.
-- Support download.
-
-### Phase 8: Signed Document Upload
-
-- Upload signed scan/photo.
-- Generate SHA-256 hash.
-- Store document metadata.
-- Prepare for blockchain anchoring.
-
-### Phase 9: Witness Verification
-
-- Implement witness dashboard.
-- Implement approval and objection.
-- Implement evidence upload.
-- Store witness statuses.
-
-### Phase 10: Blockchain Finalization
-
-- Update smart contract.
-- Finalize TPS once.
-- Store final TPS result and hashes.
-- Store transaction hash in backend.
-
-### Phase 11: Public Dashboard
-
-- Show total results.
-- Show result per TPS.
-- Show finalization status.
-- Show document hash and blockchain transaction.
-
-### Phase 12: Demo and UI Polish
-
-- Improve UI/UX.
-- Improve responsive design.
-- Add loading and error states.
-- Improve dashboard layout.
-- Update README and demo script.
+Prompts for coding agents must follow actual current route style unless the project is intentionally refactored.
 
 ---
 
-## 23. AI Coding Agent Rules
+## 10. AI Coding Agent Rules
 
-These rules are mandatory.
+Mandatory rules:
 
-1. Always read this PRD before changing code.
+1. Read `PRD.md` and `ARCHITECTURE_E_VOTING.md` before code changes.
 2. Do not reintroduce anomaly detection.
 3. Do not reintroduce K-Means clustering.
-4. Do not change the project back to village head election context.
-5. The system context is Pilkada.
-6. Do not implement full remote online voting.
-7. Do not create permanent voter login accounts.
-8. Do not store real voter identity on blockchain.
-9. Do not store uploaded document files on blockchain.
-10. Do not claim generated forms are official KPU legal forms.
-11. Use synthetic voter data only for development.
-12. Preserve local-first TPS voting architecture.
-13. Refactor incrementally; avoid unnecessary full rewrite.
-14. Keep frontend, backend, and blockchain separated by responsibility.
-15. Use npm as the package manager.
-16. Before large changes, create a short implementation plan.
-17. After changes, update relevant documentation.
-18. Maintain clear role-based permissions.
-19. Keep public pages read-only.
-20. Keep witness role read/verify/approve/object only.
-21. Never allow witnesses to modify vote counts.
-22. Never allow voters to access dashboards.
-23. Never expose raw DPT data to public pages.
-24. Ensure all finalization actions are auditable.
-25. Ensure final TPS result cannot be changed after blockchain anchoring.
+4. Do not change project context from Pilkada.
+5. Do not implement remote online voting.
+6. Do not create permanent voter login.
+7. Do not store raw NIK.
+8. Do not put voter personal data in JWT.
+9. Do not store personal voter data on blockchain.
+10. Do not store uploaded file bytes on blockchain.
+11. Do not claim generated forms are official KPU legal forms.
+12. Do not overclaim hash-based tamper detection.
+13. Use synthetic data only.
+14. Preserve local-first TPS voting architecture.
+15. Use npm only.
+16. Keep one feature/fix per branch.
+17. Do not run `git push`.
+18. Do not open a pull request.
+19. The user commits/pushes manually unless explicitly stated otherwise.
+20. After implementation, report files changed, tests run, results, and recommended commands.
 
 ---
 
-## 24. Acceptance Criteria
+## 11. Updated Acceptance Criteria
 
-### Core Election Flow
+### Already Satisfied
 
-- Admin can create and manage election, TPS, candidate pairs, voter data, and users.
-- KPPS can verify voter data.
-- KPPS can grant temporary voting access.
-- Voting booth can detect active session.
-- Voter can select and confirm one candidate pair.
-- Vote is stored locally.
-- Same session cannot vote twice.
-- Same voter cannot receive a second used voting session.
+1. SQLite database foundation exists.
+2. Role-based auth works for system users.
+3. Admin can manage election/TPS/candidate/DPT via backend API.
+4. KPPS can be restricted to assigned TPS.
+5. Temporary voting sessions can be created.
+6. Booth can poll active session.
+7. Booth UI can display candidates and submit vote.
+8. Local vote casting works.
+9. Same session cannot vote twice.
+10. TPS recap can be generated and validated.
+11. C.Hasil-KWK-inspired form can be generated/previewed/downloaded as print-ready HTML.
 
-### TPS Recap
+### Still Required
 
-- KPPS can close TPS.
-- System can generate recap.
-- Candidate pair vote totals are correct.
-- Total valid votes equals sum of candidate pair votes.
-- Total valid votes does not exceed verified voters.
-- Verified voters does not exceed DPT.
-
-### C.Hasil-KWK-Inspired Form
-
-- System can generate downloadable PDF.
-- PDF includes election metadata.
-- PDF includes TPS metadata.
-- PDF includes candidate pair names with titles.
-- PDF includes party/supporting coalition information if available.
-- PDF includes vote totals.
-- PDF includes total valid and invalid votes.
-- PDF includes signature areas.
-- PDF includes QR/hash verification fields.
-
-### Signed Form and Hash
-
-- KPPS can upload signed result form.
-- System calculates SHA-256 hash.
-- System stores document metadata.
-- System displays hash to authorized users and public page.
-
-### Witness Verification
-
-- Witness can login.
-- Witness can view assigned TPS recap.
-- Witness can approve or object.
-- Witness can upload evidence.
-- Witness cannot edit vote totals.
-
-### Blockchain Finalization
-
-- Authorized user can finalize TPS.
-- System sends final TPS result and hashes to blockchain.
-- Blockchain rejects duplicate finalization.
-- Backend stores transaction hash.
-- Public page displays finalization status and hash.
-
-### Public Transparency
-
-- Public users can view total results.
-- Public users can view result per TPS.
-- Public users can view document hash.
-- Public users cannot see voter personal data.
+1. KPPS signed form upload.
+2. SHA-256 signed file hash generation.
+3. Witness review/approval/objection.
+4. Audit log hash generation.
+5. Blockchain finalization.
+6. Public result dashboard with document hash and transaction hash.
+7. Full frontend role-based workflows.
+8. Legacy localStorage voter flow cleanup.
+9. Automated test suite.
+10. Final README/demo scripts.
 
 ---
 
-## 25. Security Requirements
+## 12. Next Recommended Implementation
 
-- Use JWT for authenticated dashboard users.
-- Apply role-based authorization middleware.
-- Validate all request bodies.
-- Sanitize uploaded file names.
-- Restrict upload MIME types.
-- Limit upload file size.
-- Generate file hash server-side.
-- Never trust frontend-calculated totals.
-- Recalculate recap on backend.
-- Do not expose private keys in frontend.
-- Do not commit private keys or secrets.
-- Use `.env` for environment variables.
-- Keep blockchain private key in backend/server environment only if signing is needed.
-- Use provider-only mode when writing transactions is not required.
-- Store only non-sensitive data on blockchain.
-
----
-
-## 26. UX Requirements
-
-The UI should be simple, clean, and suitable for election operation.
-
-Priority:
-
-- Clear navigation by role.
-- Large buttons for voting booth.
-- Clear candidate pair cards.
-- Confirmation step before vote submission.
-- Visible TPS status.
-- Visible recap validation status.
-- Clear upload status.
-- Clear witness status.
-- Clear public result visualization.
-
-Voting booth UI must be optimized for tablet usage.
-
----
-
-## 27. Terminology
-
-Use these terms consistently:
+Branch:
 
 ```txt
-Pilkada
-TPS
-KPPS
-DPT
-DPTb
-DPK
-Pasangan Calon
-Saksi Parpol
-Saksi Pasangan Calon
-C.Hasil-KWK-inspired TPS Result Form
-Rekap Hasil TPS
-Finalisasi Hasil TPS
-Hash Dokumen
-Audit Log Hash
-Blockchain Anchoring
-Temporary Voting Session
-Local-First TPS
+feat/signed-form-upload-hashing
 ```
 
-Avoid these outdated or incorrect terms:
+Commit message:
 
 ```txt
-Kepala Desa
-Anomaly Detection
-K-Means
-Dummy DPT in user-facing UI
-Official KPU Form
-Remote Online Voting
-Permanent Voter Login
+feat: add signed form upload and hashing
 ```
 
-For development code and seeders, synthetic data is allowed, but user-facing labels must use real-system terminology such as **Data Voter** or **DPT**, not **Dummy DPT**.
+Scope:
 
----
-
-## 28. Notes for Thesis Alignment
-
-The system should be described as:
-
-```txt
-A Pilkada-level e-voting website using local-first TPS operation and blockchain-based final result integrity anchoring.
-```
-
-The research emphasis is:
-
-- Digital voting process at TPS.
-- Faster TPS recap.
-- C.Hasil-KWK-inspired digital result document.
-- Witness verification.
-- Public transparency.
-- Blockchain integrity anchoring.
-- Privacy-preserving voter verification.
-
-The system must not be presented as replacing all official legal election infrastructure. It is a prototype and academic system design.
-
----
-
-## 29. Recommended Agent Workflow
-
-Before modifying the existing project, the coding agent should follow this workflow:
-
-1. Read `PRD.md` fully.
-2. Inspect the current codebase.
-3. Create or update `CURRENT_STATE.md` describing the existing implementation.
-4. Create or update `GAP_ANALYSIS.md` comparing current implementation against this PRD.
-5. Propose an incremental implementation plan.
-6. Implement one phase at a time.
-7. Test each phase before moving to the next.
-8. Update README or technical notes after meaningful changes.
-
-The coding agent must not make broad architecture changes without tying them back to this PRD.
-
----
-
-## 30. Final Implementation Principle
-
-The most important design principle is:
-
-```txt
-Voting must be fast and local.
-Results must be transparent.
-Final records must be tamper-evident.
-Voter privacy must be protected.
-The system must remain realistic for TPS-based Pilkada operation.
-```
+1. Upload signed/scanned result form.
+2. Preview or return metadata for uploaded file.
+3. Compute SHA-256 hash.
+4. Store file path and hash in documents metadata.
+5. Keep witness verification and blockchain finalization out of scope.

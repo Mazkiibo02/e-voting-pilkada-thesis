@@ -1,659 +1,675 @@
 # Current State Analysis: Krandon Vote Sim
 
-**Document Date:** 2026-06-13  
+**Document Date:** 2026-06-15  
 **Project:** Website E-Voting Pilkada Berbasis Blockchain  
-**Analysis Scope:** Comprehensive audit of implemented features and current architecture  
+**Analysis Scope:** Updated implementation inventory after incremental refactor branches completed in this ChatGPT session.  
+**Primary Source of Truth:** `PRD.md` and `ARCHITECTURE_E_VOTING.md`
 
 ---
 
-## 1. Project Structure Overview
+## 1. Executive Summary
 
-### Root Level
-```
+The project has moved from an early, partially working e-voting prototype into a backend-driven local-first Pilkada TPS e-voting system foundation.
+
+The following major foundations are now implemented:
+
+1. Old K-Means/anomaly detection runtime scope removed.
+2. SQLite persistence foundation added using Node built-in `node:sqlite`.
+3. Role-based authentication for `ADMIN`, `KPPS`, and `WITNESS` implemented.
+4. Election, TPS, candidate pair, and DPT/voter management APIs implemented.
+5. Temporary voting session APIs implemented.
+6. Local vote casting implemented using SQLite transactions.
+7. Booth/tablet voting UI implemented at `/booth/:boothId`.
+8. TPS recap generation and validation APIs implemented.
+9. C.Hasil-KWK-inspired backend document generation implemented as print-ready HTML.
+10. Frontend prototype for C.Hasil preview-before-download and preview-before-upload implemented.
+
+The project is now aligned with the main local-first TPS voting architecture, but the following important modules remain incomplete:
+
+1. Signed form upload and SHA-256 hashing.
+2. Witness verification workflow.
+3. Blockchain finalization refactor.
+4. Public result dashboard backed by finalized data and hashes.
+5. Full frontend admin/KPPS/witness management interfaces.
+6. Legacy frontend voter/localStorage cleanup.
+7. Automated tests and final demo documentation.
+
+---
+
+## 2. Root Project Structure
+
+Known current root structure:
+
+```txt
 krandon-vote-sim/
-├── backend/                 # Express API with TypeScript
-├── blockchain/              # Solidity contracts + Hardhat
-├── frontend/                # React + Vite + shadcn-ui
-├── node_modules/
-├── package.json            # Root package (no scripts)
-├── package-lock.json
-├── start-all.js            # Automation script to start all services
-├── demo.js                 # Demo script (minimal content)
-├── README.md               # Generic setup instructions
-├── PROJECT_SUMMARY.md      # Indonesian technical analysis
-├── PRD.md                  # Product Requirements Document
-├── ARCHITECTURE_E_VOTING.md # Architecture Design Document
-```
-
-### Package Manager
-- **Primary:** npm
-- **Lock file:** package-lock.json
-- **No pnpm or yarn** locks detected
-
----
-
-## 2. Frontend Current State
-
-### Technology Stack
-- **Framework:** React 18.3.1
-- **Build Tool:** Vite 5.4.19
-- **Router:** React Router v6.30.1
-- **Styling:** Tailwind CSS 3.4.17
-- **UI Components:** shadcn-ui (Radix-based)
-- **Form:** React Hook Form + Zod validation
-- **HTTP Client:** fetch (no axios/tanstack-query wrapper for API calls)
-- **Query Management:** TanStack React Query 5.83.0
-- **Toast Notifications:** Sonner 1.7.4
-- **Charts:** Recharts 2.15.4
-- **TypeScript:** 5.8.3
-
-### Pages and Routes
-
-| Route | Component | Purpose | Status |
-|-------|-----------|---------|--------|
-| `/` | Homepage | Public vote display, candidates list, stats | Implemented |
-| `/login` | Login | Dual-tab voter & admin login | Implemented |
-| `/voter` | VoterDashboard | Vote casting interface | Implemented |
-| `/admin` | AdminDashboard | Admin monitoring + TPS filter | Implemented |
-| `/results` | PublicResults | Public result display | Implemented |
-| `*` | NotFound | 404 fallback | Implemented |
-
-### Current Frontend Data Flow
-
-**Data Storage:** LocalStorage only
-- `evoting_voters` - Mock voter array (NIK, name, DOB, hasVoted, anomaly flags)
-- `evoting_candidates` - Candidate array with vote counts
-- `evoting_admin` - Single admin credential
-- `currentVoter` - Session storage for logged-in voter
-- `isAdmin` - Session flag for admin
-
-**Key Components:**
-1. **Login Page:** 
-   - Voter tab: NIK + DOB authentication (no backend verification)
-   - Admin tab: Email + Password (hardcoded: admin@desa.go.id / admin123)
-   - Calls `getVoterByNIK()` from localStorage
-   - No JWT token communication with backend
-
-2. **VoterDashboard:**
-   - Displays voter info (name, NIK)
-   - Shows "Terverifikasi Blockchain" badge (false claim - not actually blockchain-verified)
-   - Shows anomaly flags ("Anomali Terdeteksi")
-   - Vote selection and confirmation UI
-   - Calls `updateCandidateVote()` to increment vote count in localStorage
-   - No backend API call for vote submission
-
-3. **AdminDashboard:**
-   - TPS filter dropdown (TPS 01, TPS 02, TPS 03)
-   - Statistics: total voters, voted count, anomaly count
-   - Voter table with anomaly filtering
-   - Bar chart and Pie chart visualizations
-   - Reset data button
-   - No actual election/TPS management
-
-4. **Homepage:**
-   - Fetches `/api/candidates` from backend API
-   - Displays candidate list with vote counts
-   - Shows election status as "active"
-   - Bar and Pie charts for results
-   - Auto-refresh capability
-
-5. **PublicResults:**
-   - Minimal implementation visible in directory structure
-   - Not fully reviewed in code inspection
-
-### Frontend Technical Issues
-
-1. **No Backend Integration for Core Voting:** Most voting happens in localStorage, not backend
-2. **No Actual Authentication:** Voter login is just localStorage lookup
-3. **Anomaly Detection in UI:** Displays "Anomali Terdeteksi" badges (should be removed per PRD)
-4. **No TPS Concept:** Voters are not assigned to TPS properly
-5. **No Blockchain Verification:** "Terverifikasi Blockchain" badge is cosmetic
-6. **No Role-Based UI:** Single login, no distinct KPPS/witness/admin roles
-7. **No Session Management:** Direct localStorage, no JWT/token-based session
-8. **No Document Upload UI:** No file upload or form generation feature
-9. **No PDF Generation:** No C.Hasil-KWK form display
-10. **No Witness Dashboard:** No separate witness interface
-
----
-
-## 3. Backend Current State
-
-### Technology Stack
-- **Framework:** Express 5.2.1
-- **Language:** TypeScript 5.9.3
-- **Runtime:** Node.js (ts-node-dev for development)
-- **JWT:** jsonwebtoken 9.0.3
-- **Blockchain:** ethers.js 6.16.0
-- **CORS:** cors 2.8.6
-- **Env Config:** dotenv 17.3.1
-- **Data Storage:** JSON files (fs) + in-memory operations
-
-### Directory Structure
-
-```
-backend/src/
-├── index.ts              # Main Express app entry point
-├── data/
-│   ├── voters.json       # Voter list (DPT mock data)
-│   └── tps.json          # TPS data (referenced but not deeply used)
-├── middleware/
-│   └── auth.ts           # JWT verification middleware
-├── routes/
-│   ├── auth.ts           # POST /auth/login - NIK-based token
-│   ├── votes.ts          # POST /vote - vote submission with blockchain
-│   └── anomaly.ts        # GET /anomaly - anomaly detection analysis
-├── services/
-│   ├── blockchain.ts     # Ethers.js contract connection
-│   ├── kmeansTPS.ts      # K-Means clustering algorithm
-│   ├── generateTPS.ts    # TPS data generation
-│   └── seedVotes.js      # Vote seeding (referenced in PROJECT_SUMMARY)
-├── tsconfig.json
+├── backend/
+├── blockchain/
+├── frontend/
 ├── package.json
-└── README.md
+├── package-lock.json
+├── start-all.js
+├── demo.js
+├── README.md
+├── PROJECT_SUMMARY.md
+├── PRD.md
+├── ARCHITECTURE_E_VOTING.md
+├── CURRENT_STATE.md
+└── GAP_ANALYSIS.md
 ```
 
-### Current Routes and Endpoints
+Package manager:
 
-#### 1. Authentication Routes (`/auth`)
+```txt
+npm
 ```
+
+Important current project policy:
+
+```txt
+Coding agents must not run git push or open PRs.
+The user runs git push manually.
+One feature or fix must stay in one branch only.
+```
+
+---
+
+## 3. Implemented Branches and Outcomes
+
+| Branch | Status | Main Outcome |
+|---|---:|---|
+| `docs/project-audit-prd-architecture` | Done | Added initial `CURRENT_STATE.md` and `GAP_ANALYSIS.md`. |
+| `refactor/remove-anomaly-detection` | Done | Removed runtime K-Means/anomaly detection route/service/UI references. Kept only audit/guardrail documentation references. |
+| `feat/chasil-preview-workflow` | Done | Added frontend preview workflow for C.Hasil before download and preview selected signed file before upload. Replaced `.txt` mock download with browser print/Save as PDF. |
+| `feat/sqlite-persistence-layer` | Done | Added SQLite foundation using `node:sqlite`, schema, migration, seed data, and ignored local DB files. |
+| `feat/role-based-auth` | Done | Added `ADMIN`, `KPPS`, `WITNESS` login, JWT safe claims, RBAC middleware, bcryptjs password hashing, and `.env.example`. |
+| `feat/elections-tps-dpt-management` | Done | Added backend CRUD APIs for elections, TPS, candidate pairs, and DPT/voters with RBAC and privacy controls. |
+| `feat/temporary-voting-session` | Done | Added temporary voting session APIs, booth polling endpoint, session expiry/cancel behavior, and KPPS TPS restriction. |
+| `feat/local-vote-casting` | Done | Added local vote casting using SQLite transactions, one-session-one-vote enforcement, and no blockchain per-vote calls. |
+| `feat/booth-voting-ui` | Done | Added frontend `/booth/:boothId` tablet UI that polls active sessions and submits votes to backend. |
+| `feat/tps-recap-validation` | Done | Added TPS recap generation, validation rules, candidate vote totals, and TPS status update to `RECAP_GENERATED`. |
+| `feat/chasil-backend-document-generation` | Done | Added backend-generated C.Hasil-KWK-inspired print-ready HTML document, preview, download, and metadata storage. |
+
+---
+
+## 4. Frontend Current State
+
+### 4.1 Technology Stack
+
+```txt
+React
+Vite
+React Router v6
+TypeScript / TSX
+Tailwind CSS
+shadcn-ui / Radix-based components
+Recharts
+fetch-based API calls
+```
+
+### 4.2 Current Frontend Routes
+
+| Route | Purpose | Current Status |
+|---|---|---|
+| `/` | Public home / previous result display | Exists, not yet fully aligned with new backend finalization model. |
+| `/login` | Legacy login UI | Exists; legacy voter/admin localStorage behavior may remain. |
+| `/voter` | Legacy voter dashboard | Exists; should not be used for new TPS voting flow. |
+| `/admin` | Admin dashboard | Exists; includes link to C.Hasil preview and booth demo. Still not a full backend-driven admin console. |
+| `/admin/chasil-preview` | Frontend C.Hasil preview workflow | Implemented for supervisor demo. Uses mock/local data and print/Save as PDF flow. |
+| `/booth/:boothId` | New physical booth/tablet voting UI | Implemented. Polls backend active session and submits vote via `/votes/cast`. |
+| `/results` | Public result page | Exists, not yet backed by finalized blockchain/document hash flow. |
+| `*` | 404 fallback | Exists. |
+
+### 4.3 Booth Voting UI
+
+Implemented page:
+
+```txt
+frontend/src/pages/BoothVoting.tsx
+frontend/src/services/boothApi.ts
+```
+
+Implemented behavior:
+
+1. Reads `boothId` from route parameter.
+2. Polls backend endpoint:
+
+```txt
+GET /voting-sessions/booth/:boothId/active
+```
+
+3. Displays waiting state when no active session exists.
+4. Displays election, TPS, and candidate pair cards when a session is active.
+5. Allows candidate selection.
+6. Shows explicit confirmation step.
+7. Submits vote to:
+
+```txt
+POST /votes/cast
+```
+
+8. Shows success state and returns to waiting mode.
+9. Does not ask for NIK, DOB, email, or password.
+10. Does not store voter identity or vote choice in localStorage.
+11. Does not call blockchain directly.
+
+### 4.4 Frontend C.Hasil Preview Workflow
+
+Implemented page:
+
+```txt
+frontend/src/pages/ChasilPreview.tsx
+```
+
+Implemented behavior:
+
+1. Preview C.Hasil-KWK-inspired TPS result form before download.
+2. Print / Save as PDF through browser `window.print()`.
+3. Preview selected signed/scanned file before simulated upload.
+4. Supports PDF/JPG/JPEG/PNG preview on the frontend.
+5. Does not silently upload after file selection.
+6. Shows academic prototype disclaimer.
+
+This frontend workflow was created for thesis supervisor demonstration. Backend signed file upload and hashing are still pending.
+
+### 4.5 Legacy Frontend Areas
+
+The old `/login` and `/voter` flows may still exist and may still use localStorage/NIK/DOB style behavior from the old prototype. These are not the target voting architecture. The correct voting flow is now:
+
+```txt
+KPPS creates temporary voting session
+-> booth polls active session
+-> voter selects candidate on booth device
+-> vote is stored locally by backend
+```
+
+Legacy frontend cleanup is still needed later.
+
+---
+
+## 5. Backend Current State
+
+### 5.1 Technology Stack
+
+```txt
+Node.js v22.x recommended
+Express 5.x
+TypeScript
+JWT / jsonwebtoken
+bcryptjs
+node:sqlite / DatabaseSync
+ethers.js still present for future blockchain adapter
+npm
+```
+
+SQLite implementation uses Node built-in:
+
+```ts
+import { DatabaseSync } from "node:sqlite";
+```
+
+Known warning:
+
+```txt
+node:sqlite may emit ExperimentalWarning depending on Node version.
+```
+
+This is acceptable for thesis prototype, but production migration may use PostgreSQL/MySQL or a stable SQLite driver.
+
+### 5.2 Backend Data Storage
+
+Current database file:
+
+```txt
+backend/data/evoting.sqlite
+```
+
+Ignored by Git:
+
+```txt
+backend/data/*.sqlite
+backend/data/*.sqlite-wal
+backend/data/*.sqlite-shm
+backend/data/*.sqlite-journal
+backend/data/*.db
+backend/uploads/
+backend/generated-documents/
+backend/data/generated-documents/
+backend/.env
+```
+
+Database source files:
+
+```txt
+backend/src/database/connection.ts
+backend/src/database/schema.sql
+backend/src/database/migrate.ts
+backend/src/database/seed.ts
+```
+
+### 5.3 Implemented SQLite Tables
+
+Implemented/expected tables:
+
+```txt
+elections
+tps
+candidate_pairs
+voters
+users
+voting_sessions
+votes
+tps_recaps
+tps_recap_candidate_totals
+documents
+witness_verifications
+blockchain_records
+audit_logs
+```
+
+Important constraints:
+
+```txt
+votes.session_id has a unique index to enforce one session = one vote.
+```
+
+### 5.4 Seed Data
+
+Current seed data includes:
+
+1. One demo Pilkada election.
+2. Three TPS records.
+3. Three candidate pairs.
+4. Synthetic voters assigned to TPS.
+5. System users:
+
+```txt
+admin@example.local / Admin123! / ADMIN
+kpps@example.local / Kpps123! / KPPS
+witness@example.local / Witness123! / WITNESS
+```
+
+Passwords are hashed using `bcryptjs`. Demo NIK-like values are hashed before storage. No real citizen data should be used.
+
+---
+
+## 6. Backend Routes Current State
+
+The backend currently follows non-`/api` route prefixes.
+
+### 6.1 Auth
+
+```txt
 POST /auth/login
-  Input: { nik: string }
-  Output: { token: string }
-  Behavior: JWT sign with NIK, 1h expiry
-  Issue: Stores NIK in JWT claim (privacy concern)
+GET  /auth/me
+POST /auth/logout
 ```
 
-#### 2. Voting Routes (`/vote`)
-```
-POST /vote (protected with verifyToken)
-  Input: { candidateId: number }
-  Behavior:
-    1. Extract NIK from JWT
-    2. Find voter in voters.json
-    3. Check if already voted (is_voted flag)
-    4. Call blockchain castVote(tpsId=1, candidateId)
-    5. Mark voter as voted
-    6. Return transaction hash
-  Issues:
-    - Stores raw NIK in JWT
-    - Hardcoded TPS ID = 1 (not multi-TPS capable)
-    - Vote stored directly on blockchain per individual vote
-    - No validation of candidate existence
-    - No duplicate vote prevention at blockchain level
-```
+Implemented behavior:
 
-#### 3. Public Candidate Routes (unauthenticated)
-```
-GET /candidates
-  Output: Array of { id, name, voteCount }
-  Behavior: Fetches candidatesCount from blockchain, loops to read each candidate
-  
-GET /candidates/:id
-  Output: { id, name, voteCount }
-  Behavior: Fetches single candidate from blockchain
-```
+1. Login by system user email/password.
+2. Uses SQLite `users` table.
+3. Password checked using `bcryptjs`.
+4. JWT payload contains safe system-user claims:
 
-#### 4. Anomaly Routes (`/anomaly`)
-```
-GET /anomaly (unprotected)
-  Output: { totalTPS, totalAnomaly, anomalyPercentage, anomalies: array }
-  Behavior:
-    1. Reads tps.json
-    2. Runs K-Means clustering with k=2
-    3. Identifies smallest cluster as "anomaly"
-    4. Returns top 20 anomalies
-  Issues: Should be removed per PRD
-```
-
-### Current Services
-
-#### blockchain.ts
-- **Status:** Partially implemented
-- **Provider:** Ethers.js JSON-RPC to http://127.0.0.1:8545
-- **Contract Address:** Hardcoded default `0x5FbDB2315678afecb367f032d93F642f64180aa3`
-- **ABI Loading:** From `/blockchain/artifacts/contracts/EVoting.sol/EVoting.json`
-- **Functions:**
-  - Contract object (read-only, no wallet signer)
-  - `castVote()` function throws "Voting disabled sementara (no wallet)" error
-- **Issues:** 
-  - No actual voting transaction (castVote disabled)
-  - Vote endpoint calls undefined/disabled function
-  - No transaction signing capability
-  - Address is hardcoded and auto-updated by start-all.js
-
-#### kmeansTPS.ts
-- **Algorithm:** K-Means with k=2 default
-- **Features:** 
-  - Calculates turnout ratio and candidate ratio
-  - Clusters TPS data
-  - Marks smallest cluster as anomaly
-- **Issues:** Should be removed entirely per PRD (no anomaly detection in target)
-
-#### generateTPS.ts
-- **Purpose:** Generate synthetic TPS data
-- **Called:** In index.ts on startup to generate 1000 TPS records
-- **Output:** TPS data with turnout and voting statistics
-- **Issue:** Generates test data, not used by core voting flow
-
-#### seedVotes.js
-- Referenced in PROJECT_SUMMARY.md but not directly called in current code
-- Purpose unclear in current context
-
-### Current Data Storage
-
-**Voters (voters.json)**
 ```json
 {
-  "nik": "3301010001",
-  "name": "Ahmad",
-  "age": 25,
-  "is_voted": false,
-  "cluster": -1,
-  "anomaly": true
-}
-```
-- **Issues:**
-  - No DPT/TPS assignment
-  - Anomaly field (should be removed)
-  - No hashed identity
-  - Age stored (privacy concern)
-  - is_voted flag without session concept
-
-**TPS (tps.json)**
-- Referenced in anomaly route
-- Contains turnout, registered voters, candidate votes
-- Used only for anomaly clustering
-
-### Authentication & Authorization
-
-**Current State:**
-- **Only JWT-based auth:** verifyToken middleware
-- **Only one login flow:** NIK-based (single voter login)
-- **No role support:** No KPPS, Admin, Witness roles
-- **No authorization checks:** Protected routes just verify token exists
-- **Token claims:** Contains NIK (privacy issue)
-- **Secret:** Hardcoded "supersecret" in auth.ts
-
-**Issues:**
-- No role-based access control (RBAC)
-- No KPPS officer verification endpoint
-- No witness dashboard routes
-- No admin election management routes
-- Permanent voter login (PRD requires temporary voting sessions)
-
-### Blockchain Integration
-
-**Smart Contract (EVoting.sol)**
-- **Language:** Solidity 0.8.20
-- **Structure:**
-  ```solidity
-  struct Candidate {
-    uint256 id;
-    string name;
-  }
-  mapping(uint256 => Candidate) candidates;
-  mapping(uint256 => mapping(uint256 => uint256)) votes;  // votes[tpsId][candidateId]
-  
-  functions:
-  - addCandidate(string name) - public, no access control
-  - castVote(uint256 tpsId, uint256 candidateId) - public, increments votes
-  - getVotes(uint256 tpsId, uint256 candidateId) - view
-  - candidatesCount() - view
-  - getCandidate(uint256 id) - view, returns (id, name, 0)
-  ```
-- **Issues per PRD:**
-  - ❌ No access control (anyone can vote)
-  - ❌ Stores raw individual votes on-chain (should store only final TPS result)
-  - ❌ No duplicate vote prevention
-  - ❌ No TPS result structure (should store: totalVerified, totalValid, etc.)
-  - ❌ No document hash field
-  - ❌ No audit hash field
-  - ❌ No finalization concept
-  - ✅ Simple candidate storage (OK as-is)
-
-**Deployment (scripts/deploy.js)**
-- Deploys contract to Hardhat local node
-- Adds 3 sample candidates
-- Outputs contract address to console
-- start-all.js parses this output and updates backend config file
-
-**Hardhat Configuration (hardhat.config.js)**
-- Solidity version: 0.8.20
-- No networks configured (default localhost:8545)
-- No testnet or mainnet setup
-- No environment variables for chain config
-
-### Backend Technical Issues
-
-1. **Data Persistence:** JSON files not suitable for production (no concurrency safety)
-2. **No Database:** Missing SQLite (per architecture target)
-3. **No TPS Management:** Only hardcoded TPS ID 1
-4. **No Voting Sessions:** No temporary voter access concept
-5. **K-Means Bloat:** Unnecessary anomaly detection code
-6. **Missing Routes:** No endpoints for recap, document, witness, finalization
-7. **Privacy:** NIK stored in JWT and visible in logs
-8. **Blockchain Voting:** Each vote sent individually on-chain (should be batch finalization)
-9. **No PDF Generation:** No document generation service
-10. **No File Upload:** No upload handling or hashing
-11. **No Recap Validation:** No business logic for recap validation rules
-
----
-
-## 4. Blockchain Current State
-
-### Hardhat Setup
-- **Version:** 2.22.3
-- **Solidity:** 0.8.20
-- **Network:** Local development only
-- **RPC URL:** http://127.0.0.1:8545 (default Hardhat)
-- **Chain ID:** 31337 (Hardhat default)
-- **Account 0:** `0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266` (test account)
-- **Private Key 0:** `0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80`
-
-### Smart Contract Structure
-
-**File:** blockchain/contracts/EVoting.sol
-
-```solidity
-contract EVoting {
-  struct Candidate {
-    uint256 id;
-    string name;
-  }
-  
-  uint256 public candidateCount = 0;
-  uint256 public tpsCount = 0;
-  
-  mapping(uint256 => Candidate) public candidates;
-  mapping(uint256 => mapping(uint256 => uint256)) public votes;
-  
-  event VoteCast(uint256 indexed tpsId, uint256 indexed candidateId, uint256 timestamp);
-  
-  function addCandidate(string memory _name) public
-  function castVote(uint256 _tpsId, uint256 _candidateId) public
-  function getVotes(uint256 _tpsId, uint256 _candidateId) public view returns (uint256)
-  function candidatesCount() public view returns (uint256)
-  function getCandidate(uint256 _id) public view returns (uint256, string memory, uint256)
+  "sub": "user id",
+  "role": "ADMIN | KPPS | WITNESS",
+  "assignedTpsId": "number | null"
 }
 ```
 
-### Current Contract Behavior
-- ✅ Can add candidates (no limit)
-- ✅ Can cast votes per TPS and candidate
-- ✅ Can read vote totals
-- ❌ No access control
-- ❌ No ownership/admin
-- ❌ No duplicate vote prevention
-- ❌ Stores individual votes (not final TPS result)
-- ❌ No finalization mechanism
-- ❌ No document/audit hash storage
-- ❌ No event emission with transaction hash
+JWT must not contain:
 
-### Deployment Pipeline
-
-**start-all.js flow:**
-1. Starts Hardhat node (waits 6 seconds)
-2. Runs deploy.js script
-3. Parses contract address from output
-4. Updates `backend/src/services/blockchain.ts` with address
-5. Starts backend
-6. Starts frontend
-
-**Issues:**
-- File mutation during startup (not ideal for CI/CD)
-- No environment variable configuration
-- Address hardcoded in blockchain.ts
-- Private key exposed in project files
-- No deployment verification
-
-### Blockchain Directory Structure
-```
-blockchain/
-├── contracts/
-│   └── EVoting.sol
-├── scripts/
-│   └── deploy.js
-├── ignition/
-│   └── modules/
-│       └── Lock.js          (unused, from Hardhat template)
-├── artifacts/
-│   └── (generated after compile)
-├── cache/
-│   └── (build artifacts)
-├── hardhat.config.js
-├── package.json
-└── README.md
+```txt
+NIK
+voter name
+birth date
+address
+password_hash
+vote-linked identity
 ```
 
----
+### 6.2 Election Management
 
-## 5. Current Implemented Features Summary
+```txt
+GET    /elections
+GET    /elections/:id
+POST   /elections
+PATCH  /elections/:id
+PATCH  /elections/:id/status
+DELETE /elections/:id
+```
 
-### ✅ Working Features
+Access:
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Frontend React App | Working | Vite build, pages render |
-| Voter Login | Working | LocalStorage-based, frontend only |
-| Admin Login | Working | Hardcoded credentials in localStorage |
-| Vote Casting UI | Working | Candidate selection interface |
-| Vote Count Display | Working | Shows numbers, no blockchain verification |
-| Blockchain Node Startup | Working | Hardhat local node starts |
-| Contract Deployment | Working | Contract deploys to local chain |
-| Candidate Storage | Working | On blockchain and in contract state |
-| Anomaly Detection | Working | K-Means runs on startup and in anomaly endpoint |
-| TPS Data Generation | Working | generateTPS() generates mock data |
-| Auto-update Contract Address | Working | start-all.js parses and updates blockchain.ts |
+```txt
+ADMIN: read/write
+KPPS: read-only where allowed
+```
 
-### ❌ Not Working / Missing
+Allowed election statuses:
 
-| Feature | Status | Reason |
-|---------|--------|--------|
-| Backend Vote Submission | Broken | castVote() throws disabled error |
-| Actual Blockchain Voting | Broken | No wallet/signer configured |
-| JWT Authentication | Partial | Implemented but not used in frontend for voting |
-| Role-Based Access Control | Missing | No KPPS, witness, or admin roles |
-| TPS Management | Missing | Hardcoded TPS ID = 1 |
-| Voting Sessions | Missing | No temporary access concept |
-| Multi-TPS Support | Missing | Only TPS 1 works |
-| Database Integration | Missing | Using JSON files and localStorage |
-| PDF Generation | Missing | No C.Hasil-KWK form feature |
-| Document Upload | Missing | No file upload handling |
-| Document Hashing | Missing | No SHA-256 implementation |
-| Witness Verification | Missing | No witness role/dashboard |
-| Recap Generation | Missing | No server-side recap validation |
-| Blockchain Finalization | Missing | No concept of final TPS result |
-| Public Transparency | Partial | Results display exists but no integrity proof |
+```txt
+DRAFT
+ACTIVE
+CLOSED
+ARCHIVED
+```
 
----
+### 6.3 TPS Management
 
-## 6. Current Data Model
+```txt
+GET    /tps
+GET    /tps/:id
+GET    /elections/:electionId/tps
+POST   /tps
+PATCH  /tps/:id
+PATCH  /tps/:id/status
+DELETE /tps/:id
+```
 
-### Voters (frontend localStorage)
-```typescript
-interface Voter {
-  nik: string;
-  name: string;
-  dob: string;
-  hasVoted: boolean;
-  votedFor?: string;
-  anomaly?: string;      // "Duplicate NIK" | "Invalid Age" | undefined
-  tps?: string;          // "TPS 01" | "TPS 02" | "TPS 03"
+Access:
+
+```txt
+ADMIN: read/write
+KPPS: read assigned TPS only
+```
+
+Allowed TPS statuses:
+
+```txt
+DRAFT
+OPEN
+CLOSED
+RECAP_GENERATED
+DOCUMENT_UPLOADED
+WITNESS_VERIFICATION
+FINALIZED
+BLOCKCHAIN_ANCHORED
+```
+
+### 6.4 Candidate Pair Management
+
+```txt
+GET    /candidate-pairs
+GET    /candidate-pairs/:id
+GET    /elections/:electionId/candidate-pairs
+POST   /candidate-pairs
+PATCH  /candidate-pairs/:id
+DELETE /candidate-pairs/:id
+```
+
+Behavior:
+
+1. Candidate pairs belong to an election.
+2. Ballot number is unique per election.
+3. Candidate name and vice candidate name are required.
+4. Coalition and vision summary are optional.
+
+### 6.5 DPT / Voter Management
+
+```txt
+GET    /voters
+GET    /voters/:id
+GET    /tps/:tpsId/voters
+POST   /voters
+PATCH  /voters/:id
+DELETE /voters/:id
+```
+
+Privacy behavior:
+
+1. Raw NIK is never stored.
+2. NIK-like demo input is hashed server-side using SHA-256.
+3. `nik_hash` is not returned by default.
+4. Optional `includeHash` is ADMIN-only if available.
+5. KPPS is restricted to assigned TPS.
+6. Voter responses must not expose raw NIK.
+
+Allowed verification statuses:
+
+```txt
+UNVERIFIED
+VERIFIED
+REJECTED
+```
+
+### 6.6 Temporary Voting Sessions
+
+```txt
+POST /voting-sessions
+GET  /voting-sessions
+GET  /voting-sessions/:id
+GET  /voting-sessions/booth/:boothId/active
+POST /voting-sessions/:id/cancel
+POST /voting-sessions/:id/expire
+```
+
+Implemented behavior:
+
+1. ADMIN can manage any session.
+2. KPPS can manage only assigned TPS sessions.
+3. Session creation verifies election/TPS/voter consistency.
+4. Session creation marks voter verification status as `VERIFIED` if needed.
+5. Session creation does not set `has_voted = true`.
+6. Booth polling returns election/TPS/candidate pair data but no personal voter data.
+7. Duplicate active session for the same voter or booth returns conflict.
+8. Session expiry duration uses:
+
+```txt
+VOTING_SESSION_EXPIRES_MINUTES=5
+```
+
+Allowed session statuses:
+
+```txt
+ACTIVE
+USED
+EXPIRED
+CANCELLED
+```
+
+### 6.7 Local Vote Casting
+
+```txt
+POST /votes/cast
+```
+
+Request body:
+
+```json
+{
+  "sessionId": 1,
+  "candidatePairId": 1
 }
 ```
 
-### Candidates (frontend localStorage)
-```typescript
-interface Candidate {
-  id: string;
-  name: string;
-  description: string;
-  voteCount: number;
-}
+Implemented behavior:
+
+1. Validates session exists.
+2. Validates session status is `ACTIVE`.
+3. Rejects expired session and marks it `EXPIRED` if needed.
+4. Validates candidate pair belongs to same election.
+5. Validates voter belongs to same election and TPS.
+6. Validates `has_voted = false`.
+7. Inserts one local vote record into SQLite.
+8. Marks session as `USED` and sets `used_at`.
+9. Sets `voters.has_voted = true`.
+10. Uses atomic transaction.
+11. Does not call blockchain.
+12. Returns sanitized response without voter identity.
+
+### 6.8 TPS Recap and Validation
+
+```txt
+GET  /recaps/tps/:tpsId
+POST /recaps/tps/:tpsId/generate
+POST /recaps/tps/:tpsId/validate
+GET  /recaps/elections/:electionId
 ```
 
-### On Blockchain (EVoting.sol)
-```solidity
-struct Candidate {
-  uint256 id;
-  string name;
-}
+Implemented behavior:
 
-mapping(uint256 => Candidate) candidates;
-mapping(uint256 => mapping(uint256 => uint256)) votes;  // [tpsId][candidateId]
+1. Generates recap from local SQLite votes.
+2. Calculates candidate pair totals.
+3. Calculates total registered voters.
+4. Calculates total verified voters.
+5. Calculates total valid votes.
+6. Uses total invalid votes = 0 for now.
+7. Generates Indonesian `terbilang` for vote totals.
+8. Stores recap and candidate totals atomically.
+9. Updates TPS status to `RECAP_GENERATED` only after valid generation.
+10. Enforces ADMIN/KPPS access rules.
+
+Implemented validation rules include:
+
+1. Sum of candidate pair totals equals total valid votes.
+2. Total valid votes does not exceed total verified voters.
+3. Total verified voters does not exceed total registered voters.
+4. Each voting session is used at most once.
+5. Each used voting session has exactly one vote.
+6. Vote/session election and TPS consistency.
+7. Candidate pair election consistency.
+8. `has_voted` consistency with used sessions/votes.
+
+### 6.9 C.Hasil-KWK-Inspired Document Generation
+
+```txt
+POST /documents/tps/:tpsId/chasil/generate
+GET  /documents/tps/:tpsId/chasil/preview
+GET  /documents/:documentId/download
+GET  /documents/tps/:tpsId
+```
+
+Implemented behavior:
+
+1. Requires existing valid TPS recap.
+2. Generates print-ready HTML document.
+3. Stores generated HTML under ignored generated-documents directory.
+4. Upserts document metadata in SQLite `documents` table.
+5. Provides HTML preview with `Content-Type: text/html`.
+6. Provides attachment download.
+7. Includes disclaimer that it is an academic prototype and not an official KPU form.
+8. Includes election metadata, TPS metadata, recap summary, candidate totals, signature areas, and integrity placeholders.
+9. Escapes dynamic HTML content using utility helper.
+10. Does not implement signed upload or SHA-256 hash yet.
+11. Does not call blockchain.
+
+---
+
+## 7. Current End-to-End Implemented Flow
+
+The following backend-driven flow is currently implemented:
+
+```txt
+Admin/KPPS login
+-> Admin manages election/TPS/candidate/DPT data
+-> KPPS/Admin creates temporary voting session
+-> Booth device polls active session
+-> Booth displays candidate pairs
+-> Voter selects and confirms candidate pair
+-> Backend stores local vote in SQLite
+-> Backend marks session USED
+-> Backend marks voter has_voted true
+-> Admin/KPPS closes TPS manually through TPS status endpoint
+-> Backend generates TPS recap and validation
+-> Backend generates C.Hasil-KWK-inspired HTML form
+-> Form can be previewed/downloaded/printed
+```
+
+Pending after this flow:
+
+```txt
+Signed form upload
+SHA-256 hashing
+Witness verification
+Blockchain finalization
+Public hash/result dashboard
 ```
 
 ---
 
-## 7. Known Technical Risks
+## 8. Blockchain Current State
 
-### 🔴 High Priority Issues
+Blockchain stack still exists:
 
-1. **Privacy Violation:** NIK stored in JWT token claims (visible in logs/network)
-2. **No Blockchain Wallet:** Voting endpoint has disabled casting function
-3. **Individual Vote Storage:** Each vote sent to blockchain (expensive, violates PRD)
-4. **Anomaly Detection Active:** K-Means runs on every backend startup
-5. **No Access Control:** Smart contract has no permission checks
-6. **JSON File Concurrency:** Multiple requests could corrupt data files
-7. **Hardcoded Secrets:** JWT secret "supersecret" visible in source
-8. **Private Key Exposure:** Hardhat account key visible in PROJECT_SUMMARY.md
+```txt
+Solidity
+Hardhat
+ethers.js
+local Hardhat chain
+```
 
-### 🟡 Medium Priority Issues
+However, the current implemented vote flow no longer uses blockchain for individual vote casting. This is correct according to the new architecture.
 
-1. **No Database:** SQLite completely missing
-2. **Voting Sessions Missing:** No temporary access concept per PRD
-3. **Anomaly Badges in UI:** User-facing anomaly detection (should be removed)
-4. **No Role Authorization:** All authenticated users treated equally
-5. **Blockchain Address Mutation:** start-all.js mutates source files
-6. **Tight Coupling:** Frontend can't work without backend and blockchain
-7. **No Testing:** No unit, integration, or contract tests visible
-8. **No API Documentation:** No OpenAPI/Swagger specs
+Current blockchain module/contract still needs refactoring for final TPS anchoring only. Remaining blockchain work:
 
-### 🟢 Low Priority Issues
-
-1. **Unused Imports:** Some imports in files not utilized
-2. **Error Handling:** Generic error responses without specificity
-3. **No Logging:** Minimal structured logging for audit trail
-4. **No Rate Limiting:** Endpoints open to abuse
-5. **No Input Validation:** Limited request validation
+1. Replace/adjust current contract to store final TPS result records.
+2. Store candidate totals, document hash, audit log hash, and finalization timestamp.
+3. Prevent duplicate TPS finalization.
+4. Emit finalization event.
+5. Store transaction hash in backend.
+6. Display finalization metadata to authorized users and public dashboard.
 
 ---
 
-## 8. File Structure Detailed Inspection
+## 9. Known Technical Risks
 
-### Frontend Components
-- **UI Components:** Full shadcn-ui library installed (accordion, alert, dialog, table, etc.)
-- **Page Components:** 6 pages (Homepage, Login, VoterDashboard, AdminDashboard, PublicResults, NotFound)
-- **Utilities:** storage.ts (localStorage CRUD), utils.ts (general utilities)
-- **Services:** api.ts (fetch wrapper likely)
-- **Hooks:** use-mobile.tsx (responsive detection), use-toast.ts (toast notifications)
-- **Styling:** Tailwind CSS with custom CSS files (App.css, index.css)
+### High Priority
 
-### Backend Middleware
-- **auth.ts:** JWT verification only, no authorization logic
+1. Signed result form upload and hashing are not implemented yet.
+2. Witness verification workflow is not implemented yet.
+3. Blockchain finalization is not implemented yet.
+4. Public result dashboard is not yet integrated with recap/document/blockchain data.
+5. Legacy `/voter` and localStorage voting flow may still exist and must not be used for target workflow.
+6. Full frontend management UI for Admin/KPPS/Witness is still incomplete.
+7. Audit log service and deterministic audit hash generation are not yet implemented.
 
-### Configuration Files
-- **tsconfig.json (backend):** TypeScript config for backend compilation
-- **tsconfig.json (frontend):** Vite + React TypeScript
-- **tsconfig.app.json:** App-specific TS config
-- **tsconfig.node.json:** Node-specific TS config
-- **Vite config:** SWC transpiler, React plugin
-- **Tailwind config:** CSS processing with Tailwind
-- **PostCSS config:** CSS plugin pipeline
-- **ESLint config:** Code quality rules
+### Medium Priority
 
----
+1. `node:sqlite` can emit experimental warnings depending on Node version.
+2. Generated C.Hasil document is HTML/print-ready, not binary PDF yet.
+3. Upload preview exists as frontend prototype, but backend upload/hashing is pending.
+4. Old homepage/results may still show legacy data or blockchain candidate data.
+5. Automated tests are not yet formalized in repository.
+6. Start scripts may still assume old blockchain/demo behavior.
 
-## 9. Current Session and Authentication Flow
+### Low Priority
 
-### Voter Login Flow (Current)
-```
-1. User enters NIK + DOB
-2. Frontend calls getVoterByNIK(nik, dob)
-3. Matches against localStorage voters
-4. Stores { nik, name, dob, ... } in localStorage[currentVoter]
-5. Displays Dashboard
-6. Vote submission calls localStorage update (no backend)
-```
-
-### Admin Login Flow (Current)
-```
-1. User enters email + password
-2. Frontend validates against hardcoded admin@desa.go.id / admin123
-3. Sets localStorage[isAdmin] = true
-4. Displays AdminDashboard
-```
-
-### Backend Authentication (Current, Not Used in Voting)
-```
-1. Frontend would call POST /auth/login with { nik }
-2. Backend finds voter in voters.json
-3. Signs JWT with nik claim
-4. Returns token
-5. Frontend stores token
-6. Subsequent requests include Authorization: Bearer <token>
-```
-
-**Gap:** Frontend doesn't actually use the JWT flow - voting happens entirely in localStorage.
+1. Frontend bundle size optimization.
+2. UI polish for tablet booth and admin dashboard.
+3. README/demo script updates.
+4. Route prefix consistency decision (`/api` vs no `/api`).
 
 ---
 
-## 10. Areas Needing Manual Review
+## 10. Current Recommended Next Branch
 
-1. **Demo.js Content:** File exists but content not fully inspected
-2. **PublicResults.tsx:** Page structure not fully reviewed
-3. **Full storage.ts:** Complete utility functions list not catalogued
-4. **Blockchain test scenarios:** No test files found or inspected
-5. **Complete API service flow:** frontend/services/api.ts not fully reviewed
-6. **Deployment workflow details:** start-all.js external process handling
-7. **Error scenarios:** How errors cascade through the stack
-8. **Performance:** No performance metrics or benchmarks observed
-9. **Security testing:** No indication of security audit
-10. **Build artifacts:** Compiled blockchain contracts ABI structure
+Next branch:
 
----
+```txt
+feat/signed-form-upload-hashing
+```
 
-## 11. Dependencies Summary
+Purpose:
 
-### Frontend Critical Dependencies
-- React 18, Vite 5, React Router v6
-- Radix UI (Accordion, Dialog, Tabs, etc.)
-- TanStack Query, Recharts
-- Tailwind CSS, TypeScript
+1. Upload signed/scanned C.Hasil file.
+2. Validate PDF/JPG/JPEG/PNG.
+3. Store uploaded file outside frontend public folder.
+4. Generate SHA-256 hash from uploaded file bytes.
+5. Update document metadata.
+6. Provide preview/hash metadata to authorized users.
+7. Do not implement witness verification or blockchain finalization yet.
 
-### Backend Critical Dependencies
-- Express 5, TypeScript
-- ethers.js 6 (blockchain interaction)
-- jsonwebtoken (JWT)
-- dotenv (environment config)
+Recommended commit message:
 
-### Blockchain Critical Dependencies
-- Hardhat 2.22.3
-- Solidity 0.8.20
-- @nomicfoundation/hardhat-toolbox
+```txt
+feat: add signed form upload and hashing
+```
 
-**No development databases configured (SQLite missing completely)**
+Agent reminder:
 
----
-
-## Summary
-
-The current project is a **partially working e-voting prototype** with:
-
-**Strengths:**
-- Frontend UI framework well-structured with modern components
-- Blockchain infrastructure setup (Hardhat, contract deployment)
-- Basic voting UI and candidate display
-- Frontend/backend/blockchain separated by folder
-
-**Critical Gaps:**
-- K-Means and anomaly detection active (PRD violation)
-- No real voting session or temporary access mechanism
-- No database layer (SQLite completely missing)
-- No role-based authorization
-- Blockchain stores individual votes instead of final results
-- No document generation, hashing, or witness verification
-- Private voter data in JWT claims
-- Frontend voting bypasses backend entirely
-
-**Status:** About 20-30% aligned with PRD and ARCHITECTURE documents. Significant refactoring needed.
+```txt
+Do not run git push. The user pushes manually.
+```
