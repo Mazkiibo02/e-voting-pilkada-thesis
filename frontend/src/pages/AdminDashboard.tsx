@@ -115,10 +115,16 @@ const AdminDashboard = () => {
                 ))}
               </div>
             </div>
-            <Button size="sm" onClick={() => navigate('/admin/chasil-preview')}>
-              <Shield className="mr-2 h-4 w-4" />
-              Preview C.Hasil
-            </Button>
+            <div className="flex gap-2 flex-wrap">
+              <Button size="sm" onClick={() => navigate('/admin/chasil-preview')}>
+                <Shield className="mr-2 h-4 w-4" />
+                Preview C.Hasil
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => window.open('/booth/BOOTH-01', '_blank')}>
+                <Vote className="mr-2 h-4 w-4 text-blue-500" />
+                Buka Booth Voting Demo
+              </Button>
+            </div>
           </div>
         </div>
 
