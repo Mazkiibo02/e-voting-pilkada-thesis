@@ -31,4 +31,6 @@ backend/data/*.sqlite-wal
 backend/data/*.db
 backend/uploads/
 backend/.env
+backend/generated-documents/
+backend/data/generated-documents/
 
