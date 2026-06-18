@@ -2,6 +2,7 @@ import db from "../database/connection";
 import { generateChasilHtml, ChasilTemplateData } from "./chasilTemplate";
 import path from "path";
 import fs from "fs";
+import { createHash } from "crypto";
 
 export interface DocumentRecord {
   id: number;
@@ -11,11 +12,15 @@ export interface DocumentRecord {
   document_type: string | null;
   generated_pdf_path: string | null;
   uploaded_signed_file_path: string | null;
-  file_hash: string | null;
+  signed_file_hash_sha256: string | null;
   qr_payload: string | null;
   status: string;
   generated_at: string | null;
-  uploaded_at: string | null;
+  signed_file_uploaded_at: string | null;
+  signed_file_original_name: string | null;
+  signed_file_stored_name: string | null;
+  signed_file_mime_type: string | null;
+  signed_file_size_bytes: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -171,7 +176,7 @@ export const DocumentsService = {
       `).run(relativePath, now, documentId);
 
       db.exec("COMMIT;");
-
+      
       const finalRecord = db.prepare("SELECT * FROM documents WHERE id = ?").get(documentId) as unknown as DocumentRecord;
       return finalRecord;
 
@@ -179,6 +184,123 @@ export const DocumentsService = {
       try {
         db.exec("ROLLBACK;");
       } catch (rollbackErr) {
+        // ignore
+      }
+      throw error;
+    }
+  },
+
+  uploadSignedForm(
+    documentId: number,
+    file: { originalname: string; buffer: Buffer; size: number; mimetype: string }
+  ): DocumentRecord {
+    // 1. Fetch existing document metadata
+    const doc = this.getById(documentId);
+    if (!doc) {
+      throw new DocumentError(404, "Document not found");
+    }
+
+    // 2. Validate document is generated
+    if (!doc.generated_pdf_path) {
+      throw new DocumentError(409, "C.Hasil document form has not been generated for this TPS yet.");
+    }
+
+    // 3. Fetch related TPS and restrict upload if finalized or anchored
+    if (doc.tps_id) {
+      const tps = db.prepare("SELECT * FROM tps WHERE id = ?").get(doc.tps_id) as any;
+      if (tps && (tps.status === "FINALIZED" || tps.status === "BLOCKCHAIN_ANCHORED")) {
+        throw new DocumentError(409, "Cannot upload signed form for a finalized TPS.");
+      }
+    }
+
+    // 4. Calculate SHA-256 hash from exact uploaded bytes
+    const hash = createHash("sha256").update(file.buffer).digest("hex").toLowerCase();
+
+    // 5. Store file securely
+    const ext = path.extname(file.originalname).toLowerCase();
+    const safeStoredName = `signed-${doc.id}-${Date.now()}${ext}`;
+    const uploadDir = path.resolve(__dirname, "../../", process.env.UPLOAD_DIR || "uploads/signed-forms");
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const filePath = path.join(uploadDir, safeStoredName);
+    fs.writeFileSync(filePath, file.buffer);
+
+    const relativePath = `${process.env.UPLOAD_DIR || "uploads/signed-forms"}/${safeStoredName}`.replace(/\\/g, "/");
+    const now = new Date().toISOString();
+    const oldRelativePath = doc.uploaded_signed_file_path;
+
+    try {
+      db.exec("BEGIN TRANSACTION;");
+
+      // Update documents table metadata
+      db.prepare(`
+        UPDATE documents
+        SET uploaded_signed_file_path = ?,
+            signed_file_hash_sha256 = ?,
+            signed_file_original_name = ?,
+            signed_file_stored_name = ?,
+            signed_file_mime_type = ?,
+            signed_file_size_bytes = ?,
+            status = 'SIGNED_UPLOADED',
+            signed_file_uploaded_at = ?,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(
+        relativePath,
+        hash,
+        file.originalname,
+        safeStoredName,
+        file.mimetype,
+        file.size,
+        now,
+        doc.id
+      );
+
+      // Update TPS status to DOCUMENT_UPLOADED
+      if (doc.tps_id) {
+        db.prepare(`
+          UPDATE tps
+          SET status = 'DOCUMENT_UPLOADED',
+              updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `).run(doc.tps_id);
+      }
+
+      db.exec("COMMIT;");
+
+      // After transaction commits successfully, clean up the old file from disk if it existed
+      if (oldRelativePath && oldRelativePath !== relativePath) {
+        const oldAbsolutePath = path.resolve(__dirname, "../../", oldRelativePath);
+        try {
+          if (fs.existsSync(oldAbsolutePath)) {
+            fs.unlinkSync(oldAbsolutePath);
+          }
+        } catch (err) {
+          console.warn("Failed to delete old signed form file:", err);
+        }
+      }
+
+      const finalRecord = this.getById(doc.id);
+      if (!finalRecord) {
+        throw new DocumentError(500, "Failed to retrieve updated document metadata");
+      }
+      return finalRecord;
+
+    } catch (error) {
+      try {
+        db.exec("ROLLBACK;");
+      } catch (rollbackErr) {
+        // ignore
+      }
+      // Clean up the newly written file if database update failed
+      try {
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      } catch (e) {
         // ignore
       }
       throw error;

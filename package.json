@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node demo.js",
     "start": "node demo.js",
+    "demo:activate-booth": "node scripts/demo-activate-booth.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

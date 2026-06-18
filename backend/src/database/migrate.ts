@@ -22,6 +22,29 @@ function migrate() {
   try {
     db.exec("PRAGMA foreign_keys = ON;");
     db.exec(schema);
+    
+    // Run additive schema updates for documents table
+    const columns = [
+      { name: "uploaded_signed_file_path", type: "TEXT" },
+      { name: "signed_file_original_name", type: "TEXT" },
+      { name: "signed_file_stored_name", type: "TEXT" },
+      { name: "signed_file_mime_type", type: "TEXT" },
+      { name: "signed_file_size_bytes", type: "INTEGER" },
+      { name: "signed_file_hash_sha256", type: "TEXT" },
+      { name: "signed_file_uploaded_at", type: "TEXT" },
+    ];
+    for (const col of columns) {
+      try {
+        db.exec(`ALTER TABLE documents ADD COLUMN ${col.name} ${col.type};`);
+        console.log(`Added column ${col.name} to documents table.`);
+      } catch (colErr: any) {
+        const errStr = String(colErr);
+        if (!errStr.includes("duplicate column name") && !errStr.includes("already exists")) {
+          console.warn(`Could not add column ${col.name}:`, colErr);
+        }
+      }
+    }
+
     console.log("Database migrated successfully:", DB_PATH);
   } catch (err: any) {
     // If the file exists but is not a valid SQLite DB (corrupted or empty), remove and retry
