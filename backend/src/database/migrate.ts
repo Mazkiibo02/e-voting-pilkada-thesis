@@ -45,6 +45,41 @@ function migrate() {
       }
     }
 
+    // Run additive schema updates for audit_logs table
+    const auditLogsColumns = [
+      { name: "actor_email", type: "TEXT" },
+      { name: "description", type: "TEXT" },
+    ];
+    for (const col of auditLogsColumns) {
+      try {
+        db.exec(`ALTER TABLE audit_logs ADD COLUMN ${col.name} ${col.type};`);
+        console.log(`Added column ${col.name} to audit_logs table.`);
+      } catch (colErr: any) {
+        const errStr = String(colErr);
+        if (!errStr.includes("duplicate column name") && !errStr.includes("already exists")) {
+          console.warn(`Could not add column ${col.name} to audit_logs:`, colErr);
+        }
+      }
+    }
+
+    // Run additive schema updates for witness_verifications table
+    const witnessColumns = [
+      { name: "evidence_file_original_name", type: "TEXT" },
+      { name: "evidence_file_mime_type", type: "TEXT" },
+      { name: "evidence_file_size_bytes", type: "INTEGER" },
+    ];
+    for (const col of witnessColumns) {
+      try {
+        db.exec(`ALTER TABLE witness_verifications ADD COLUMN ${col.name} ${col.type};`);
+        console.log(`Added column ${col.name} to witness_verifications table.`);
+      } catch (colErr: any) {
+        const errStr = String(colErr);
+        if (!errStr.includes("duplicate column name") && !errStr.includes("already exists")) {
+          console.warn(`Could not add column ${col.name} to witness_verifications:`, colErr);
+        }
+      }
+    }
+
     console.log("Database migrated successfully:", DB_PATH);
   } catch (err: any) {
     // If the file exists but is not a valid SQLite DB (corrupted or empty), remove and retry

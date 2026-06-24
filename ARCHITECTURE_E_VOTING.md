@@ -5,7 +5,7 @@
 **Document Date:** 2026-06-15  
 **Primary Audience:** AI coding agent, developer, thesis implementation maintainer  
 **Package Manager:** npm  
-**Current Implementation Milestone:** through `feat/chasil-backend-document-generation`
+**Current Implementation Milestone:** through `chore/demo-local-flow-helper`
 
 ---
 
@@ -43,7 +43,9 @@ Express Backend TypeScript
   ├─ Local Vote Casting
   ├─ TPS Recap and Validation
   ├─ C.Hasil-KWK-inspired Document Generation
-  └─ Future: Upload/Hash, Witness, Audit, Blockchain, Public
+  ├─ Signed C.Hasil Upload & SHA-256 Hashing
+  ├─ Activity Log / Audit Trail (actor_email, description)
+  └─ Witness, Blockchain (implemented), Future: Public
 
 SQLite Local Database
   ├─ elections, tps, candidate_pairs, voters, users
@@ -53,7 +55,7 @@ SQLite Local Database
   └─ blockchain_records, audit_logs
 
 Hardhat Local Blockchain
-  └─ Future final TPS result + document hash + audit hash anchoring
+  └─ Final TPS result + document hash + audit hash anchoring (implemented)
 ```
 
 ---
@@ -72,6 +74,7 @@ backend/src/
 ├── middleware/
 │   └── auth.ts
 ├── routes/
+│   ├── auditLogs.ts
 │   ├── auth.ts
 │   ├── elections.ts
 │   ├── tps.ts
@@ -82,6 +85,7 @@ backend/src/
 │   ├── recaps.ts
 │   └── documents.ts
 ├── services/
+│   ├── auditLogs.ts
 │   ├── auth.ts
 │   ├── elections.ts
 │   ├── tps.ts
@@ -109,12 +113,14 @@ Important implemented frontend additions:
 frontend/src/pages/BoothVoting.tsx
 frontend/src/services/boothApi.ts
 frontend/src/pages/ChasilPreview.tsx
+frontend/src/pages/AuditLogs.tsx
 ```
 
 Important routes:
 
 ```txt
 /admin/chasil-preview
+/admin/audit-logs
 /booth/:boothId
 ```
 
@@ -346,17 +352,34 @@ POST /documents/tps/:tpsId/chasil/generate
 GET  /documents/tps/:tpsId/chasil/preview
 GET  /documents/:documentId/download
 GET  /documents/tps/:tpsId
+POST /documents/:documentId/signed-upload
+GET  /documents/:documentId/signed-download
+GET  /documents/:documentId/signed-preview
 ```
 
-### 7.10 Future Routes
+### 7.10 Audit Logs
 
 ```txt
-POST /documents/tps/:tpsId/upload-signed
-GET  /documents/tps/:tpsId/hash
-GET  /witness/tps
-POST /witness/tps/:tpsId/approve
-POST /witness/tps/:tpsId/object
+GET /audit-logs
+```
+
+### 7.11 Witness (Completed)
+
+```txt
+GET  /witness/recap
+POST /witness/verify
+GET  /witness/evidence/:verificationId
+```
+
+### 7.12 Finalization (Completed)
+
+```txt
 POST /finalization/tps/:tpsId
+```
+
+### 7.13 Future Routes
+
+```txt
 GET  /public/results
 GET  /public/results/tps/:tpsId
 ```
@@ -459,7 +482,7 @@ ANCHORED
 
 ### 8.8 Witness Verification
 
-Future statuses:
+Implemented statuses:
 
 ```txt
 PENDING
@@ -573,17 +596,16 @@ Current protections:
 9. Recap generation transaction.
 10. Document HTML escaping.
 11. No individual vote on blockchain.
+12. Signed C.Hasil file validation (MIME type and size check) and secure upload storage.
+13. SHA-256 hashing service on uploaded document bytes.
+14. System activity logs / Audit trail service (without logging raw NIK/passwords/server paths).
+15. Deterministic audit hash chain calculation for blockchain anchoring.
+16. Blockchain finalization access control.
 
 Remaining security work:
 
-1. Signed file MIME and size validation.
-2. Secure upload storage.
-3. SHA-256 hashing service.
-4. Audit logging.
-5. Audit hash generation.
-6. Blockchain finalization access control.
-7. Public API sanitization.
-8. Legacy flow cleanup.
+1. Public API sanitization.
+2. Legacy flow cleanup.
 
 ---
 
@@ -626,7 +648,7 @@ Current state:
 ```txt
 Hardhat and Solidity project exists.
 Current implemented local vote casting does not use blockchain.
-Blockchain finalization is pending.
+Blockchain finalization is implemented (feat/blockchain-finalization) via result anchoring.
 ```
 
 Target smart contract responsibility:
@@ -666,18 +688,22 @@ individual voter-linked data
 8. Add booth voting UI.
 9. Add TPS recap generation and validation.
 10. Add C.Hasil backend document generation.
+11. Add signed form upload and SHA-256 hashing.
+12. Add activity log/audit trail service and admin route.
+
+### Completed (continued)
+
+13. Add witness verification workflow (dashboard UI & upload).
+14. Add deterministic audit log hash generation.
+15. Add blockchain finalization (anchoring TPS result, document hash, and audit log hash to contract).
 
 ### Next
 
 ```txt
-11. Add signed form upload and SHA-256 hashing.
-12. Add witness verification.
-13. Add audit log/hash service.
-14. Add blockchain finalization.
-15. Add public result dashboard.
-16. Add frontend role-based management workflows.
-17. Clean legacy localStorage voter flow.
-18. Add tests and demo documentation.
+16. Add public result dashboard.
+17. Add frontend role-based management workflows.
+18. Clean legacy localStorage voter flow.
+19. Add tests and demo documentation.
 ```
 
 ---
@@ -725,22 +751,17 @@ Coding agents must:
 ## 17. Recommended Next Branch
 
 ```txt
-feat/signed-form-upload-hashing
+feat/public-result-dashboard
 ```
 
 Expected scope:
 
-1. Backend upload endpoint for signed result form.
-2. Validate PDF/JPG/JPEG/PNG.
-3. Store uploaded file outside public root.
-4. Generate SHA-256 hash.
-5. Update document metadata.
-6. Return safe hash metadata.
-7. No witness verification.
-8. No blockchain finalization.
+1. Public results dashboard UI implementation.
+2. Public API endpoint integration (fetching finalized results and hashes).
+3. Legacy voter login flow and localStorage cleanup.
 
 Recommended commit message:
 
 ```txt
-feat: add signed form upload and hashing
+feat: add public results dashboard
 ```

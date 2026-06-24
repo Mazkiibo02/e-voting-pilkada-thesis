@@ -2,50 +2,72 @@
 pragma solidity ^0.8.20;
 
 contract EVoting {
-
-    struct Candidate {
-        uint256 id;
-        string name;
+    struct TpsFinalRecord {
+        uint256 electionId;
+        uint256 tpsId;
+        uint256[] candidatePairIds;
+        uint256[] voteTotals;
+        uint256 totalRegisteredVoters;
+        uint256 totalVerifiedVoters;
+        string documentHash;
+        string auditLogHash;
+        uint256 finalizedAt;
     }
 
-    uint256 public candidateCount;
-    uint256 public tpsCount;
+    // electionId => tpsId => TpsFinalRecord
+    mapping(uint256 => mapping(uint256 => TpsFinalRecord)) public finalRecords;
 
-    mapping(uint256 => Candidate) public candidates;
-
-    // votes[tpsId][candidateId] = jumlah suara
-    mapping(uint256 => mapping(uint256 => uint256)) public votes;
-
-    event VoteCast(
+    event TpsResultAnchored(
+        uint256 indexed electionId,
         uint256 indexed tpsId,
-        uint256 indexed candidateId,
-        uint256 timestamp
+        string documentHash,
+        string auditLogHash,
+        uint256 finalizedAt
     );
 
-    function addCandidate(string memory _name) public {
-        candidateCount++;
-        candidates[candidateCount] = Candidate(candidateCount, _name);
+    /**
+     * Anchors a final TPS e-voting result to the blockchain.
+     * Rejects duplicates if the same electionId and tpsId combination has been finalized.
+     */
+    function anchorTpsResult(
+        uint256 _electionId,
+        uint256 _tpsId,
+        uint256[] memory _candidatePairIds,
+        uint256[] memory _voteTotals,
+        uint256 _totalRegisteredVoters,
+        uint256 _totalVerifiedVoters,
+        string memory _documentHash,
+        string memory _auditLogHash
+    ) public {
+        require(finalRecords[_electionId][_tpsId].finalizedAt == 0, "TPS result already finalized for this election");
+        require(_candidatePairIds.length == _voteTotals.length, "Candidates and vote totals length mismatch");
+
+        finalRecords[_electionId][_tpsId] = TpsFinalRecord({
+            electionId: _electionId,
+            tpsId: _tpsId,
+            candidatePairIds: _candidatePairIds,
+            voteTotals: _voteTotals,
+            totalRegisteredVoters: _totalRegisteredVoters,
+            totalVerifiedVoters: _totalVerifiedVoters,
+            documentHash: _documentHash,
+            auditLogHash: _auditLogHash,
+            finalizedAt: block.timestamp
+        });
+
+        emit TpsResultAnchored(
+            _electionId,
+            _tpsId,
+            _documentHash,
+            _auditLogHash,
+            block.timestamp
+        );
     }
 
-    function castVote(uint256 _tpsId, uint256 _candidateId) public {
-        require(_candidateId > 0 && _candidateId <= candidateCount, "Invalid candidate");
-
-        votes[_tpsId][_candidateId] += 1;
-
-        emit VoteCast(_tpsId, _candidateId, block.timestamp);
-    }
-
-    function getVotes(uint256 _tpsId, uint256 _candidateId) public view returns (uint256) {
-        return votes[_tpsId][_candidateId];
-    }
-
-    function candidatesCount() public view returns (uint256) {
-        return candidateCount;
-    }
-
-    function getCandidate(uint256 _id) public view returns (uint256, string memory, uint256) {
-        require(_id > 0 && _id <= candidateCount, "Invalid candidate ID");
-        Candidate memory candidate = candidates[_id];
-        return (_id, candidate.name, 0); // voteCount is always 0 from contract, votes stored by TPS
+    /**
+     * Helper function to fetch a TPS final record.
+     */
+    function getTpsFinalRecord(uint256 _electionId, uint256 _tpsId) public view returns (TpsFinalRecord memory) {
+        require(finalRecords[_electionId][_tpsId].finalizedAt > 0, "TPS result not finalized");
+        return finalRecords[_electionId][_tpsId];
     }
 }

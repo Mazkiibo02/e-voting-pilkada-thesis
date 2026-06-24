@@ -1,15 +1,27 @@
-const { exec } = require("child_process");
+const { spawn } = require("child_process");
 const fs = require("fs");
+const net = require("net");
 
 function run(command, name) {
-  const proc = exec(command);
+  const proc = spawn(command, {
+    shell: true,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
 
   proc.stdout.on("data", (data) => {
-    console.log(`[${name}] ${data}`);
+    const text = data.toString();
+    process.stdout.write(`[${name}] ${text}`);
+
+    if (name === "FRONTEND") {
+      const match = text.match(/Local:\s+(http:\/\/localhost:\d+\/?)/);
+      if (match) {
+        console.log("\n[SYSTEM] Frontend is ready. Open:", match[1]);
+      }
+    }
   });
 
   proc.stderr.on("data", (data) => {
-    console.error(`[${name} ERROR] ${data}`);
+    process.stderr.write(`[${name} ERROR] ${data.toString()}`);
   });
 
   proc.on("exit", (code) => {
@@ -21,15 +33,55 @@ function run(command, name) {
   return proc;
 }
 
+function waitForPort(port, host = "127.0.0.1", timeoutMs = 60000) {
+  const startedAt = Date.now();
+
+  return new Promise((resolve, reject) => {
+    function check() {
+      const socket = new net.Socket();
+
+      socket.setTimeout(1000);
+
+      socket.once("connect", () => {
+        socket.destroy();
+        resolve();
+      });
+
+      socket.once("timeout", () => {
+        socket.destroy();
+        retry();
+      });
+
+      socket.once("error", () => {
+        socket.destroy();
+        retry();
+      });
+
+      socket.connect(port, host);
+    }
+
+    function retry() {
+      if (Date.now() - startedAt > timeoutMs) {
+        reject(new Error(`Timed out waiting for ${host}:${port}`));
+        return;
+      }
+
+      setTimeout(check, 1000);
+    }
+
+    check();
+  });
+}
+
 function updateContractAddress(address) {
   const file = "./backend/src/services/blockchain.ts";
 
   if (!fs.existsSync(file)) {
-    console.log("⚠️ File backend/src/services/blockchain.ts tidak ditemukan");
-    return false;
+    console.log("[WARN] backend/src/services/blockchain.ts not found");
+    return;
   }
 
-  let content = fs.readFileSync(file, "utf-8");
+  const content = fs.readFileSync(file, "utf-8");
 
   const updated = content.replace(
     /const CONTRACT_ADDRESS = ".*?"/,
@@ -37,67 +89,82 @@ function updateContractAddress(address) {
   );
 
   if (updated === content) {
-    console.log("⚠️ CONTRACT_ADDRESS pattern tidak ditemukan di blockchain.ts");
-    return false;
+    console.log("[WARN] CONTRACT_ADDRESS pattern not found in blockchain.ts");
+    return;
   }
 
   fs.writeFileSync(file, updated);
-  console.log("✅ Backend contract address updated:", address);
-  return true;
+  console.log("[SYSTEM] Backend contract address updated:", address);
 }
 
-(async () => {
-  console.log("🚀 Starting system...");
+function deployContract() {
+  return new Promise((resolve, reject) => {
+    console.log("[SYSTEM] Deploying contract...");
 
-  run("cd blockchain && npx hardhat node", "BLOCKCHAIN");
-
-  setTimeout(() => {
-    console.log("🚀 Deploying contract...");
-
-    const deploy = exec(
-      "cd blockchain && npx hardhat run scripts/deploy.js --network localhost"
+    const deploy = spawn(
+      "cd blockchain && npx hardhat run scripts/deploy.js --network localhost",
+      {
+        shell: true,
+        stdio: ["ignore", "pipe", "pipe"],
+      }
     );
 
+    let output = "";
+
     deploy.stdout.on("data", (data) => {
-      console.log(`[DEPLOY] ${data}`);
+      const text = data.toString();
+      output += text;
+      process.stdout.write(`[DEPLOY] ${text}`);
 
-      const match = data.match(/(?:EVoting deployed to:|deployed to:)\s*(0x[a-fA-F0-9]{40})/i);
+      const match = output.match(
+        /(?:EVoting deployed to:|deployed to:)\s*(0x[a-fA-F0-9]{40})/i
+      );
 
-      if (!match) {
-        return;
+      if (match) {
+        resolve(match[1]);
       }
-
-      const address = match[1];
-      console.log("📌 CONTRACT:", address);
-
-      updateContractAddress(address);
-
-      console.log("🚀 Starting backend...");
-      run("cd backend && npm run dev", "BACKEND");
-
-      console.log("🚀 Starting frontend...");
-      const frontendProc = run("cd frontend && npm run dev", "FRONTEND");
-
-      frontendProc.stdout.on("data", (data) => {
-        const match = data.toString().match(/Local:\s*(http:\/\/localhost:\d+)/i);
-        if (match) {
-          console.log(`\n🎉 [SYSTEM] Frontend is ready! Open: ${match[1]}\n`);
-        }
-      });
-
-      console.log("\n✅ System starting. Open these URLs:");
-      console.log("Backend:  http://localhost:5000");
-      console.log("Frontend (default): http://localhost:8080 (Vite may auto-select another port if in use)\n");
     });
 
     deploy.stderr.on("data", (data) => {
-      console.error(`[DEPLOY ERROR] ${data}`);
+      const text = data.toString();
+      output += text;
+      process.stderr.write(`[DEPLOY ERROR] ${text}`);
     });
 
     deploy.on("exit", (code) => {
       if (code !== 0) {
-        console.error(`[DEPLOY] exited with code ${code}`);
+        reject(new Error(`Deploy failed with code ${code}`));
       }
     });
-  }, 8000);
-})();
+  });
+}
+
+async function main() {
+  console.log("[SYSTEM] Starting system...");
+
+  run("cd blockchain && npx hardhat node", "BLOCKCHAIN");
+
+  console.log("[SYSTEM] Waiting for Hardhat node at 127.0.0.1:8545...");
+  await waitForPort(8545, "127.0.0.1", 60000);
+  console.log("[SYSTEM] Hardhat node is ready.");
+
+  const address = await deployContract();
+  console.log("[SYSTEM] Contract deployed:", address);
+
+  updateContractAddress(address);
+
+  console.log("[SYSTEM] Starting backend...");
+  run("cd backend && npm run dev", "BACKEND");
+
+  console.log("[SYSTEM] Starting frontend...");
+  run("cd frontend && npm run dev", "FRONTEND");
+
+  console.log("\n[SYSTEM] Services are starting.");
+  console.log("[SYSTEM] Backend:  http://localhost:5000");
+  console.log("[SYSTEM] Frontend URL will appear from Vite output.\n");
+}
+
+main().catch((error) => {
+  console.error("[SYSTEM ERROR]", error.message);
+  process.exit(1);
+});

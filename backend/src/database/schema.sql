@@ -165,6 +165,9 @@ CREATE TABLE IF NOT EXISTS witness_verifications (
   status TEXT DEFAULT 'PENDING',
   note TEXT,
   evidence_file_path TEXT,
+  evidence_file_original_name TEXT,
+  evidence_file_mime_type TEXT,
+  evidence_file_size_bytes INTEGER,
   signed_at DATETIME,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -193,10 +196,12 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   election_id INTEGER,
   tps_id INTEGER,
   actor_user_id INTEGER,
+  actor_email TEXT,
   actor_role TEXT,
   action TEXT,
   entity_type TEXT,
   entity_id INTEGER,
+  description TEXT,
   metadata_json TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

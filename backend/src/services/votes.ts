@@ -1,4 +1,5 @@
 import db from "../database/connection";
+import { AuditLogsService } from "./auditLogs";
 
 export class VoteError extends Error {
   status: number;
@@ -104,6 +105,17 @@ export const VotesService = {
         SET has_voted = 1, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `).run(session.voter_id);
+
+      // Log vote cast
+      AuditLogsService.log({
+        electionId: session.election_id,
+        tpsId: session.tps_id,
+        actorRole: "VOTER",
+        action: "VOTE_CAST",
+        entityType: "VOTE",
+        entityId: session.id,
+        description: `Vote cast successfully for voting session ID ${session.id}`
+      });
 
       db.exec("COMMIT;");
 

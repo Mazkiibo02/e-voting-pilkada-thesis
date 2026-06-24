@@ -23,16 +23,20 @@ The following major foundations are now implemented:
 8. TPS recap generation and validation APIs implemented.
 9. C.Hasil-KWK-inspired backend document generation implemented as print-ready HTML.
 10. Frontend prototype for C.Hasil preview-before-download and preview-before-upload implemented.
+11. Signed C.Hasil Upload System (multer integration, JPEG/PNG/PDF validation, secure randomized local storage).
+12. Signed Document Metadata & SHA-256 Hashing tracked in SQLite for tamper detection.
+13. Activity Log / Audit Trail service and table (`audit_logs` enhanced with `actor_email` and `description`, ADMIN-only API route `GET /audit-logs`, and React `AuditLogs.tsx` frontend page).
+14. Demo automation improvements (`demo-activate-booth.js` to automate booth setup, and port-readiness wait in `start-all.js`).
+15. Witness Verification Flow with Objection Evidence Upload (database schema migration, backend endpoints `/witness/recap`, `/witness/verify`, and `/witness/evidence/:verificationId`, automatic TPS status update, and WitnessDashboard frontend page with login redirect integration).
+16. Deterministic audit log hash generation (`generateTpsAuditHash` in `AuditLogsService`).
+17. Blockchain Finalization (Solidity contract refactor, wallet signer connection, finalization endpoint `/finalization/tps/:tpsId`, database logging, status transition to `BLOCKCHAIN_ANCHORED`, and dynamic anchor button with loader in `ChasilPreview.tsx`).
 
 The project is now aligned with the main local-first TPS voting architecture, but the following important modules remain incomplete:
 
-1. Signed form upload and SHA-256 hashing.
-2. Witness verification workflow.
-3. Blockchain finalization refactor.
-4. Public result dashboard backed by finalized data and hashes.
-5. Full frontend admin/KPPS/witness management interfaces.
-6. Legacy frontend voter/localStorage cleanup.
-7. Automated tests and final demo documentation.
+1. Public result dashboard backed by finalized data and hashes.
+2. Full frontend admin/KPPS/witness management interfaces.
+3. Legacy frontend voter/localStorage cleanup.
+4. Automated tests and remaining README documentation updates.
 
 ---
 
@@ -88,6 +92,9 @@ One feature or fix must stay in one branch only.
 | `feat/booth-voting-ui` | Done | Added frontend `/booth/:boothId` tablet UI that polls active sessions and submits votes to backend. |
 | `feat/tps-recap-validation` | Done | Added TPS recap generation, validation rules, candidate vote totals, and TPS status update to `RECAP_GENERATED`. |
 | `feat/chasil-backend-document-generation` | Done | Added backend-generated C.Hasil-KWK-inspired print-ready HTML document, preview, download, and metadata storage. |
+| `chore/demo-local-flow-helper` | Done | Implemented Signed C.Hasil upload system, SQLite metadata tracking, SHA-256 file hashing, Audit Log / Activity Trail service & admin view, and demo automation improvements (booth activation script, start-all port readiness check). |
+| `feat/witness-verification` | Done | Implemented complete Witness Verification flow including database schema migration, backend endpoints, and WitnessDashboard frontend UI. |
+| `feat/blockchain-finalization` | Done | Refactored EVoting.sol smart contract, created finalization route and blockchain service using ethers.js to anchor results, and integrated anchoring UI in ChasilPreview.tsx. |
 
 ---
 
@@ -115,6 +122,7 @@ fetch-based API calls
 | `/voter` | Legacy voter dashboard | Exists; should not be used for new TPS voting flow. |
 | `/admin` | Admin dashboard | Exists; includes link to C.Hasil preview and booth demo. Still not a full backend-driven admin console. |
 | `/admin/chasil-preview` | Frontend C.Hasil preview workflow | Implemented for supervisor demo. Uses mock/local data and print/Save as PDF flow. |
+| `/admin/audit-logs` | Frontend Activity Log / Audit Trail UI page | Implemented. Displays system activity logs from backend, includes filtering options. |
 | `/booth/:boothId` | New physical booth/tablet voting UI | Implemented. Polls backend active session and submits vote via `/votes/cast`. |
 | `/results` | Public result page | Exists, not yet backed by finalized blockchain/document hash flow. |
 | `*` | 404 fallback | Exists. |
@@ -533,13 +541,16 @@ Implemented validation rules include:
 7. Candidate pair election consistency.
 8. `has_voted` consistency with used sessions/votes.
 
-### 6.9 C.Hasil-KWK-Inspired Document Generation
+### 6.9 C.Hasil-KWK-Inspired Document & Signed Upload
 
 ```txt
 POST /documents/tps/:tpsId/chasil/generate
 GET  /documents/tps/:tpsId/chasil/preview
 GET  /documents/:documentId/download
 GET  /documents/tps/:tpsId
+POST /documents/:documentId/signed-upload
+GET  /documents/:documentId/signed-download
+GET  /documents/:documentId/signed-preview
 ```
 
 Implemented behavior:
@@ -553,8 +564,39 @@ Implemented behavior:
 7. Includes disclaimer that it is an academic prototype and not an official KPU form.
 8. Includes election metadata, TPS metadata, recap summary, candidate totals, signature areas, and integrity placeholders.
 9. Escapes dynamic HTML content using utility helper.
-10. Does not implement signed upload or SHA-256 hash yet.
-11. Does not call blockchain.
+10. Implements signed form upload using multer (with PDF/JPEG/PNG validations and size checks).
+11. Generates SHA-256 integrity hash from the exact uploaded bytes and stores metadata in database.
+12. Provides endpoints for authorized users (ADMIN, KPPS restricted to assigned TPS) to preview and download the signed C.Hasil document.
+13. Does not call blockchain.
+
+### 6.10 Activity Log / Audit Trail
+
+```txt
+GET /audit-logs
+```
+
+Implemented behavior:
+
+1. Enhanced database schema with `audit_logs` table containing `actor_email` and `description` tracking.
+2. Admin-only route `GET /audit-logs` that allows retrieving, filtering, and paging through system activity logs.
+3. Backend service (`src/services/auditLogs.ts`) to programmatically log crucial events.
+4. Logged actions include: `AUTH_LOGIN`, `VOTING_SESSION_CREATED`, `VOTING_SESSION_CANCELLED`, `VOTE_CAST`, `TPS_STATUS_UPDATED`, `TPS_RECAP_GENERATED`, `CHASIL_GENERATED`, and `SIGNED_FORM_UPLOADED`.
+5. Strictly avoids logging sensitive details such as voter NIK, nik_hash, passwords, JWT tokens, or absolute file paths.
+6. Helper `generateTpsAuditHash(tpsId)` computes a deterministic cryptographic hash chain over the audit logs associated with a selected TPS.
+
+### 6.11 Finalization
+
+```txt
+POST /finalization/tps/:tpsId
+```
+
+Implemented behavior:
+
+1. Authenticates ADMIN/KPPS users.
+2. Formulates candidates vote totals arrays and registered/verified voter statistics from database.
+3. Validates status and queries document hash from `documents` (using `signed_file_hash_sha256` or generated HTML file hash).
+4. Submits statistics to on-chain Solidity `anchorTpsResult` method.
+5. Logs receipt on database `blockchain_records` table, transitions status to `BLOCKCHAIN_ANCHORED`, and writes to `audit_logs`.
 
 ---
 
@@ -581,10 +623,6 @@ Admin/KPPS login
 Pending after this flow:
 
 ```txt
-Signed form upload
-SHA-256 hashing
-Witness verification
-Blockchain finalization
 Public hash/result dashboard
 ```
 
@@ -603,14 +641,14 @@ local Hardhat chain
 
 However, the current implemented vote flow no longer uses blockchain for individual vote casting. This is correct according to the new architecture.
 
-Current blockchain module/contract still needs refactoring for final TPS anchoring only. Remaining blockchain work:
+Blockchain finalization is implemented (feat/blockchain-finalization) to support final TPS result anchoring on-chain:
 
-1. Replace/adjust current contract to store final TPS result records.
-2. Store candidate totals, document hash, audit log hash, and finalization timestamp.
-3. Prevent duplicate TPS finalization.
-4. Emit finalization event.
-5. Store transaction hash in backend.
-6. Display finalization metadata to authorized users and public dashboard.
+1. Refactored Solidity contract `EVoting.sol` to store final TPS result records.
+2. Stores candidate totals, document hash, audit log hash, and finalization timestamp.
+3. Strict enforcement prevents duplicate TPS finalization.
+4. Emits `TpsResultAnchored` event.
+5. Saves transaction hash in backend `blockchain_records` table and updates TPS status.
+6. Display finalization metadata on the ChasilPreview management dashboard.
 
 ---
 
@@ -618,22 +656,15 @@ Current blockchain module/contract still needs refactoring for final TPS anchori
 
 ### High Priority
 
-1. Signed result form upload and hashing are not implemented yet.
-2. Witness verification workflow is not implemented yet.
-3. Blockchain finalization is not implemented yet.
-4. Public result dashboard is not yet integrated with recap/document/blockchain data.
-5. Legacy `/voter` and localStorage voting flow may still exist and must not be used for target workflow.
-6. Full frontend management UI for Admin/KPPS/Witness is still incomplete.
-7. Audit log service and deterministic audit hash generation are not yet implemented.
+1. Public result dashboard is not yet integrated with recap/document/blockchain data.
+2. Legacy `/voter` and localStorage voting flow may still exist and must not be used for target workflow.
+3. Full frontend management UI for Admin/KPPS/Witness is still incomplete.
 
 ### Medium Priority
 
 1. `node:sqlite` can emit experimental warnings depending on Node version.
 2. Generated C.Hasil document is HTML/print-ready, not binary PDF yet.
-3. Upload preview exists as frontend prototype, but backend upload/hashing is pending.
-4. Old homepage/results may still show legacy data or blockchain candidate data.
-5. Automated tests are not yet formalized in repository.
-6. Start scripts may still assume old blockchain/demo behavior.
+3. Automated tests are not yet formalized in repository.
 
 ### Low Priority
 
@@ -649,23 +680,19 @@ Current blockchain module/contract still needs refactoring for final TPS anchori
 Next branch:
 
 ```txt
-feat/signed-form-upload-hashing
+feat/public-result-dashboard
 ```
 
 Purpose:
 
-1. Upload signed/scanned C.Hasil file.
-2. Validate PDF/JPG/JPEG/PNG.
-3. Store uploaded file outside frontend public folder.
-4. Generate SHA-256 hash from uploaded file bytes.
-5. Update document metadata.
-6. Provide preview/hash metadata to authorized users.
-7. Do not implement witness verification or blockchain finalization yet.
+1. Create public results transparency dashboard.
+2. Clean up legacy voter login flow and localStorage objects.
+3. Integrate public APIs to load data directly from SQLite database and blockchain records.
 
 Recommended commit message:
 
 ```txt
-feat: add signed form upload and hashing
+feat: add public results dashboard
 ```
 
 Agent reminder:

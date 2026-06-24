@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getVoterByNIK, validateAdmin, initializeMockData } from '@/lib/storage';
+import { getVoterByNIK, initializeMockData } from '@/lib/storage';
 import { toast } from 'sonner';
 import { Shield, Vote } from 'lucide-react';
 
@@ -40,7 +40,7 @@ const Login = () => {
     }
   };
 
-  const handleAdminLogin = (e: React.FormEvent) => {
+  const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!adminEmail || !adminPassword) {
@@ -48,12 +48,40 @@ const Login = () => {
       return;
     }
 
-    if (validateAdmin(adminEmail, adminPassword)) {
-      localStorage.setItem('isAdmin', 'true');
-      toast.success('Login Admin berhasil');
-      navigate('/admin');
-    } else {
-      toast.error('Email atau Password salah');
+    try {
+      const response = await fetch('http://localhost:5000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: adminEmail,
+          password: adminPassword,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+        
+        if (data.user && data.user.role === 'ADMIN') {
+          localStorage.setItem('isAdmin', 'true');
+          toast.success('Login Admin berhasil');
+          navigate('/admin');
+        } else if (data.user && data.user.role === 'WITNESS') {
+          toast.success('Login Saksi berhasil');
+          navigate('/witness');
+        } else {
+          toast.success(`Login berhasil: ${data.user?.role}`);
+          navigate('/');
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(errorData.message || 'Email atau Password salah');
+      }
+    } catch (error) {
+      console.error('Error admin login:', error);
+      toast.error('Koneksi ke server gagal');
     }
   };
 
@@ -77,7 +105,7 @@ const Login = () => {
         <Tabs defaultValue="voter" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="voter">Pemilih</TabsTrigger>
-            <TabsTrigger value="admin">Admin</TabsTrigger>
+            <TabsTrigger value="admin">Petugas / Saksi</TabsTrigger>
           </TabsList>
 
           <TabsContent value="voter">
@@ -122,10 +150,10 @@ const Login = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="h-5 w-5" />
-                  Login Administrator
+                  Login Petugas & Saksi
                 </CardTitle>
                 <CardDescription>
-                  Akses dashboard administrator sistem e-voting
+                  Akses dashboard petugas (KPPS) atau saksi (WITNESS)
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -135,7 +163,7 @@ const Login = () => {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="admin@desa.go.id"
+                      placeholder="admin@example.local"
                       value={adminEmail}
                       onChange={(e) => setAdminEmail(e.target.value)}
                     />
@@ -153,9 +181,10 @@ const Login = () => {
                     Login
                   </Button>
                 </form>
-                <p className="text-xs text-muted-foreground mt-4 text-center">
-                  Demo: admin@desa.go.id / admin123
-                </p>
+                <div className="text-xs text-muted-foreground mt-4 text-center space-y-1">
+                  <div>Demo Admin: <span className="font-semibold">admin@example.local / Admin123!</span></div>
+                  <div>Demo Saksi: <span className="font-semibold">witness@example.local / Witness123!</span></div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

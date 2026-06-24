@@ -1,6 +1,6 @@
 import "dotenv/config";
-import db from "./database/connection";
-import { createAuthToken } from "./services/auth";
+import db from "../src/database/connection";
+import { createAuthToken } from "../src/services/auth";
 import fs from "fs";
 import path from "path";
 

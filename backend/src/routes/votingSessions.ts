@@ -4,6 +4,7 @@ import { VotingSessionsService } from "../services/votingSessions";
 import { VotersService } from "../services/voters";
 import { TpsService } from "../services/tps";
 import { ElectionsService } from "../services/elections";
+import { AuditLogsService } from "../services/auditLogs";
 
 const router = Router();
 
@@ -118,6 +119,21 @@ router.post("/", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: 
       boothId: boothId.trim(),
       expiresMinutes,
       createdByUserId,
+    });
+
+    // Log voting session creation
+    AuditLogsService.log({
+      electionId: session.election_id,
+      tpsId: session.tps_id,
+      actorUserId: req.user?.sub ? Number(req.user.sub) : null,
+      actorRole: req.user?.role || null,
+      action: "VOTING_SESSION_CREATED",
+      entityType: "VOTING_SESSION",
+      entityId: session.id,
+      description: `Voting session created for booth ${session.booth_id}`,
+      metadataJson: {
+        boothId: session.booth_id
+      }
     });
 
     return res.status(201).json({
@@ -239,6 +255,26 @@ router.post("/:id/cancel", authenticateToken, requireRole(["ADMIN", "KPPS"]), as
     }
 
     const updated = VotingSessionsService.updateStatus(id, "CANCELLED");
+
+    if (!updated) {
+      return res.status(404).json({ message: "Voting session not found" });
+    }
+
+    // Log voting session cancellation
+    AuditLogsService.log({
+      electionId: updated.election_id,
+      tpsId: updated.tps_id,
+      actorUserId: req.user?.sub ? Number(req.user.sub) : null,
+      actorRole: req.user?.role || null,
+      action: "VOTING_SESSION_CANCELLED",
+      entityType: "VOTING_SESSION",
+      entityId: updated.id,
+      description: `Voting session ID ${updated.id} cancelled`,
+      metadataJson: {
+        boothId: updated.booth_id
+      }
+    });
+
     return res.json({ data: sanitizeSession(updated) });
   } catch (error: any) {
     return res.status(500).json({ message: "Failed to cancel voting session" });

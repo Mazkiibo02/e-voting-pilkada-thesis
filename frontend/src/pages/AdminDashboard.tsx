@@ -62,6 +62,7 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('isAdmin');
+    localStorage.removeItem('token');
     toast.info('Logout berhasil');
     navigate('/');
   };
@@ -116,6 +117,10 @@ const AdminDashboard = () => {
               </div>
             </div>
             <div className="flex gap-2 flex-wrap">
+              <Button size="sm" variant="secondary" onClick={() => navigate('/admin/audit-logs')}>
+                <Shield className="mr-2 h-4 w-4 text-amber-500" />
+                Log Aktivitas
+              </Button>
               <Button size="sm" onClick={() => navigate('/admin/chasil-preview')}>
                 <Shield className="mr-2 h-4 w-4" />
                 Preview C.Hasil

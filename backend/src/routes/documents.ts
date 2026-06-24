@@ -5,6 +5,7 @@ import db from "../database/connection";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
+import { AuditLogsService } from "../services/auditLogs";
 
 const router = Router();
 
@@ -34,6 +35,20 @@ router.post("/tps/:tpsId/chasil/generate", authenticateToken, requireRole(["ADMI
 
     // Call service to generate the document
     const doc = DocumentsService.generateForm(tpsId);
+
+    AuditLogsService.log({
+      electionId: doc.election_id,
+      tpsId: doc.tps_id,
+      actorUserId: req.user?.sub ? Number(req.user.sub) : null,
+      actorRole: req.user?.role || null,
+      action: "CHASIL_GENERATED",
+      entityType: "DOCUMENT",
+      entityId: doc.id,
+      description: `C.Hasil generated successfully for TPS ID ${doc.tps_id}`,
+      metadataJson: {
+        documentId: doc.id
+      }
+    });
 
     return res.status(200).json({
       message: "Form generated successfully",
@@ -173,6 +188,8 @@ router.get("/tps/:tpsId", authenticateToken, requireRole(["ADMIN", "KPPS"]), asy
       return res.status(404).json({ message: "Document metadata not found for this TPS" });
     }
 
+    const blockchainRecord = db.prepare("SELECT * FROM blockchain_records WHERE tps_id = ?").get(tpsId) as any;
+
     return res.json({
       data: {
         id: doc.id,
@@ -191,6 +208,12 @@ router.get("/tps/:tpsId", authenticateToken, requireRole(["ADMIN", "KPPS"]), asy
           sizeBytes: doc.signed_file_size_bytes,
           sha256: doc.signed_file_hash_sha256,
           uploadedAt: doc.signed_file_uploaded_at,
+        } : null,
+        blockchainRecord: blockchainRecord ? {
+          transactionHash: blockchainRecord.transaction_hash,
+          contractAddress: blockchainRecord.contract_address,
+          chainId: blockchainRecord.chain_id,
+          finalizedAt: blockchainRecord.finalized_at
         } : null,
       },
     });
@@ -256,6 +279,24 @@ router.post("/:documentId/signed-upload", authenticateToken, requireRole(["ADMIN
 
       try {
         const updatedDoc = DocumentsService.uploadSignedForm(docId, req.file);
+
+        AuditLogsService.log({
+          electionId: updatedDoc.election_id,
+          tpsId: updatedDoc.tps_id,
+          actorUserId: req.user?.sub ? Number(req.user.sub) : null,
+          actorRole: req.user?.role || null,
+          action: "SIGNED_FORM_UPLOADED",
+          entityType: "DOCUMENT",
+          entityId: updatedDoc.id,
+          description: `Signed form uploaded for TPS ID ${updatedDoc.tps_id}`,
+          metadataJson: {
+            documentId: updatedDoc.id,
+            originalName: updatedDoc.signed_file_original_name,
+            mimeType: updatedDoc.signed_file_mime_type,
+            sizeBytes: updatedDoc.signed_file_size_bytes,
+            sha256: updatedDoc.signed_file_hash_sha256
+          }
+        });
 
         return res.status(200).json({
           document: {

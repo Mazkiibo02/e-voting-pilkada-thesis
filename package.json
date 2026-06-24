@@ -4,6 +4,7 @@
   "description": "E-Voting Simulation System with Auto Start (Blockchain + Backend + Frontend)",
   "main": "demo.js",
   "scripts": {
+    "start-all": "node start-all.js",
     "dev": "node demo.js",
     "start": "node demo.js",
     "demo:activate-booth": "node scripts/demo-activate-booth.js",

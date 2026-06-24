@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { authenticateToken, requireRole, AuthRequest } from "../middleware/auth";
 import { RecapsService } from "../services/recaps";
 import db from "../database/connection";
+import { AuditLogsService } from "../services/auditLogs";
 
 const router = Router();
 
@@ -110,6 +111,21 @@ router.post("/tps/:tpsId/generate", authenticateToken, requireRole(["ADMIN", "KP
 
     // If valid, generate recap atomically
     const result = RecapsService.generateRecap(tpsId, userId);
+
+    AuditLogsService.log({
+      electionId: result.recap.election_id,
+      tpsId: result.recap.tps_id,
+      actorUserId: req.user?.sub ? Number(req.user.sub) : null,
+      actorRole: req.user?.role || null,
+      action: "TPS_RECAP_GENERATED",
+      entityType: "RECAP",
+      entityId: result.recap.id,
+      description: `TPS recap generated with status ${result.recap.validation_status}`,
+      metadataJson: {
+        recapId: result.recap.id,
+        validationStatus: result.recap.validation_status
+      }
+    });
 
     return res.status(200).json({
       message: "TPS recap generated successfully",

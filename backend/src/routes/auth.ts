@@ -2,6 +2,7 @@ import { Router } from "express";
 import db from "../database/connection";
 import { authenticateToken, requireRole, AuthRequest } from "../middleware/auth";
 import { createAuthToken, verifyPassword } from "../services/auth";
+import { AuditLogsService } from "../services/auditLogs";
 
 const router = Router();
 
@@ -43,6 +44,21 @@ router.post("/login", (req, res) => {
     assignedTpsId: user.assigned_tps_id ?? null,
     status: user.status,
   };
+
+  // Log authentication login
+  AuditLogsService.log({
+    actorUserId: user.id,
+    actorEmail: user.email,
+    actorRole: user.role,
+    action: "AUTH_LOGIN",
+    entityType: "USER",
+    entityId: user.id,
+    description: `User ${user.email} successfully logged in as ${user.role}`,
+    metadataJson: {
+      email: user.email,
+      role: user.role
+    }
+  });
 
   res.json({ token, user: safeUser });
 });

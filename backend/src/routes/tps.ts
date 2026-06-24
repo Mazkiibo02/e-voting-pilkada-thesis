@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { authenticateToken, requireRole, AuthRequest } from "../middleware/auth";
 import { TpsService, TPS } from "../services/tps";
 import { ElectionsService } from "../services/elections";
+import { AuditLogsService } from "../services/auditLogs";
 
 const router = Router();
 
@@ -236,6 +237,24 @@ router.patch("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: Auth
       registered_voters_total: registered_voters_total !== undefined ? Number(registered_voters_total) : undefined,
     });
 
+    if (!updated) {
+      return res.status(404).json({ message: "TPS not found" });
+    }
+
+    if (status !== undefined) {
+      AuditLogsService.log({
+        electionId: updated.election_id,
+        tpsId: updated.id,
+        actorUserId: req.user?.sub ? Number(req.user.sub) : null,
+        actorRole: req.user?.role || null,
+        action: "TPS_STATUS_UPDATED",
+        entityType: "TPS",
+        entityId: updated.id,
+        description: `TPS status updated to ${updated.status}`,
+        metadataJson: { status: updated.status }
+      });
+    }
+
     return res.json({ data: updated });
   } catch (error: any) {
     return res.status(500).json({ message: "Failed to update TPS" });
@@ -263,6 +282,23 @@ router.patch("/:id/status", authenticateToken, requireRole(["ADMIN"]), async (re
     }
 
     const updated = TpsService.update(id, { status: status.toUpperCase() });
+
+    if (!updated) {
+      return res.status(404).json({ message: "TPS not found" });
+    }
+
+    AuditLogsService.log({
+      electionId: updated.election_id,
+      tpsId: updated.id,
+      actorUserId: req.user?.sub ? Number(req.user.sub) : null,
+      actorRole: req.user?.role || null,
+      action: "TPS_STATUS_UPDATED",
+      entityType: "TPS",
+      entityId: updated.id,
+      description: `TPS status updated to ${updated.status}`,
+      metadataJson: { status: updated.status }
+    });
+
     return res.json({ data: updated });
   } catch (error: any) {
     return res.status(500).json({ message: "Failed to update TPS status" });

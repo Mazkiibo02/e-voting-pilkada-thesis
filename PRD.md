@@ -15,7 +15,7 @@ This PRD is the primary product and engineering reference for the ongoing refact
 This version reflects implementation progress completed through:
 
 ```txt
-feat/chasil-backend-document-generation
+chore/demo-local-flow-helper
 ```
 
 All future code changes by any coding agent must follow this document and `ARCHITECTURE_E_VOTING.md`.
@@ -65,21 +65,23 @@ The system is designed for **Pilkada**, not village head elections.
 | TPS recap generation and validation | Done |
 | Frontend C.Hasil preview workflow | Done |
 | Backend C.Hasil-KWK-inspired form generation | Done as print-ready HTML |
+| Signed C.Hasil upload system (multer/validation) | Done |
+| SHA-256 hash generation for uploaded signed form | Done |
+| Activity Log / Audit Trail (service, DB table, UI page) | Done |
+| Demo automation (activate-booth script & port checks) | Done |
+| Witness verification workflow (dashboard UI & upload) | Done |
+| Deterministic audit hash for blockchain finalization | Done |
+| Blockchain finalization | Done |
 
 ### 2.2 Pending
 
 | Capability | Status |
 |---|---|
-| Signed form upload | Pending |
-| SHA-256 hash generation for uploaded signed form | Pending |
-| Witness verification workflow | Pending |
-| Audit log service and deterministic audit hash | Pending |
-| Blockchain finalization | Pending |
 | Public result dashboard backed by final data | Pending |
 | Full frontend role-based dashboards | Pending |
 | Legacy localStorage voter flow cleanup | Pending |
 | Formal automated tests | Pending |
-| README/demo script update | Pending |
+| README documentation updates | Pending |
 
 ---
 
@@ -207,21 +209,15 @@ ADMIN/KPPS login
 -> Backend stores vote locally in SQLite
 -> Backend marks session USED
 -> Backend marks voter has_voted true
--> TPS is closed by authorized user
--> Backend generates and validates TPS recap
--> Backend generates C.Hasil-KWK-inspired print-ready HTML result form
--> Form can be previewed/downloaded/printed
-```
+-> Signed form upload and SHA-256 hash generation
+-> Witness verification
+-> Deterministic audit hash chain generation
+-> Blockchain finalization (anchored to contract)
 
 Pending continuation:
 
 ```txt
-Signed form upload
--> SHA-256 hash generation
--> Witness verification
--> Audit hash generation
--> Blockchain finalization
--> Public transparency dashboard
+Public transparency dashboard
 ```
 
 ---
@@ -407,36 +403,37 @@ Current generation strategy:
 
 Pending:
 
-1. Signed form upload.
-2. SHA-256 upload hash.
-3. Blockchain transaction hash after finalization.
+1. Blockchain transaction hash after finalization.
 
 ### 7.8 Signed Form Upload and Hashing
 
-Pending next implementation.
+Implemented.
 
-Required endpoint:
+Endpoints:
 
 ```txt
-POST /documents/tps/:tpsId/upload-signed
+POST /documents/:documentId/signed-upload
+GET  /documents/:documentId/signed-download
+GET  /documents/:documentId/signed-preview
 ```
 
-Requirements:
+Requirements & Features:
 
 1. Accept PDF/JPG/JPEG/PNG.
 2. Validate MIME type.
-3. Validate file size.
-4. Store securely outside public folder.
-5. Compute SHA-256 hash from uploaded bytes.
-6. Store hash and file metadata.
-7. Return safe metadata.
-8. Explain limitation: hash verifies post-upload integrity, not pre-upload authenticity.
+3. Validate file size (limit configured via environment variable `MAX_SIGNED_FORM_UPLOAD_MB`, default 10MB).
+4. Store securely outside public folder (e.g., `uploads/signed-forms/`).
+5. Compute SHA-256 hash from exact uploaded bytes for tamper detection.
+6. Store file path, original name, stored name, MIME type, size, hash, and upload timestamp in SQLite metadata.
+7. Return safe metadata (no absolute server paths exposed).
+8. Enforce RBAC protection (ADMIN and KPPS only; KPPS restricted to assigned TPS).
+9. Explain limitation: hash verifies post-upload integrity, not pre-upload authenticity.
 
 ### 7.9 Witness Verification
 
-Pending.
+Completed.
 
-Required statuses:
+Allowed statuses:
 
 ```txt
 PENDING
@@ -446,11 +443,22 @@ ABSENT
 NO_RESPONSE
 ```
 
-Witness must never modify vote totals.
+Witnesses can review their assigned TPS recap, candidate vote totals (completely read-only), and preview/download generated or uploaded C.Hasil documents.
+
+- **Database Updates**: Added additive schema updates in `schema.sql` and `migrate.ts` for metadata support: `evidence_file_original_name`, `evidence_file_mime_type`, and `evidence_file_size_bytes` in `witness_verifications` table.
+- **Backend Endpoints** (under `/witness` prefix):
+  - `GET /witness/recap` (Fetch assigned TPS data, recap totals, candidate totals, document metadata, and witness verification status).
+  - `POST /witness/verify` (Submit approval or objection with note and optional physical file upload. Checks size <= 5MB and types PDF/PNG/JPEG). Automatically updates TPS status to `WITNESS_VERIFICATION` and logs to `audit_logs`.
+  - `GET /witness/evidence/:verificationId` (Securely download witness's uploaded evidence file).
+- **Frontend Components**:
+  - `WitnessDashboard.tsx`: Interactive read-only grid, candidate totals, document downloads, and action form.
+  - Role-based redirect to `/witness` added in `Login.tsx` and route added in `App.tsx`.
+
+Witnesses must never modify vote totals.
 
 ### 7.10 Blockchain Finalization
 
-Pending.
+Done (Implemented in `feat/blockchain-finalization`). The contract `EVoting.sol` is refactored to support the `TpsFinalRecord` struct and the `anchorTpsResult` function.
 
 Blockchain must only store final TPS-level result and hashes:
 
@@ -608,19 +616,21 @@ Mandatory rules:
 9. Same session cannot vote twice.
 10. TPS recap can be generated and validated.
 11. C.Hasil-KWK-inspired form can be generated/previewed/downloaded as print-ready HTML.
+12. KPPS signed form upload (PDF/JPG/PNG) and secure local storage.
+13. SHA-256 hash generation on exact uploaded bytes for tamper detection.
+14. Activity log / Audit trail backend service and Admin-only route `/audit-logs`.
+15. Frontend Activity Log UI page under `/admin/audit-logs`.
+16. Demo automation (`demo-activate-booth.js` script) and startup port checks.
+17. Deterministic audit log hash generation.
+18. Blockchain finalization (anchoring TPS result, document hash, and audit log hash to contract).
 
 ### Still Required
 
-1. KPPS signed form upload.
-2. SHA-256 signed file hash generation.
-3. Witness review/approval/objection.
-4. Audit log hash generation.
-5. Blockchain finalization.
-6. Public result dashboard with document hash and transaction hash.
-7. Full frontend role-based workflows.
-8. Legacy localStorage voter flow cleanup.
-9. Automated test suite.
-10. Final README/demo scripts.
+1. Public result dashboard with document hash and transaction hash.
+2. Full frontend role-based workflows.
+3. Legacy localStorage voter flow cleanup.
+4. Automated test suite.
+5. Updated README documentation.
 
 ---
 
@@ -629,19 +639,17 @@ Mandatory rules:
 Branch:
 
 ```txt
-feat/signed-form-upload-hashing
+feat/public-result-dashboard
 ```
 
 Commit message:
 
 ```txt
-feat: add signed form upload and hashing
+feat: add public results dashboard
 ```
 
 Scope:
 
-1. Upload signed/scanned result form.
-2. Preview or return metadata for uploaded file.
-3. Compute SHA-256 hash.
-4. Store file path and hash in documents metadata.
-5. Keep witness verification and blockchain finalization out of scope.
+1. Public results dashboard UI implementation.
+2. Public API endpoint integration (fetching finalized results and hashes).
+3. Legacy voter login flow and localStorage cleanup.

@@ -46,52 +46,36 @@ Target system principles:
 | Booth polling | Missing | Backend and frontend booth page done | Hardening device auth can be future work. |
 | Local vote casting | Blockchain/legacy/localStorage wrong model | Backend local vote casting done | Formal test coverage pending. |
 | TPS recap validation | Missing | Backend recap generation/validation done | Frontend recap review UI pending. |
-| C.Hasil generation | Missing | Backend print-ready HTML generation done; frontend prototype exists | Signed upload and hash pending. |
-| Signed form upload/hash | Missing | Not implemented | Next branch. |
-| Witness verification | Missing | Not implemented | After upload/hash. |
-| Blockchain finalization | Wrong model / not implemented | Not implemented | Contract/backend adapter refactor required. |
+| C.Hasil generation | Missing | Backend print-ready HTML generation done; frontend prototype exists | Done. |
+| Signed form upload/hash | Missing | Done | Fully implemented with multer file validation, randomized storage, and SHA-256 hash tracking. |
+| Witness verification | Missing | Done | Fully implemented with database schema migration, backend endpoints, and WitnessDashboard frontend UI. |
+| Blockchain finalization | Wrong model / not implemented | Done | Solidity contract refactor, wallet signer connection, finalization route, and frontend anchor button implemented. |
 | Public transparency | Partial/legacy | Not implemented against new data | After finalization. |
 | Legacy frontend cleanup | Old localStorage flow exists | Partially bypassed by booth route | Cleanup required later. |
-| Audit logs/hash | Missing | Schema exists but service not implemented | Needed before blockchain finalization. |
+| Audit logs/hash | Missing | Done | Backend logging service, admin route, and generateTpsAuditHash deterministic chain calculation implemented. |
 
 ---
 
 ## 3. Remaining Major Gaps
 
-### 3.1 Signed Form Upload and SHA-256 Hashing
+### 3.1 [COMPLETED] Signed Form Upload and SHA-256 Hashing
 
 Current status:
 
 ```txt
-Frontend prototype can preview file before simulated upload.
-Backend document generation can create/preview/download generated HTML.
-Actual signed file upload and server-side hash are not implemented yet.
+Successfully implemented in chore/demo-local-flow-helper.
 ```
 
-Target:
+Implemented Behavior:
 
-```txt
-POST /documents/tps/:tpsId/upload-signed
-```
-
-Required behavior:
-
-1. Accept PDF/JPG/JPEG/PNG.
-2. Validate MIME type and size.
-3. Store outside public frontend folder.
-4. Compute SHA-256 over exact uploaded file bytes.
-5. Store file path, MIME type, size, hash, uploaded timestamp, uploader user ID.
-6. Update document status to `SIGNED_UPLOADED` or `HASHED` depending final status decision.
-7. Return safe metadata and hash.
-8. Do not claim pre-upload image manipulation detection.
-
-Risk: High. This is required before witness verification and blockchain finalization.
-
-Recommended branch:
-
-```txt
-feat/signed-form-upload-hashing
-```
+1. Accept PDF/JPEG/PNG formats.
+2. Validate MIME type and file size (limit default 10MB).
+3. Store securely in local folder (e.g. `uploads/signed-forms`) outside the public frontend structure.
+4. Generate SHA-256 hash dynamically from exact uploaded bytes.
+5. Save file path, original name, stored name, MIME type, size, hash, and timestamp in SQLite documents table.
+6. Return safe JSON metadata to authorized clients.
+7. Strict RBAC protection (ADMIN & KPPS only, KPPS restricted to assigned TPS).
+8. Ensure hash verification only guarantees post-upload integrity (tamper detection), not pre-upload authenticity.
 
 ---
 
@@ -100,27 +84,17 @@ feat/signed-form-upload-hashing
 Current status:
 
 ```txt
-WITNESS auth role exists.
-witness_verifications table exists.
-No witness workflow routes/UI yet.
+Completed in feat/witness-verification.
 ```
 
-Target:
+Implemented Features:
 
 1. Witness can view assigned TPS recap and signed document metadata/hash.
 2. Witness can approve.
-3. Witness can object with note.
-4. Witness can upload objection evidence if supported.
-5. Witness cannot modify vote totals.
-6. Finalization records witness statuses but does not require all witnesses to approve.
-
-Recommended branch:
-
-```txt
-feat/witness-verification
-```
-
-Risk: High. Needed for thesis workflow realism.
+3. Witness can object with note and optional physical evidence file upload (PDF/PNG/JPEG under 5MB).
+4. Witness cannot modify vote totals (all fields read-only).
+5. Finalization records witness statuses but does not require all witnesses to approve.
+6. Automatic TPS status updates to 'WITNESS_VERIFICATION' and audit logs tracking.
 
 ---
 
@@ -129,27 +103,18 @@ Risk: High. Needed for thesis workflow realism.
 Current status:
 
 ```txt
-Old blockchain code still exists.
-New local vote flow does not call blockchain.
-Final TPS result anchoring is not implemented.
+Implemented in feat/blockchain-finalization.
+Contract refactored, backend finalization endpoint, and frontend anchor button integrated.
 ```
 
-Target:
+Target & Completed:
 
-1. Smart contract stores final TPS-level result only.
-2. Contract prevents duplicate finalization per election/TPS.
-3. Backend submits recap totals, document hash, and audit hash.
-4. Backend stores transaction hash in `blockchain_records`.
-5. TPS status becomes `BLOCKCHAIN_ANCHORED`.
-6. No personal voter data or uploaded files are stored on-chain.
-
-Recommended branch:
-
-```txt
-feat/blockchain-finalization
-```
-
-Risk: High. Needed to satisfy blockchain thesis claim.
+1. Smart contract stores final TPS-level result only. [Completed]
+2. Contract prevents duplicate finalization per election/TPS. [Completed]
+3. Backend submits recap totals, document hash, and audit hash. [Completed]
+4. Backend stores transaction hash in `blockchain_records`. [Completed]
+5. TPS status becomes `BLOCKCHAIN_ANCHORED`. [Completed]
+6. No personal voter data or uploaded files are stored on-chain. [Completed]
 
 ---
 
@@ -204,29 +169,21 @@ Recommended approach: implement after upload/hash and witness backend, or increm
 
 ---
 
-### 3.6 Audit Logs and Audit Hash
+### 3.6 [COMPLETED] Audit Logs and Audit Hash
 
 Current status:
 
 ```txt
-audit_logs table exists.
-No audit service or deterministic audit hash generation yet.
+Completed in feat/blockchain-finalization.
+Logging, admin routes, and deterministic audit hash chain calculation are fully functional.
 ```
 
-Target:
+Target & Completed:
 
-1. Important actions write audit log.
-2. Audit logs contain no sensitive voter data.
-3. Audit hash is generated deterministically for TPS finalization.
-4. Audit hash is anchored to blockchain with document hash.
-
-Recommended branch:
-
-```txt
-feat/audit-log-and-hash
-```
-
-This may be combined carefully with blockchain finalization if scope remains controlled, but a separate branch is cleaner.
+1. Important actions write audit log (e.g., `AUTH_LOGIN`, `VOTE_CAST`, `SIGNED_FORM_UPLOADED`, etc.). [Completed]
+2. Audit logs contain no sensitive voter data (raw NIK, passwords, server paths avoided). [Completed]
+3. Deterministic audit hash is generated for TPS finalization. [Completed]
+4. Audit hash is anchored to blockchain with document hash. [Completed]
 
 ---
 
@@ -245,23 +202,24 @@ This may be combined carefully with blockchain finalization if scope remains con
 9. `feat/booth-voting-ui`
 10. `feat/tps-recap-validation`
 11. `feat/chasil-backend-document-generation`
+12. `chore/demo-local-flow-helper` (Signed C.Hasil upload, SHA-256 hashing, activity logs/audit trail, and demo automation)
+
+### Completed (continued)
+
+- `feat/witness-verification`
+- `feat/blockchain-finalization`
 
 ### Recommended Next
 
 ```txt
-feat/signed-form-upload-hashing
+feat/public-result-dashboard
 ```
 
 ### Then
 
 ```txt
-feat/witness-verification
-feat/audit-log-and-hash
-feat/blockchain-finalization
-feat/public-result-dashboard
 feat/kpps-officer-workflow-ui
 feat/admin-management-ui
-feat/witness-dashboard-ui
 refactor/remove-legacy-voter-localstorage-flow
 test/core-election-flow
 chore/update-readme-demo-script
@@ -275,12 +233,8 @@ chore/update-readme-demo-script
 
 | Gap | Why High Priority |
 |---|---|
-| Signed upload + hash | Required before witness verification and blockchain finalization. |
-| Witness verification | Required for realistic Pilkada TPS workflow. |
-| Blockchain finalization | Required for thesis title and final integrity claim. |
 | Public result dashboard | Required for transparency goal. |
 | Legacy voter flow cleanup | Prevents demo/architecture confusion. |
-| Audit hash | Required for trustworthy blockchain finalization. |
 
 ### Medium Risk
 
@@ -314,10 +268,12 @@ chore/update-readme-demo-script
 | Same session cannot vote twice | Done |
 | TPS recap can be generated and validated | Done |
 | C.Hasil-KWK-inspired form can be generated/downloaded | Done as print-ready HTML |
-| Signed form upload | Pending |
-| SHA-256 hash generation | Pending |
-| Witness verification | Pending |
-| Blockchain finalization | Pending |
+| Signed form upload | Done |
+| SHA-256 hash generation | Done |
+| Activity logging and admin audit routes | Done |
+| Witness verification | Done |
+| Deterministic audit hash generation | Done |
+| Blockchain finalization | Done |
 | Public dashboard with hashes | Pending |
 
 ---
@@ -335,32 +291,26 @@ Historical audit references may remain in `CURRENT_STATE.md`/`GAP_ANALYSIS.md` o
 Branch:
 
 ```txt
-feat/signed-form-upload-hashing
+feat/blockchain-finalization
 ```
 
 Commit message:
 
 ```txt
-feat: add signed form upload and hashing
+feat: add blockchain finalization
 ```
 
 Main files likely affected:
 
 ```txt
-backend/src/routes/documents.ts
-backend/src/services/documents.ts
-backend/src/middleware/upload.ts
-backend/src/services/hashing.ts
-backend/src/database/schema.sql (only if minimal metadata fields are missing)
-backend/.env.example
-.gitignore
+backend/src/services/blockchain.ts
+blockchain/contracts/EVoting.sol
+backend/src/routes/finalization.ts
 ```
 
 Hard constraints:
 
-1. Do not implement witness verification in this branch.
-2. Do not implement blockchain finalization in this branch.
-3. Do not claim Photoshop/pre-upload tampering detection.
-4. Do not expose uploaded files publicly without authorization.
-5. Do not store file bytes on blockchain.
-6. Do not run `git push` from agent.
+1. Smart contract stores final TPS-level result only.
+2. Prevent duplicate finalization.
+3. No voter personal details on-chain.
+4. Do not run `git push` from agent.
