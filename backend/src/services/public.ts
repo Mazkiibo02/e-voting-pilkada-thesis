@@ -31,7 +31,7 @@ export const PublicService = {
         cp.ballot_number as ballotNumber,
         cp.candidate_name as candidateName,
         cp.vice_candidate_name as viceCandidateName,
-        COALESCE(SUM(ct.vote_total), 0) as voteCount
+        CAST(COALESCE(SUM(ct.vote_total), 0) AS INTEGER) as voteCount
       FROM candidate_pairs cp
       LEFT JOIN tps_recap_candidate_totals ct ON cp.id = ct.candidate_pair_id
       GROUP BY cp.id, cp.ballot_number, cp.candidate_name, cp.vice_candidate_name

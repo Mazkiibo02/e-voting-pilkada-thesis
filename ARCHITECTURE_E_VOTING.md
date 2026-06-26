@@ -2,10 +2,10 @@
 
 **Project Name:** Website E-Voting Pilkada Berbasis Blockchain  
 **Document Type:** Technical Architecture Document / Technical Design Document  
-**Document Date:** 2026-06-15  
+**Document Date:** 2026-06-24  
 **Primary Audience:** AI coding agent, developer, thesis implementation maintainer  
 **Package Manager:** npm  
-**Current Implementation Milestone:** through `chore/demo-local-flow-helper`
+**Current Implementation Milestone:** through `feat/public-result-dashboard`
 
 ---
 
@@ -31,21 +31,21 @@ The project must remain aligned with these architecture decisions:
 ## 2. Current Runtime Architecture
 
 ```txt
-Frontend React/Vite
-  ├─ Admin dashboard / C.Hasil preview prototype
+Frontend React/Vite (Fully converted to Light Mode)
+  ├─ Admin dashboard / C.Hasil preview & multi-booth dropdown selector
   ├─ Booth voting UI (/booth/:boothId)
-  └─ Legacy pages still present
+  └─ Public Transparency Dashboard landing page (/)
 
 Express Backend TypeScript
-  ├─ Auth + RBAC
+  ├─ Auth + RBAC (simplified to exclude voter login/tab)
   ├─ Elections / TPS / Candidate Pairs / Voters
   ├─ Temporary Voting Sessions
   ├─ Local Vote Casting
   ├─ TPS Recap and Validation
   ├─ C.Hasil-KWK-inspired Document Generation
   ├─ Signed C.Hasil Upload & SHA-256 Hashing
-  ├─ Activity Log / Audit Trail (actor_email, description)
-  └─ Witness, Blockchain (implemented), Future: Public
+  ├─ Activity Log / Audit Trail (with LEFT JOIN user name extraction)
+  └─ Witness, Blockchain (implemented), and Public transparency endpoints
 
 SQLite Local Database
   ├─ elections, tps, candidate_pairs, voters, users
@@ -139,7 +139,7 @@ The legacy voter flow should not be used as the target flow.
 
 ### 5.1 Current Database Engine
 
-Current implementation uses Node built-in SQLite:
+Current implementation uses Node built-in SQLite pointing directly to the local database file:
 
 ```ts
 import { DatabaseSync } from "node:sqlite";
@@ -196,6 +196,14 @@ audit_logs
 4. Vote records are linked to a temporary session.
 5. Public APIs must never expose DPT or voter personal data.
 6. Blockchain must never store voter identity.
+
+### 5.4 File Storage
+
+Local file storage is implemented via `multer` for handling candidate photo uploads and signed C.Hasil document uploads. 
+Files are securely stored outside the public directory in:
+```txt
+backend/uploads/
+```
 
 ---
 
@@ -377,7 +385,7 @@ GET  /witness/evidence/:verificationId
 POST /finalization/tps/:tpsId
 ```
 
-### 7.13 Future Routes
+### 7.13 Public Routes (Completed)
 
 ```txt
 GET  /public/results
@@ -700,10 +708,9 @@ individual voter-linked data
 ### Next
 
 ```txt
-16. Add public result dashboard.
-17. Add frontend role-based management workflows.
-18. Clean legacy localStorage voter flow.
-19. Add tests and demo documentation.
+16. Add frontend role-based management workflows (KPPS/Admin dashboards complete CRUD forms).
+17. Clean legacy localStorage voter flow.
+18. Add tests and demo documentation.
 ```
 
 ---
@@ -751,17 +758,28 @@ Coding agents must:
 ## 17. Recommended Next Branch
 
 ```txt
-feat/public-result-dashboard
+refactor/cleanup-legacy-voter-localStorage
 ```
 
 Expected scope:
 
-1. Public results dashboard UI implementation.
-2. Public API endpoint integration (fetching finalized results and hashes).
-3. Legacy voter login flow and localStorage cleanup.
+1. Clean up unused /voter frontend views and routes.
+2. Remove any remaining voter credentials from login page localStorage logic.
+3. Align all authentication components entirely with the new local-first TPS design.
+
+---
+
+## 18. Network & Deployment
+
+The frontend and backend communication flow utilizes Vite Reverse Proxy:
+- The frontend configures a proxy to map `/api` to the backend running on port `5000`.
+
+For public exposure, the system uses Cloudflare Tunnel CLI (`cloudflared`):
+- Exposes the local Vite development server pointing to port `8081`.
+- Vite's `allowedHosts` configuration is explicitly updated to allow the Cloudflare Tunnel domain (e.g., `evoting.hafidzrahmatullah.my.id`).
 
 Recommended commit message:
 
 ```txt
-feat: add public results dashboard
+refactor: clean up legacy voter local storage flow
 ```

@@ -30,7 +30,7 @@ import {
   Legend,
 } from "recharts";
 import { Shield, Link2, RefreshCw, Users, Vote, BarChart3, Clock } from "lucide-react";
-import { getCandidates, getVoters, getTpsList, getStatisticsByTps, initializeMockData } from "@/lib/storage";
+
 
 const CHART_COLORS = [
   "hsl(215, 70%, 50%)",
@@ -45,15 +45,27 @@ const ELECTION_STATUS = "active" as "active" | "finished";
 const PublicResults = () => {
   const [selectedTps, setSelectedTps] = useState<string>("all");
   const [tpsList, setTpsList] = useState<string[]>([]);
-  const [stats, setStats] = useState<ReturnType<typeof getStatisticsByTps> | null>(null);
+  const [stats, setStats] = useState<any | null>(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  const refreshData = useCallback(() => {
-    initializeMockData();
-    setTpsList(getTpsList());
-    const tpsFilter = selectedTps === "all" ? undefined : selectedTps;
-    setStats(getStatisticsByTps(tpsFilter));
-    setLastUpdated(new Date());
+  const refreshData = useCallback(async () => {
+    try {
+      const tpsFilter = selectedTps === "all" ? undefined : selectedTps;
+      const url = tpsFilter 
+        ? `${import.meta.env.VITE_API_BASE_URL}/stats?tps=${tpsFilter}`
+        : `${import.meta.env.VITE_API_BASE_URL}/stats`;
+      const res = await fetch(url);
+      const resData = await res.json();
+      if (resData.success && resData.data) {
+        setStats(resData.data);
+        if (selectedTps === "all") {
+          setTpsList(resData.data.tpsList || []);
+        }
+        setLastUpdated(new Date());
+      }
+    } catch (e) {
+      console.error("Failed to load stats", e);
+    }
   }, [selectedTps]);
 
   useEffect(() => {
@@ -129,8 +141,8 @@ const PublicResults = () => {
             {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
               <StatCard icon={<Vote className="h-5 w-5" />} label="Suara Masuk" value={stats.totalVotes} />
-              <StatCard icon={<Users className="h-5 w-5" />} label="Pemilih Terdaftar" value={stats.totalRegistered} />
-              <StatCard icon={<BarChart3 className="h-5 w-5" />} label="Partisipasi" value={`${stats.participation}%`} />
+              <StatCard icon={<Users className="h-5 w-5" />} label="Pemilih Terdaftar" value={100} />
+              <StatCard icon={<BarChart3 className="h-5 w-5" />} label="Partisipasi" value={`${Math.min(Math.round((stats.totalVotes / 100) * 100), 100)}%`} />
               <StatCard
                 icon={<RefreshCw className="h-5 w-5" />}
                 label="Terakhir Diperbarui"

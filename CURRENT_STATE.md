@@ -1,4 +1,4 @@
-# Current State Analysis: Krandon Vote Sim
+# Current State Analysis: E-Voting Pilkada Kota Tegal Sim
 
 **Document Date:** 2026-06-15  
 **Project:** Website E-Voting Pilkada Berbasis Blockchain  
@@ -30,6 +30,13 @@ The following major foundations are now implemented:
 15. Witness Verification Flow with Objection Evidence Upload (database schema migration, backend endpoints `/witness/recap`, `/witness/verify`, and `/witness/evidence/:verificationId`, automatic TPS status update, and WitnessDashboard frontend page with login redirect integration).
 16. Deterministic audit log hash generation (`generateTpsAuditHash` in `AuditLogsService`).
 17. Blockchain Finalization (Solidity contract refactor, wallet signer connection, finalization endpoint `/finalization/tps/:tpsId`, database logging, status transition to `BLOCKCHAIN_ANCHORED`, and dynamic anchor button with loader in `ChasilPreview.tsx`).
+18. API URL refactoring completed (Zero hardcoded URLs).
+19. Vite Proxy integration and Cloudflare Tunnel CLI setup implemented for secure public exposure.
+20. DPT/Voter dependency fully decoupled from the voting flow.
+21. One-Time Token authentication flow implemented for digital booth access.
+22. Full-stack "Tambah Paslon" (Candidate Management) implementation completed.
+
+**Environment Status**: Database has been fully sterilized and UI hardcoded fallback data has been removed.
 
 The project is now aligned with the main local-first TPS voting architecture, but the following important modules remain incomplete:
 
@@ -95,6 +102,10 @@ One feature or fix must stay in one branch only.
 | `chore/demo-local-flow-helper` | Done | Implemented Signed C.Hasil upload system, SQLite metadata tracking, SHA-256 file hashing, Audit Log / Activity Trail service & admin view, and demo automation improvements (booth activation script, start-all port readiness check). |
 | `feat/witness-verification` | Done | Implemented complete Witness Verification flow including database schema migration, backend endpoints, and WitnessDashboard frontend UI. |
 | `feat/blockchain-finalization` | Done | Refactored EVoting.sol smart contract, created finalization route and blockchain service using ethers.js to anchor results, and integrated anchoring UI in ChasilPreview.tsx. |
+| `refactor/api-proxy-tunnel` | Done | API URL refactoring (Zero hardcoded URLs), Vite Proxy integration, and Cloudflare Tunnel CLI setup. |
+| `refactor/voting-flow-pivot` | Done | DPT/Voter dependency decoupling and One-Time Token auth flow implementation. |
+| `feat/tambah-paslon` | Done | Full-stack "Tambah Paslon" (Candidate Management) implementation. |
+| `chore/sterilize-env` | Done | Database fully sterilized and UI hardcoded fallback data removed. |
 
 ---
 

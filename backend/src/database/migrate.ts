@@ -80,6 +80,27 @@ function migrate() {
       }
     }
 
+    // Run additive schema updates for candidate_pairs table
+    const candidateColumns = [
+      { name: "motto", type: "TEXT" },
+      { name: "vision", type: "TEXT" },
+      { name: "mission", type: "TEXT" },
+      { name: "education", type: "TEXT" },
+      { name: "career_path", type: "TEXT" },
+      { name: "photo_url", type: "TEXT" },
+    ];
+    for (const col of candidateColumns) {
+      try {
+        db.exec(`ALTER TABLE candidate_pairs ADD COLUMN ${col.name} ${col.type};`);
+        console.log(`Added column ${col.name} to candidate_pairs table.`);
+      } catch (colErr: any) {
+        const errStr = String(colErr);
+        if (!errStr.includes("duplicate column name") && !errStr.includes("already exists")) {
+          console.warn(`Could not add column ${col.name} to candidate_pairs:`, colErr);
+        }
+      }
+    }
+
     console.log("Database migrated successfully:", DB_PATH);
   } catch (err: any) {
     // If the file exists but is not a valid SQLite DB (corrupted or empty), remove and retry

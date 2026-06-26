@@ -56,24 +56,7 @@ export const VotesService = {
       throw new VoteError(400, "Candidate pair does not belong to the same election as the voting session");
     }
 
-    // 6. Validate voter exists
-    if (session.voter_id === null || session.voter_id === undefined) {
-      throw new VoteError(400, "Voting session has no associated voter");
-    }
-    const voter = db.prepare("SELECT * FROM voters WHERE id = ?").get(session.voter_id) as any;
-    if (!voter) {
-      throw new VoteError(404, "Voter associated with session not found");
-    }
-
-    // 7. Validate voter belongs to same election and TPS as session
-    if (voter.election_id !== session.election_id || voter.tps_id !== session.tps_id) {
-      throw new VoteError(400, "Voter does not belong to the same election and TPS as the voting session");
-    }
-
-    // 8. Validate voter has_voted is false (0 in SQLite)
-    if (voter.has_voted !== 0) {
-      throw new VoteError(409, "Voter has already cast a vote");
-    }
+    // Note: voter checks removed due to token-based anonymous voting
 
     // 9. Check if a vote record already exists for the session (safety index check)
     const existingVote = db.prepare("SELECT COUNT(*) as c FROM votes WHERE session_id = ?").get(sessionId) as any;
@@ -98,13 +81,6 @@ export const VotesService = {
         SET status = 'USED', used_at = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `).run(castTime, sessionId);
-
-      // Update voter has_voted to true
-      db.prepare(`
-        UPDATE voters
-        SET has_voted = 1, updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
-      `).run(session.voter_id);
 
       // Log vote cast
       AuditLogsService.log({

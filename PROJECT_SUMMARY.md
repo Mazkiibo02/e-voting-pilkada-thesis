@@ -1,4 +1,4 @@
-# Analisis Teknis Lengkap: Proyek E-Voting Desa Krandon (krandon-vote-sim)
+# Analisis Teknis Lengkap: Proyek E-Voting Pilkada Kota Tegal (krandon-vote-sim)
 
 **Dokumen untuk Proposal Skripsi - Analisis berdasarkan Kode Sebenarnya**
 
@@ -17,7 +17,7 @@
 ---
 
 ## 🌐 Deskripsi Umum
-Sistem prototipe e‑voting untuk Pilkades (Pemilihan Kepala Desa) yang memadukan teknologi **blockchain Ethereum**, **backend Node.js/TypeScript**, dan **frontend React**. NOTE: anomaly detection (K-Means) was explored in earlier work but is REMOVED FROM CURRENT SCOPE and is documented here only for historical/contextual purposes.
+Sistem prototipe e‑voting untuk Pilkada (Pemilihan Walikota) yang memadukan teknologi **blockchain Ethereum**, **backend Node.js/TypeScript**, dan **frontend React**. NOTE: anomaly detection (K-Means) was explored in earlier work but is REMOVED FROM CURRENT SCOPE and is documented here only for historical/contextual purposes.
 
 ```
 / (root)
@@ -935,7 +935,7 @@ npm run dev            # Start Vite dev server (port 5173)
 
 ## ✨ Kesimpulan
 
-Proyek **Krandon e-Voting System** adalah implementasi lengkap dari sistem pemilihan elektronik yang mengintegrasikan:
+Proyek **E-Voting Pilkada Kota Tegal System** adalah implementasi lengkap dari sistem pemilihan elektronik yang mengintegrasikan:
 
 1. **Blockchain Layer** (Ethereum/Hardhat)
    - Smart contract untuk immutable vote recording

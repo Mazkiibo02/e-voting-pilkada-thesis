@@ -6,6 +6,12 @@ export interface CandidatePair {
   candidateName: string;
   viceCandidateName: string;
   coalitionName?: string;
+  motto?: string;
+  vision?: string;
+  mission?: string;
+  education?: string;
+  careerPath?: string;
+  photoUrl?: string;
 }
 
 export interface ActiveSession {
@@ -43,13 +49,38 @@ export interface CastVoteResponse {
   };
 }
 
+export interface BoothStatusResponse {
+  status: "LOCKED" | "UNLOCKED";
+  data?: ActiveSession;
+  message?: string;
+}
+
 /**
- * Polls the backend for an active voting session on a specific booth.
+ * Checks the status of the booth (LOCKED vs UNLOCKED).
  */
-export async function getActiveBoothSession(boothId: string): Promise<ActiveSessionResponse> {
-  const res = await fetch(`${API_BASE}/voting-sessions/booth/${encodeURIComponent(boothId)}/active`);
+export async function checkBoothStatus(boothId: string): Promise<BoothStatusResponse> {
+  const res = await fetch(`${API_BASE}/voting-sessions/booth/${boothId}/status`, {
+    method: "GET",
+  });
   if (!res.ok) {
-    throw new Error("Gagal memeriksa status sesi voting aktif di TPS.");
+    throw new Error("Gagal memeriksa status bilik.");
+  }
+  return res.json();
+}
+
+/**
+ * Retrieves the active voting session using the token.
+ */
+export async function getBoothSessionByToken(token: string, boothId: string): Promise<ActiveSessionResponse> {
+  const res = await fetch(`${API_BASE}/voting-sessions/booth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token, boothId }),
+  });
+  if (!res.ok) {
+    throw new Error("Gagal mengambil status sesi voting aktif di TPS.");
   }
   return res.json();
 }

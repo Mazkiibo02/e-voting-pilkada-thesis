@@ -93,8 +93,8 @@ export const RecapsService = {
    */
   validateRecapData(tpsId: number, electionId: number): ValidationResult {
     // 1. Fetch counts
-    const totalRegistered = (db.prepare("SELECT COUNT(*) as c FROM voters WHERE tps_id = ?").get(tpsId) as any).c || 0;
-    const totalVerified = (db.prepare("SELECT COUNT(*) as c FROM voters WHERE tps_id = ? AND verification_status = 'VERIFIED'").get(tpsId) as any).c || 0;
+    const totalRegistered = (db.prepare("SELECT registered_voters_total FROM tps WHERE id = ?").get(tpsId) as any)?.registered_voters_total || 0;
+    const totalVerified = (db.prepare("SELECT COUNT(*) as c FROM voting_sessions WHERE tps_id = ?").get(tpsId) as any).c || 0;
     const totalValid = (db.prepare("SELECT COUNT(*) as c FROM votes WHERE tps_id = ? AND election_id = ?").get(tpsId, electionId) as any).c || 0;
     const totalInvalid = 0; // Invalid vote support not yet implemented
 
@@ -202,27 +202,7 @@ export const RecapsService = {
       });
     }
 
-    // Rule 8: voter has_voted consistency
-    const votersHasVotedCount = (db.prepare("SELECT COUNT(*) as c FROM voters WHERE tps_id = ? AND has_voted = 1").get(tpsId) as any).c || 0;
-    if (votersHasVotedCount !== totalValid) {
-      issues.push({
-        code: "VOTER_HAS_VOTED_COUNT_MISMATCH",
-        message: `Number of voters marked has_voted=1 (${votersHasVotedCount}) does not match vote count (${totalValid}).`
-      });
-    }
-
-    const inconsistentVoters = db.prepare(`
-      SELECT id FROM voters 
-      WHERE tps_id = ? AND has_voted = 1 
-      AND id NOT IN (SELECT voter_id FROM voting_sessions WHERE tps_id = ? AND status = 'USED')
-    `).all(tpsId, tpsId) as { id: number }[];
-
-    if (inconsistentVoters.length > 0) {
-      issues.push({
-        code: "VOTER_HAS_VOTED_INCONSISTENCY",
-        message: `Voter ID(s) ${inconsistentVoters.map(v => v.id).join(", ")} are marked has_voted=1 but have no USED session.`
-      });
-    }
+    // Rule 8: removed because voter tracking is anonymous now
 
     return {
       isValid: issues.length === 0,
@@ -254,8 +234,8 @@ export const RecapsService = {
     }
 
     // 3. Compute source data
-    const totalRegistered = (db.prepare("SELECT COUNT(*) as c FROM voters WHERE tps_id = ?").get(tpsId) as any).c || 0;
-    const totalVerified = (db.prepare("SELECT COUNT(*) as c FROM voters WHERE tps_id = ? AND verification_status = 'VERIFIED'").get(tpsId) as any).c || 0;
+    const totalRegistered = tps.registered_voters_total || 0;
+    const totalVerified = (db.prepare("SELECT COUNT(*) as c FROM voting_sessions WHERE tps_id = ?").get(tpsId) as any).c || 0;
     const totalValid = (db.prepare("SELECT COUNT(*) as c FROM votes WHERE tps_id = ? AND election_id = ?").get(tpsId, electionId) as any).c || 0;
     const totalInvalid = 0;
 

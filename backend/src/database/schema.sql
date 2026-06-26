@@ -37,26 +37,15 @@ CREATE TABLE IF NOT EXISTS candidate_pairs (
   vice_candidate_name TEXT,
   coalition_name TEXT,
   vision_summary TEXT,
+  motto TEXT,
+  vision TEXT,
+  mission TEXT,
+  education TEXT,
+  career_path TEXT,
+  photo_url TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (election_id) REFERENCES elections(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS voters (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  election_id INTEGER NOT NULL,
-  tps_id INTEGER,
-  voter_code TEXT,
-  nik_hash TEXT,
-  name TEXT,
-  gender TEXT,
-  birth_year INTEGER,
-  verification_status TEXT DEFAULT 'UNVERIFIED',
-  has_voted INTEGER DEFAULT 0,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (election_id) REFERENCES elections(id) ON DELETE CASCADE,
-  FOREIGN KEY (tps_id) REFERENCES tps(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -77,7 +66,7 @@ CREATE TABLE IF NOT EXISTS voting_sessions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   election_id INTEGER NOT NULL,
   tps_id INTEGER NOT NULL,
-  voter_id INTEGER,
+  token TEXT UNIQUE NOT NULL,
   booth_id TEXT,
   status TEXT DEFAULT 'PENDING',
   expires_at DATETIME,
@@ -87,7 +76,6 @@ CREATE TABLE IF NOT EXISTS voting_sessions (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (election_id) REFERENCES elections(id) ON DELETE CASCADE,
   FOREIGN KEY (tps_id) REFERENCES tps(id) ON DELETE CASCADE,
-  FOREIGN KEY (voter_id) REFERENCES voters(id) ON DELETE SET NULL,
   FOREIGN KEY (created_by_user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 

@@ -11,7 +11,9 @@ import ChasilPreview from "./pages/ChasilPreview";
 import AuditLogs from "./pages/AuditLogs";
 import PublicResults from "./pages/PublicResults";
 import BoothVoting from "./pages/BoothVoting";
+import StandbyBooth from "./pages/StandbyBooth";
 import WitnessDashboard from "./pages/WitnessDashboard";
+import TambahPaslon from "./pages/TambahPaslon";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,8 +31,10 @@ const App = () => (
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/chasil-preview" element={<ChasilPreview />} />
           <Route path="/admin/audit-logs" element={<AuditLogs />} />
+          <Route path="/admin/tambah-paslon" element={<TambahPaslon />} />
           <Route path="/results" element={<PublicResults />} />
-          <Route path="/booth/:boothId" element={<BoothVoting />} />
+          <Route path="/booth/:boothId" element={<StandbyBooth />} />
+          <Route path="/booth/:boothId/vote" element={<BoothVoting />} />
           <Route path="/witness" element={<WitnessDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

@@ -2,11 +2,11 @@
 
 ## Project Title
 
-**Website E-Voting Pilkada Berbasis Blockchain**
+**Website E-Voting Pilkada Kota Tegal Berbasis Blockchain**
 
 ## Document Date
 
-2026-06-15
+2026-06-24
 
 ## Document Purpose
 
@@ -15,7 +15,7 @@ This PRD is the primary product and engineering reference for the ongoing refact
 This version reflects implementation progress completed through:
 
 ```txt
-chore/demo-local-flow-helper
+feat/public-result-dashboard
 ```
 
 All future code changes by any coding agent must follow this document and `ARCHITECTURE_E_VOTING.md`.
@@ -24,7 +24,7 @@ All future code changes by any coding agent must follow this document and `ARCHI
 
 ## 1. Product Overview
 
-The system is a **Pilkada-level e-voting web application** that preserves the physical TPS voting process while replacing paper-based candidate selection, manual vote counting, and slow result reporting with a secure, local-first digital voting workflow.
+The system is a **Pilkada Kota Tegal (Mayoral Election) e-voting web application** that preserves the physical TPS voting process while replacing paper-based candidate selection, manual vote counting, and slow result reporting with a secure, local-first digital voting workflow.
 
 The system supports or is designed to support:
 
@@ -41,7 +41,7 @@ The system supports or is designed to support:
 11. Witness verification.
 12. Public transparency dashboard.
 
-The system is designed for **Pilkada**, not village head elections.
+The system is designed for **Pilkada Kota Tegal (Mayoral Election)**.
 
 ---
 
@@ -57,8 +57,7 @@ The system is designed for **Pilkada**, not village head elections.
 | Election management backend | Done |
 | TPS management backend | Done |
 | Candidate pair management backend | Done |
-| DPT/voter management backend | Done |
-| Temporary voting session backend | Done |
+| One-Time Alphanumeric Token auth flow | Done |
 | Booth polling backend | Done |
 | Local vote casting backend | Done |
 | Booth/tablet voting UI | Done |
@@ -72,12 +71,16 @@ The system is designed for **Pilkada**, not village head elections.
 | Witness verification workflow (dashboard UI & upload) | Done |
 | Deterministic audit hash for blockchain finalization | Done |
 | Blockchain finalization | Done |
+| Public result dashboard backed by final data | Done (fully integrated `/` center with SQLite & blockchain logs) |
+| Full UI Light Mode conversion | Done (Homepage, Login, Admin dashboards, high-contrast grays/slate text) |
+| Authentication page simplification | Done (removed Voter tab/fields, removed navbar guest link) |
+| Multi-booth selector & routing | Done (dropdown selection for Bilik 1, 2, 3 in Admin dashboard) |
+| Audit log real name extraction | Done (LEFT JOIN on users table to display agent name, voter kept anonymous) |
 
 ### 2.2 Pending
 
 | Capability | Status |
 |---|---|
-| Public result dashboard backed by final data | Pending |
 | Full frontend role-based dashboards | Pending |
 | Legacy localStorage voter flow cleanup | Pending |
 | Formal automated tests | Pending |
@@ -138,9 +141,9 @@ Can:
 
 1. Login.
 2. Access assigned TPS only.
-3. Verify voter against DPT.
-4. Create temporary voting session.
-5. Cancel/expire session.
+3. Verify voter identity manually (KTP/Model C7).
+4. Generate One-Time Alphanumeric Token for secure digital booth access.
+5. Cancel/expire token.
 6. Generate assigned TPS recap.
 7. Generate/download assigned TPS result form.
 8. Upload signed form later.
@@ -171,8 +174,8 @@ The voter is not a dashboard user.
 The voter can:
 
 1. Come physically to TPS.
-2. Be verified by KPPS.
-3. Vote only through temporary voting session on booth device.
+2. Be verified manually by KPPS (KTP/Model C7).
+3. Vote on booth device using a One-Time Alphanumeric Token.
 4. Select and confirm one candidate pair.
 
 The voter cannot:
@@ -200,24 +203,22 @@ The implemented core flow is now:
 
 ```txt
 ADMIN/KPPS login
--> Admin manages election/TPS/candidate/DPT data
--> KPPS/Admin creates temporary voting session
--> Booth polls active session
+-> Admin manages election/TPS/candidate data (Manajemen Paslon)
+-> KPPS handles manual ID verification (KTP/Model C7)
+-> Admin/KPPS generates One-Time Alphanumeric Token
+-> Voter enters One-Time Token at digital booth
 -> Booth displays candidate pairs
 -> Voter selects candidate pair
 -> Voter confirms vote
 -> Backend stores vote locally in SQLite
--> Backend marks session USED
--> Backend marks voter has_voted true
+-> Backend marks token USED
 -> Signed form upload and SHA-256 hash generation
 -> Witness verification
 -> Deterministic audit hash chain generation
 -> Blockchain finalization (anchored to contract)
 
-Pending continuation:
-
 ```txt
-Public transparency dashboard
+Public transparency dashboard (fully active, displaying finalized results, document hashes, and blockchain tx hashes)
 ```
 
 ---
@@ -243,7 +244,6 @@ Required tables include:
 elections
 tps
 candidate_pairs
-voters
 users
 voting_sessions
 votes
@@ -277,7 +277,7 @@ JWT payload must contain only safe system-user claims:
 
 JWT must not contain voter personal data.
 
-### 7.3 Election/TPS/Candidate/DPT Management
+### 7.3 Election/TPS/Candidate Management
 
 Backend APIs must support ADMIN CRUD and KPPS restricted reads.
 
@@ -287,16 +287,16 @@ Implemented resource groups:
 /elections
 /tps
 /candidate-pairs
-/voters
 ```
 
-Voter privacy rules:
-
-1. Never store raw NIK.
-2. Hash NIK-like demo input server-side.
-3. Prefer `voter_code` for visible demo identity.
-4. Do not expose `nik_hash` by default.
-5. Do not expose DPT publicly.
+**Feature Requirement: Manajemen Paslon (Candidate Management)**
+- Support for candidate photo uploads.
+- Comprehensive candidate profiles formatted as arrays/bullet points:
+  - Motto
+  - Vision
+  - Mission
+  - Education
+  - Career Path
 
 ### 7.4 Temporary Voting Session
 
@@ -624,13 +624,17 @@ Mandatory rules:
 17. Deterministic audit log hash generation.
 18. Blockchain finalization (anchoring TPS result, document hash, and audit log hash to contract).
 
+1. Public result dashboard with document hash and transaction hash.
+2. Full UI Light Mode conversion and authentication simplification.
+3. Multi-booth selection & dropdown routing.
+4. Audit log real name extraction (with voter anonymity preservation).
+
 ### Still Required
 
-1. Public result dashboard with document hash and transaction hash.
-2. Full frontend role-based workflows.
-3. Legacy localStorage voter flow cleanup.
-4. Automated test suite.
-5. Updated README documentation.
+1. Full frontend role-based workflows (KPPS/Admin dashboards complete CRUD forms).
+2. Legacy localStorage voter flow cleanup.
+3. Automated test suite.
+4. Updated README documentation.
 
 ---
 
@@ -639,17 +643,17 @@ Mandatory rules:
 Branch:
 
 ```txt
-feat/public-result-dashboard
+refactor/cleanup-legacy-voter-localStorage
 ```
 
 Commit message:
 
 ```txt
-feat: add public results dashboard
+refactor: clean up legacy voter local storage flow
 ```
 
 Scope:
 
-1. Public results dashboard UI implementation.
-2. Public API endpoint integration (fetching finalized results and hashes).
-3. Legacy voter login flow and localStorage cleanup.
+1. Clean up unused /voter frontend views and routes.
+2. Remove any remaining voter credentials from login page localStorage logic.
+3. Align all authentication components entirely with the new local-first TPS design.

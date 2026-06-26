@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getActiveBoothSession, castVote, ActiveSession, CandidatePair } from "@/services/boothApi";
+import { getBoothSessionByToken, castVote, ActiveSession, CandidatePair } from "@/services/boothApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,64 +29,42 @@ const BoothVoting = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [modalPair, setModalPair] = useState<CandidatePair | null>(null);
 
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const currentBoothId = boothId || "BOOTH-UNKNOWN";
+  const token = localStorage.getItem(`booth_token_${currentBoothId}`);
 
-  // Polling logic for Active Voting Session
-  const pollSession = async () => {
+  // Load session using token
+  const loadSession = async () => {
+    if (!token) {
+      navigate(`/booth/${currentBoothId}`);
+      return;
+    }
+    
     try {
-      const response = await getActiveBoothSession(currentBoothId);
-      
-      // If we are in "success" or "error" screen, do not override state automatically
-      if (uiState === "success" || uiState === "error" || uiState === "confirm") {
-        // However, if the session is completely gone (null), and we are in confirm,
-        // it means KPPS expired/cancelled the session from the backend.
-        if (!response.data && uiState === "confirm") {
-          setUiState("waiting");
-          setSessionData(null);
-          setSelectedPair(null);
-          toast.warning("Sesi voting telah dibatalkan oleh petugas KPPS.");
-        }
-        return;
-      }
-
+      const response = await getBoothSessionByToken(token, currentBoothId);
       if (response.data) {
-        // Active session found
         setSessionData(response.data);
-        if (uiState === "waiting") {
-          setUiState("active");
-          setSelectedPair(null);
-          setErrorMessage(null);
-        }
+        setUiState("active");
+        setErrorMessage(null);
       } else {
-        // No active session
-        setSessionData(null);
-        if (uiState !== "waiting") {
-          setUiState("waiting");
-          setSelectedPair(null);
-        }
+        setUiState("error");
+        setErrorMessage("Token tidak valid atau sudah kadaluarsa");
+        localStorage.removeItem(`booth_token_${currentBoothId}`);
       }
     } catch (err: any) {
-      // Don't toast error on every poll fail to prevent annoying UI alerts
-      console.error("Error polling session:", err);
+      setUiState("error");
+      setErrorMessage(err.message || "Gagal memuat sesi voting");
+      localStorage.removeItem(`booth_token_${currentBoothId}`);
     }
   };
 
-  // Start polling when mounted or state changes
   useEffect(() => {
-    // Poll immediately
-    pollSession();
-
-    // Set interval 1.5 seconds
-    pollingIntervalRef.current = setInterval(pollSession, 1500);
-
-    return () => {
-      if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
-    };
-  }, [currentBoothId, uiState]);
+    loadSession();
+  }, [currentBoothId, token]);
 
   // Handle countdown on session expiry
   useEffect(() => {
@@ -123,10 +101,9 @@ const BoothVoting = () => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(countdownIntervalRef.current!);
-          // Return to waiting
-          setUiState("waiting");
-          setSessionData(null);
-          setSelectedPair(null);
+          // Return to login
+          localStorage.removeItem(`booth_token_${currentBoothId}`);
+          navigate(`/booth/${currentBoothId}`);
           return 5;
         }
         return prev - 1;
@@ -165,39 +142,37 @@ const BoothVoting = () => {
   };
 
   const handleResetToWaiting = () => {
-    setUiState("waiting");
-    setSessionData(null);
-    setSelectedPair(null);
-    setErrorMessage(null);
+    localStorage.removeItem(`booth_token_${currentBoothId}`);
+    navigate(`/booth/${currentBoothId}`);
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-blue-500 selection:text-white">
+    <div className="min-h-screen bg-gray-50 text-slate-900 flex flex-col justify-between selection:bg-blue-500 selection:text-white">
       {/* Top Header */}
-      <header className="border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50">
+      <header className="border-b border-gray-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-600/10 p-2 rounded-xl border border-blue-500/20 text-blue-400">
+            <div className="bg-blue-600/10 p-2 rounded-xl border border-blue-500/20 text-blue-600">
               <Vote className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              <h1 className="text-lg font-bold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 Website E-Voting Pilkada
               </h1>
-              <p className="text-xs text-slate-400">Bilik Suara Digital • {currentBoothId}</p>
+              <p className="text-xs text-slate-500">Bilik Suara Digital • {currentBoothId}</p>
             </div>
           </div>
           
           <div className="flex items-center gap-3">
             {uiState === "active" && timeLeft !== null && (
               <Badge variant="outline" className={`flex items-center gap-1.5 px-3 py-1 text-sm border font-mono ${
-                timeLeft < 30 ? "border-red-500/30 bg-red-500/10 text-red-400 animate-pulse" : "border-slate-800 bg-slate-900 text-slate-300"
+                timeLeft < 30 ? "border-red-500/30 bg-red-500/10 text-red-600 animate-pulse" : "border-gray-200 bg-white text-slate-700"
               }`}>
                 <Clock className="h-4 w-4" />
                 Sisa Waktu: {formatTimeLeft(timeLeft)}
               </Badge>
             )}
-            <Badge variant="outline" className="border-slate-800 bg-slate-900 text-slate-300 px-3 py-1 flex items-center gap-1.5">
+            <Badge variant="outline" className="border-gray-200 bg-white text-slate-700 px-3 py-1 flex items-center gap-1.5">
               <span className={`h-2.5 w-2.5 rounded-full ${sessionData ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
               {sessionData ? "Terhubung" : "Standby"}
             </Badge>
@@ -214,22 +189,22 @@ const BoothVoting = () => {
             <div className="relative flex justify-center items-center">
               <div className="absolute h-24 w-24 rounded-full bg-blue-500/10 animate-ping border border-blue-500/20" />
               <div className="absolute h-16 w-16 rounded-full bg-indigo-500/10 animate-pulse border border-indigo-500/20" />
-              <div className="relative bg-slate-900 p-6 rounded-2xl border border-slate-800 text-blue-400 shadow-xl">
+              <div className="relative bg-white p-6 rounded-2xl border border-gray-200 text-blue-600 shadow-xl">
                 <Loader2 className="h-8 w-8 animate-spin" />
               </div>
             </div>
 
             <div className="space-y-3">
-              <h2 className="text-2xl font-bold tracking-tight text-slate-100">Menunggu Sesi Voting Aktif</h2>
-              <p className="text-slate-400 leading-relaxed text-sm md:text-base">
-                Silakan hubungi petugas KPPS di meja pelayanan untuk memverifikasi data Anda dan mengaktifkan bilik suara ini.
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900">Memuat Sesi Voting...</h2>
+              <p className="text-slate-500 leading-relaxed text-sm md:text-base">
+                Sistem sedang memverifikasi token dan menyiapkan surat suara digital Anda.
               </p>
             </div>
 
-            <Card className="border-slate-900 bg-slate-900/40 backdrop-blur-md py-4">
+            <Card className="border-gray-200 bg-white/60 backdrop-blur-md py-4 shadow-sm">
               <CardContent className="p-0 flex flex-col items-center justify-center space-y-1">
                 <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Identifikasi Perangkat</span>
-                <span className="text-xl font-bold text-slate-300 font-mono tracking-wide">{currentBoothId}</span>
+                <span className="text-xl font-bold text-slate-700 font-mono tracking-wide">{currentBoothId}</span>
               </CardContent>
             </Card>
           </div>
@@ -239,33 +214,33 @@ const BoothVoting = () => {
         {uiState === "active" && sessionData && (
           <div className="space-y-8 animate-fade-in">
             {/* Header info */}
-            <div className="border-b border-slate-900 pb-6">
+            <div className="border-b border-gray-200 pb-6">
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="space-y-1">
-                  <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">
+                  <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">
                     Surat Suara Elektronik • {sessionData.election.electionType === "GOVERNOR" ? "Pemilihan Gubernur" : "Pemilihan Daerah"}
                   </span>
-                  <h2 className="text-3xl font-extrabold tracking-tight text-white">
+                  <h2 className="text-3xl font-extrabold tracking-tight text-slate-900">
                     {sessionData.election.name}
                   </h2>
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-slate-500">
                     Lokasi: TPS {sessionData.tps.tpsNumber} (Kode: {sessionData.tps.tpsCode})
                   </p>
                 </div>
-                <div className="bg-slate-900/60 border border-slate-800 rounded-xl px-4 py-2 text-xs md:text-sm text-slate-400 flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                <div className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs md:text-sm text-slate-600 flex items-center gap-2 shadow-sm">
+                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
                   Sesi Terverifikasi • ID: {sessionData.sessionId}
                 </div>
               </div>
             </div>
 
             {/* Instruction Banner */}
-            <div className="bg-blue-950/20 border border-blue-500/20 rounded-xl p-4 flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
               <div>
-                <h4 className="font-semibold text-blue-300 text-sm">Petunjuk Penggunaan:</h4>
-                <p className="text-slate-400 text-xs md:text-sm mt-0.5">
-                  Ketuk kartu salah satu pasangan calon untuk memilih. Setelah memilih, tombol konfirmasi pilihan akan muncul di bagian bawah layar.
+                <h4 className="font-semibold text-blue-800 text-sm">Petunjuk Penggunaan:</h4>
+                <p className="text-blue-700/80 text-xs md:text-sm mt-0.5">
+                  Ketuk kartu salah satu Pasangan Calon untuk memilih. Setelah memilih, tombol konfirmasi pilihan akan muncul di bagian bawah layar.
                 </p>
               </div>
             </div>
@@ -280,15 +255,15 @@ const BoothVoting = () => {
                     onClick={() => setSelectedPair(pair)}
                     className={`relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 transform active:scale-[0.98] ${
                       isSelected
-                        ? "ring-4 ring-blue-500 bg-slate-900 border-transparent shadow-2xl scale-[1.02]"
-                        : "bg-slate-900/50 hover:bg-slate-900 border border-slate-800 hover:border-slate-700"
+                        ? "ring-4 ring-blue-500 bg-white border-transparent shadow-xl scale-[1.02]"
+                        : "bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 shadow-sm"
                     }`}
                   >
                     {/* Ballot Number badge */}
                     <div className={`absolute top-4 left-4 h-12 w-12 rounded-xl flex items-center justify-center text-xl font-black ${
                       isSelected
                         ? "bg-blue-600 text-white"
-                        : "bg-slate-800 text-slate-400"
+                        : "bg-gray-100 text-gray-500"
                     }`}>
                       {pair.ballotNumber.toString().padStart(2, "0")}
                     </div>
@@ -302,23 +277,39 @@ const BoothVoting = () => {
 
                     <div className="pt-20 px-6 pb-6 space-y-4">
                       <div className="space-y-1">
-                        <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Kepala Daerah</span>
-                        <h3 className="text-xl font-bold text-white tracking-tight">{pair.candidateName}</h3>
+                        <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Walikota</span>
+                        <h3 className="text-xl font-bold text-slate-900 tracking-tight">{pair.candidateName}</h3>
                       </div>
 
-                      <div className="border-t border-slate-800/80 my-3" />
+                      <div className="border-t border-gray-100 my-3" />
 
                       <div className="space-y-1">
-                        <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Wakil Kepala Daerah</span>
-                        <h3 className="text-xl font-bold text-slate-200 tracking-tight">{pair.viceCandidateName}</h3>
+                        <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Wakil Walikota</span>
+                        <h3 className="text-xl font-bold text-slate-700 tracking-tight">{pair.viceCandidateName}</h3>
                       </div>
 
                       {pair.coalitionName && (
                         <div className="pt-2 space-y-1">
                           <span className="text-[10px] text-slate-500 uppercase font-semibold">Partai / Coalition Pengusung</span>
-                          <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">{pair.coalitionName}</p>
+                          <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{pair.coalitionName}</p>
                         </div>
                       )}
+                      
+                      <div className="pt-2">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full text-xs font-semibold"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setModalPair(pair);
+                            setProfileModalOpen(true);
+                          }}
+                        >
+                          Lihat Profil Detail
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -326,7 +317,7 @@ const BoothVoting = () => {
             </div>
 
             {/* Bottom Floating bar for Actions */}
-            <div className="border-t border-slate-900 pt-6 flex justify-end">
+            <div className="border-t border-gray-200 pt-6 flex justify-end">
               <Button
                 onClick={() => setUiState("confirm")}
                 size="lg"
@@ -343,39 +334,39 @@ const BoothVoting = () => {
         {uiState === "confirm" && sessionData && selectedPair && (
           <div className="max-w-2xl mx-auto space-y-8 animate-fade-in py-6">
             <div className="text-center space-y-2">
-              <h2 className="text-3xl font-extrabold text-white">Konfirmasi Pilihan Anda</h2>
-              <p className="text-slate-400 text-sm md:text-base">
+              <h2 className="text-3xl font-extrabold text-slate-900">Konfirmasi Pilihan Anda</h2>
+              <p className="text-slate-500 text-sm md:text-base">
                 Mohon tinjau kembali pilihan Anda di bawah ini sebelum mengirimkan suara.
               </p>
             </div>
 
             {/* Selection Summary Card */}
-            <Card className="border-blue-500/20 bg-slate-900/40 backdrop-blur-md overflow-hidden shadow-2xl">
-              <div className="bg-blue-600/10 px-6 py-4 border-b border-blue-500/20 flex justify-between items-center">
-                <span className="text-sm font-bold text-blue-400 uppercase tracking-wider">Pasangan Calon Pilihan Anda</span>
+            <Card className="border-gray-200 bg-white overflow-hidden shadow-xl">
+              <div className="bg-blue-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <span className="text-sm font-bold text-blue-700 uppercase tracking-wider">Pasangan Calon Pilihan Anda</span>
                 <span className="text-lg font-black bg-blue-600 text-white px-3 py-1 rounded-lg">
                   NO. {selectedPair.ballotNumber.toString().padStart(2, "0")}
                 </span>
               </div>
               <CardContent className="p-6 space-y-6">
                 <div>
-                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Kepala Daerah</span>
-                  <p className="text-xl font-bold text-white mt-1">{selectedPair.candidateName}</p>
+                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Walikota</span>
+                  <p className="text-xl font-bold text-slate-900 mt-1">{selectedPair.candidateName}</p>
                 </div>
                 
-                <div className="border-t border-slate-800/80" />
+                <div className="border-t border-gray-100" />
 
                 <div>
-                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Wakil Kepala Daerah</span>
-                  <p className="text-xl font-bold text-slate-200 mt-1">{selectedPair.viceCandidateName}</p>
+                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Wakil Walikota</span>
+                  <p className="text-xl font-bold text-slate-700 mt-1">{selectedPair.viceCandidateName}</p>
                 </div>
 
                 {selectedPair.coalitionName && (
                   <>
-                    <div className="border-t border-slate-800/80" />
+                    <div className="border-t border-gray-100" />
                     <div>
                       <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Koalisi Pengusung</span>
-                      <p className="text-sm text-slate-400 mt-1 leading-relaxed">{selectedPair.coalitionName}</p>
+                      <p className="text-sm text-slate-600 mt-1 leading-relaxed">{selectedPair.coalitionName}</p>
                     </div>
                   </>
                 )}
@@ -383,11 +374,11 @@ const BoothVoting = () => {
             </Card>
 
             {/* Confirmation Alert Box */}
-            <div className="bg-amber-950/20 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <h4 className="font-semibold text-amber-400 text-sm">Peringatan Penting:</h4>
-                <p className="text-slate-400 text-xs md:text-sm mt-0.5">
+                <h4 className="font-semibold text-amber-800 text-sm">Peringatan Penting:</h4>
+                <p className="text-amber-900/80 text-xs md:text-sm mt-0.5">
                   Suara Anda akan disimpan secara anonim. Pilihan ini bersifat final dan tidak dapat diubah, dibatalkan, atau diulang setelah Anda menekan tombol "Kirim Suara".
                 </p>
               </div>
@@ -400,7 +391,7 @@ const BoothVoting = () => {
                 size="lg"
                 onClick={() => setUiState("active")}
                 disabled={isSubmitting}
-                className="flex-1 border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white py-6"
+                className="flex-1 border-gray-300 bg-white text-slate-700 hover:bg-gray-50 hover:text-slate-900 py-6"
               >
                 <ArrowLeft className="mr-2 h-5 w-5" />
                 Kembali
@@ -437,8 +428,8 @@ const BoothVoting = () => {
             </div>
 
             <div className="space-y-3">
-              <h2 className="text-3xl font-extrabold tracking-tight text-white">Suara Berhasil Disimpan</h2>
-              <p className="text-slate-400 leading-relaxed text-sm md:text-base">
+              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900">Suara Berhasil Disimpan</h2>
+              <p className="text-slate-500 leading-relaxed text-sm md:text-base">
                 Terima kasih. Hak pilih Anda telah digunakan secara sukses dan suara Anda telah tercatat ke dalam basis data TPS secara aman.
               </p>
             </div>
@@ -447,7 +438,7 @@ const BoothVoting = () => {
               <Button
                 onClick={handleResetToWaiting}
                 size="lg"
-                className="w-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 hover:text-white font-semibold py-6"
+                className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-slate-700 hover:text-slate-900 font-semibold py-6"
               >
                 Selesai (Kembali ke Awal)
               </Button>
@@ -469,11 +460,11 @@ const BoothVoting = () => {
             </div>
 
             <div className="space-y-3">
-              <h2 className="text-3xl font-extrabold tracking-tight text-white">Pemilihan Gagal</h2>
-              <p className="text-red-400 font-medium text-base">
+              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900">Pemilihan Gagal</h2>
+              <p className="text-red-600 font-medium text-base">
                 {errorMessage || "Terjadi kesalahan yang tidak terduga saat menyimpan suara."}
               </p>
-              <p className="text-slate-400 text-sm leading-relaxed max-w-sm mx-auto">
+              <p className="text-slate-500 text-sm leading-relaxed max-w-sm mx-auto">
                 Silakan hubungi petugas KPPS di lokasi TPS Anda untuk memeriksa status sesi atau untuk mendapatkan sesi voting baru.
               </p>
             </div>
@@ -482,7 +473,7 @@ const BoothVoting = () => {
               <Button
                 onClick={handleResetToWaiting}
                 size="lg"
-                className="w-full bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 hover:text-white font-semibold py-6"
+                className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-slate-700 hover:text-slate-900 font-semibold py-6"
               >
                 Kembali ke Layar Utama
               </Button>
@@ -492,11 +483,104 @@ const BoothVoting = () => {
 
       </main>
 
+      {/* MODAL PROFIL DETAIL */}
+      {profileModalOpen && modalPair && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+              <h3 className="text-xl font-bold text-slate-900">Profil Pasangan Calon No. {modalPair.ballotNumber}</h3>
+              <Button variant="ghost" size="sm" onClick={() => setProfileModalOpen(false)}>Tutup</Button>
+            </div>
+            <div className="p-6 overflow-y-auto space-y-6">
+              {modalPair.photoUrl && (
+                <div className="flex justify-center mb-6">
+                  <img src={`http://localhost:5000${modalPair.photoUrl}`} alt="Paslon" className="h-48 rounded-xl object-contain shadow-md" />
+                </div>
+              )}
+              
+              <div className="grid md:grid-cols-2 gap-4 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                <div>
+                  <span className="text-xs text-blue-600 uppercase font-bold tracking-wider">Calon Walikota</span>
+                  <p className="text-lg font-bold text-slate-800">{modalPair.candidateName}</p>
+                </div>
+                <div>
+                  <span className="text-xs text-blue-600 uppercase font-bold tracking-wider">Wakil Walikota</span>
+                  <p className="text-lg font-bold text-slate-800">{modalPair.viceCandidateName}</p>
+                </div>
+              </div>
+
+              {modalPair.motto && (
+                <div className="text-center italic font-semibold text-slate-700 text-lg">"{modalPair.motto}"</div>
+              )}
+
+              {modalPair.vision && (
+                <div className="space-y-2">
+                  <span className="text-sm text-slate-500 uppercase font-bold tracking-wider">Visi</span>
+                  <p className="text-slate-800 bg-gray-50 p-4 rounded-xl">{modalPair.vision}</p>
+                </div>
+              )}
+
+              {modalPair.mission && (
+                <div className="space-y-2">
+                  <span className="text-sm text-slate-500 uppercase font-bold tracking-wider">Misi</span>
+                  <ul className="list-disc pl-5 space-y-2 text-slate-700 bg-gray-50 p-4 rounded-xl">
+                    {(() => {
+                      try {
+                        const parsed = JSON.parse(modalPair.mission);
+                        return parsed.map((m: string, i: number) => <li key={i}>{m}</li>);
+                      } catch {
+                        return <li>{modalPair.mission}</li>;
+                      }
+                    })()}
+                  </ul>
+                </div>
+              )}
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {modalPair.education && (
+                  <div className="space-y-2">
+                    <span className="text-sm text-slate-500 uppercase font-bold tracking-wider">Riwayat Pendidikan</span>
+                    <ul className="list-disc pl-5 space-y-1 text-sm text-slate-600">
+                      {(() => {
+                        try {
+                          const parsed = JSON.parse(modalPair.education);
+                          return parsed.map((e: string, i: number) => <li key={i}>{e}</li>);
+                        } catch {
+                          return <li>{modalPair.education}</li>;
+                        }
+                      })()}
+                    </ul>
+                  </div>
+                )}
+                {modalPair.careerPath && (
+                  <div className="space-y-2">
+                    <span className="text-sm text-slate-500 uppercase font-bold tracking-wider">Riwayat Karir</span>
+                    <ul className="list-disc pl-5 space-y-1 text-sm text-slate-600">
+                      {(() => {
+                        try {
+                          const parsed = JSON.parse(modalPair.careerPath);
+                          return parsed.map((c: string, i: number) => <li key={i}>{c}</li>);
+                        } catch {
+                          return <li>{modalPair.careerPath}</li>;
+                        }
+                      })()}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end">
+              <Button onClick={() => setProfileModalOpen(false)}>Tutup Profil</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bottom Footer */}
-      <footer className="border-t border-slate-900 py-6 text-center text-xs text-slate-500 bg-slate-950/40">
+      <footer className="border-t border-gray-200 py-6 text-center text-xs text-slate-500 bg-gray-50/40">
         <div className="container mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-2">
           <span>© 2026 E-Voting Pilkada • Model Sim Thesis</span>
-          <span className="font-mono text-[10px] text-slate-600 bg-slate-900 px-2 py-0.5 rounded border border-slate-850">
+          <span className="font-mono text-[10px] text-slate-500 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
             Secure Casting Protocol v1.0
           </span>
         </div>

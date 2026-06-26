@@ -27,6 +27,7 @@ export interface AuditLogRecord {
   description: string | null;
   metadata_json: string | null;
   created_at: string;
+  actor_name?: string | null;
 }
 
 export const AuditLogsService = {
@@ -71,20 +72,20 @@ export const AuditLogsService = {
   },
 
   getAll(filters: { action?: string; entityType?: string; actorRole?: string; limit?: number; offset?: number } = {}): AuditLogRecord[] {
-    let query = `SELECT * FROM audit_logs`;
+    let query = `SELECT audit_logs.*, users.name AS actor_name FROM audit_logs LEFT JOIN users ON audit_logs.actor_user_id = users.id`;
     const conditions: string[] = [];
     const params: any[] = [];
 
     if (filters.action && filters.action !== 'ALL') {
-      conditions.push(`action = ?`);
+      conditions.push(`audit_logs.action = ?`);
       params.push(filters.action);
     }
     if (filters.entityType) {
-      conditions.push(`entity_type = ?`);
+      conditions.push(`audit_logs.entity_type = ?`);
       params.push(filters.entityType);
     }
     if (filters.actorRole) {
-      conditions.push(`actor_role = ?`);
+      conditions.push(`audit_logs.actor_role = ?`);
       params.push(filters.actorRole);
     }
 
@@ -92,7 +93,7 @@ export const AuditLogsService = {
       query += ` WHERE ` + conditions.join(` AND `);
     }
 
-    query += ` ORDER BY created_at DESC, id DESC`;
+    query += ` ORDER BY audit_logs.created_at DESC, audit_logs.id DESC`;
 
     const limit = filters.limit ?? 100;
     const offset = filters.offset ?? 0;

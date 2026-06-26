@@ -29,7 +29,6 @@ function seed() {
         "votes",
         "voting_sessions",
         "users",
-        "voters",
         "candidate_pairs",
         "tps",
         "elections",
@@ -56,9 +55,9 @@ function seed() {
         `INSERT INTO elections (name, election_type, region_name, voting_date, status) VALUES (?, ?, ?, ?, ?)`
       );
       const electionInfo = [
-        "Demo Pilkada Election",
-        "GOVERNOR",
-        "Demo Region",
+        "Demo Pilkada Kota Tegal",
+        "MAYOR",
+        "Kota Tegal",
         "2026-07-01",
         "DRAFT",
       ];
@@ -79,29 +78,9 @@ function seed() {
         tpsIds.push(Number(r.lastInsertRowid));
       }
 
-      // Insert 3 candidate pairs
-      const candStmt = db.prepare(`INSERT INTO candidate_pairs (election_id, ballot_number, candidate_name, vice_candidate_name, coalition_name, vision_summary) VALUES (?, ?, ?, ?, ?, ?)`);
-      const candidates = [
-        [electionId, 1, "Candidate A", "Vice A", "Party Alpha", "Vision A"],
-        [electionId, 2, "Candidate B", "Vice B", "Party Beta", "Vision B"],
-        [electionId, 3, "Candidate C", "Vice C", "Party Gamma", "Vision C"],
-      ];
-      for (const c of candidates) {
-        candStmt.run(...c);
-      }
-
-      // Insert sample voters per TPS (synthetic hashed NIKs)
-      const voterStmt = db.prepare(`INSERT INTO voters (election_id, tps_id, voter_code, nik_hash, name, gender, birth_year, verification_status, has_voted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`);
-      for (let i = 0; i < tpsIds.length; i++) {
-        const tpsId = tpsIds[i];
-        for (let j = 1; j <= 6; j++) {
-          const demoNik = `demo-${tpsId}-${j}`;
-          voterStmt.run(electionId, tpsId, `DEMO-${tpsId}-${j}`, hash(demoNik), `Demo Voter ${tpsId}-${j}`, j % 2 === 0 ? "F" : "M", 1980 + (j % 30), "UNVERIFIED", 0);
-        }
-      }
-      console.log(`Seeded elections (id: ${electionId}) and ${tpsIds.length} TPS.`);
+      console.log(`Seeded elections (id: ${electionId}) and ${tpsIds.length} TPS. Ready for real candidate data.`);
     } else {
-      console.log("Elections already exist in database; skipping election/voter seeding.");
+      console.log("Elections already exist in database; skipping election seeding.");
     }
 
     // Determine target TPS ID for demo user seeding

@@ -49,7 +49,7 @@ const ChasilPreview = () => {
     setLoadingList(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:5000/tps', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/tps`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -79,21 +79,21 @@ const ChasilPreview = () => {
       const headers = { Authorization: `Bearer ${token}` };
 
       // 1. Fetch TPS Info
-      const tpsRes = await fetch(`http://localhost:5000/tps/${tpsId}`, { headers });
+      const tpsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/tps/${tpsId}`, { headers });
       if (!tpsRes.ok) throw new Error('Gagal mengambil info TPS');
       const tpsJson = await tpsRes.json();
       const tpsInfo = tpsJson.data;
       setTpsDetails(tpsInfo);
 
       // 2. Fetch Election Info
-      const electionRes = await fetch(`http://localhost:5000/elections/${tpsInfo.election_id}`, { headers });
+      const electionRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/elections/${tpsInfo.election_id}`, { headers });
       if (electionRes.ok) {
         const electionJson = await electionRes.json();
         setElectionDetails(electionJson.data);
       }
 
       // 3. Fetch Recap Data
-      const recapRes = await fetch(`http://localhost:5000/recaps/tps/${tpsId}`, { headers });
+      const recapRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/recaps/tps/${tpsId}`, { headers });
       if (recapRes.ok) {
         const recapJson = await recapRes.json();
         setRecapData(recapJson.data);
@@ -102,7 +102,7 @@ const ChasilPreview = () => {
       }
 
       // 4. Fetch Document Data
-      const docRes = await fetch(`http://localhost:5000/documents/tps/${tpsId}`, { headers });
+      const docRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/documents/tps/${tpsId}`, { headers });
       if (docRes.ok) {
         const docJson = await docRes.json();
         setDocumentData(docJson.data);
@@ -177,7 +177,7 @@ const ChasilPreview = () => {
       const formData = new FormData();
       formData.append('signedForm', selectedFile);
 
-      const res = await fetch(`http://localhost:5000/documents/${documentData.id}/signed-upload`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/documents/${documentData.id}/signed-upload`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`
@@ -210,7 +210,7 @@ const ChasilPreview = () => {
     setAnchoring(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:5000/finalization/tps/${selectedTpsId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/finalization/tps/${selectedTpsId}`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`
@@ -239,9 +239,9 @@ const ChasilPreview = () => {
       electionType: electionDetails ? electionDetails.election_type : 'Pilkada',
       region: {
         province: tpsDetails.province || 'Jawa Tengah',
-        city: tpsDetails.city_regency || 'Kota Krandon',
-        district: tpsDetails.district || 'Kecamatan Sumber',
-        village: tpsDetails.village || 'Desa Krandon',
+        city: tpsDetails.city_regency || 'Kota Tegal',
+        district: tpsDetails.district || 'Kecamatan Tegal Timur',
+        village: tpsDetails.village || 'Kelurahan',
       },
       votingDate: electionDetails ? electionDetails.voting_date : '2026-06-23',
       tpsNumber: tpsDetails.tps_number || '01',
@@ -648,12 +648,12 @@ const ChasilPreview = () => {
                       )
                     ) : documentData?.signedFile ? (
                       documentData.signedFile.mimeType === 'application/pdf' ? (
-                        <object data={`http://localhost:5000/documents/${documentData.id}/signed-preview`} type="application/pdf" className="h-[360px] w-full rounded-lg border bg-white shadow-inner">
+                        <object data={`${import.meta.env.VITE_API_BASE_URL}/documents/${documentData.id}/signed-preview`} type="application/pdf" className="h-[360px] w-full rounded-lg border bg-white shadow-inner">
                           <p className="p-6 text-xs text-slate-500 font-medium">Pratinjau PDF tidak tersedia.</p>
                         </object>
                       ) : (
                         <img 
-                          src={`http://localhost:5000/documents/${documentData.id}/signed-preview`} 
+                          src={`${import.meta.env.VITE_API_BASE_URL}/documents/${documentData.id}/signed-preview`} 
                           alt="Berkas diunggah" 
                           className="h-[360px] w-full rounded-lg object-contain bg-white border shadow-inner" 
                         />

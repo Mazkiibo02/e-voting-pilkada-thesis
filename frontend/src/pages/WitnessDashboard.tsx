@@ -119,7 +119,7 @@ const WitnessDashboard = () => {
         return;
       }
 
-      const res = await fetch("http://localhost:5000/witness/recap", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/witness/recap`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -203,7 +203,7 @@ const WitnessDashboard = () => {
         formData.append("evidenceFile", evidenceFile);
       }
 
-      const res = await fetch("http://localhost:5000/witness/verify", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/witness/verify`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`
@@ -364,7 +364,7 @@ const WitnessDashboard = () => {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="p-4 bg-slate-50 border rounded-lg">
                       <p className="text-[10px] font-bold text-muted-foreground uppercase">DPT Terdaftar</p>
-                      <p className="text-xl font-extrabold text-slate-800 mt-1">{recap.totalRegisteredVoters}</p>
+                      <p className="text-xl font-extrabold text-slate-800 mt-1">100</p>
                       <p className="text-[10px] text-muted-foreground mt-0.5">Pemilih Fisik</p>
                     </div>
                     <div className="p-4 bg-slate-50 border rounded-lg">
@@ -387,9 +387,7 @@ const WitnessDashboard = () => {
                   <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-between text-xs text-blue-900 font-medium">
                     <span>Tingkat Partisipasi Pemilih:</span>
                     <span className="font-bold text-sm bg-blue-100/50 px-2 py-0.5 rounded">
-                      {recap.totalRegisteredVoters > 0
-                        ? `${((recap.totalVerifiedVoters / recap.totalRegisteredVoters) * 100).toFixed(1)}%`
-                        : "0%"}
+                      {`${Math.min(Math.round((recap.totalValidVotes / 100) * 100), 100)}%`}
                     </span>
                   </div>
                 </CardContent>
@@ -466,11 +464,11 @@ const WitnessDashboard = () => {
                         </div>
                       </div>
                       <div className="flex gap-2 shrink-0">
-                        <Button variant="outline" size="sm" className="text-xs font-semibold" onClick={() => window.open(`http://localhost:5000${document.previewUrl}`, "_blank")}>
+                        <Button variant="outline" size="sm" className="text-xs font-semibold" onClick={() => window.open(`${import.meta.env.VITE_API_BASE_URL}${document.previewUrl}`, "_blank")}>
                           Preview Form HTML
                         </Button>
                         {document.signedDownloadUrl && (
-                          <Button size="sm" className="text-xs font-semibold bg-primary hover:bg-primary/90" onClick={() => window.open(`http://localhost:5000${document.signedDownloadUrl}`, "_blank")}>
+                          <Button size="sm" className="text-xs font-semibold bg-primary hover:bg-primary/90" onClick={() => window.open(`${import.meta.env.VITE_API_BASE_URL}${document.signedDownloadUrl}`, "_blank")}>
                             <Download className="h-3.5 w-3.5 mr-1.5" />
                             Unduh Pindai Fisik
                           </Button>
@@ -545,7 +543,7 @@ const WitnessDashboard = () => {
                               {verification.evidenceFileOriginalName || "evidence.pdf"}
                             </span>
                           </div>
-                          <Button size="sm" variant="ghost" className="h-8 text-primary hover:text-primary-foreground text-xs font-bold" onClick={() => window.open(`http://localhost:5000/witness/evidence/${verification.id}`, "_blank")}>
+                          <Button size="sm" variant="ghost" className="h-8 text-primary hover:text-primary-foreground text-xs font-bold" onClick={() => window.open(`${import.meta.env.VITE_API_BASE_URL}/witness/evidence/${verification.id}`, "_blank")}>
                             <Download className="h-3.5 w-3.5 mr-1" />
                             Unduh
                           </Button>

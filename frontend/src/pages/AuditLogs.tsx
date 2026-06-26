@@ -19,6 +19,7 @@ interface AuditLog {
   entity_id: number | null;
   description: string | null;
   created_at: string;
+  actor_name?: string | null;
 }
 
 const formatTimestamp = (dateStr: string) => {
@@ -68,7 +69,7 @@ const AuditLogs = () => {
       }
 
       // Fetch logs with the obtained token
-      const logsRes = await fetch("http://localhost:5000/audit-logs", {
+      const logsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/audit-logs`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -206,8 +207,10 @@ const AuditLogs = () => {
                         <TableCell className="font-mono text-xs text-slate-600 whitespace-nowrap">
                           {formatTimestamp(log.created_at)}
                         </TableCell>
-                        <TableCell className="text-sm font-medium">
-                          {log.actor_email || (log.actor_role === 'VOTER' ? 'Bilik Suara (Voter)' : `ID: ${log.actor_user_id || 'System'}`)}
+                        <TableCell className="text-sm font-medium text-slate-900">
+                          {log.actor_role === 'VOTER'
+                            ? 'Bilik Suara (Voter)'
+                            : (log.actor_name || log.actor_email || `ID: ${log.actor_user_id || 'System'}`)}
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className="text-xs uppercase">

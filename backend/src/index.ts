@@ -11,7 +11,6 @@ import voteRoutes from "./routes/votes";
 import electionsRoutes from "./routes/elections";
 import tpsRoutes from "./routes/tps";
 import candidatePairsRoutes from "./routes/candidatePairs";
-import votersRoutes from "./routes/voters";
 import votingSessionsRoutes from "./routes/votingSessions";
 import recapRoutes from "./routes/recaps";
 import documentRoutes from "./routes/documents";
@@ -19,12 +18,13 @@ import auditLogsRoutes from "./routes/auditLogs";
 import witnessRoutes from "./routes/witness";
 import finalizationRoutes from "./routes/finalization";
 import publicRoutes from "./routes/public";
+import statsRoutes from "./routes/stats";
 import db from "./database/connection";
-
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use("/auth", authRoutes);
 app.use("/votes", voteRoutes);
@@ -32,7 +32,6 @@ app.use("/vote", voteRoutes);
 app.use("/elections", electionsRoutes);
 app.use("/tps", tpsRoutes);
 app.use("/candidate-pairs", candidatePairsRoutes);
-app.use("/voters", votersRoutes);
 app.use("/voting-sessions", votingSessionsRoutes);
 app.use("/recaps", recapRoutes);
 app.use("/documents", documentRoutes);
@@ -40,6 +39,7 @@ app.use("/audit-logs", auditLogsRoutes);
 app.use("/witness", witnessRoutes);
 app.use("/finalization", finalizationRoutes);
 app.use("/public", publicRoutes);
+app.use("/stats", statsRoutes);
 
 
 app.get("/", (req, res) => {

@@ -212,12 +212,15 @@ Target & Completed:
 ### Recommended Next
 
 ```txt
-feat/public-result-dashboard
+chore/production-vps-infrastructure-planning
+test/system-load-testing-e2e
+chore/final-security-audit
 ```
 
 ### Then
 
 ```txt
+feat/public-result-dashboard
 feat/kpps-officer-workflow-ui
 feat/admin-management-ui
 refactor/remove-legacy-voter-localstorage-flow
@@ -243,7 +246,6 @@ chore/update-readme-demo-script
 | Full frontend admin/KPPS/witness UIs | Backend exists, but UX incomplete. |
 | Node `node:sqlite` experimental warning | Acceptable for prototype, document migration path. |
 | HTML instead of PDF binary | Current print-ready HTML is acceptable for prototype; PDF generator can be added later if required. |
-| Route prefix inconsistency | Current backend uses no `/api`; future docs/prompts must follow actual convention. |
 
 ### Low Risk
 

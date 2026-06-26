@@ -1,7 +1,6 @@
 import { Router, Response } from "express";
 import { authenticateToken, requireRole, AuthRequest } from "../middleware/auth";
 import { VotingSessionsService } from "../services/votingSessions";
-import { VotersService } from "../services/voters";
 import { TpsService } from "../services/tps";
 import { ElectionsService } from "../services/elections";
 import { AuditLogsService } from "../services/auditLogs";
@@ -15,39 +14,29 @@ function sanitizeSession(session: any) {
     id: session.id,
     electionId: session.election_id,
     tpsId: session.tps_id,
-    voterId: session.voter_id,
+    token: session.token,
     boothId: session.booth_id,
     status: session.status,
     expiresAt: session.expires_at,
     usedAt: session.used_at,
     createdAt: session.created_at,
     updatedAt: session.updated_at,
-    voter: {
-      id: session.voter_id,
-      voterCode: session.voter_code,
-      name: session.voter_name,
-      gender: session.voter_gender,
-      birthYear: session.voter_birth_year,
-      verificationStatus: session.voter_verification_status,
-    },
   };
 }
 
-// 1. POST /voting-sessions
-router.post("/", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+// 1. POST /voting-sessions/unlock
+router.post("/unlock", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
   try {
-    const { electionId, tpsId, voterId, boothId } = req.body;
+    const { electionId, tpsId, boothId } = req.body;
 
-    // Validate request body
-    if (electionId === undefined || tpsId === undefined || voterId === undefined || !boothId || typeof boothId !== "string" || boothId.trim() === "") {
-      return res.status(400).json({ message: "electionId, tpsId, voterId, and boothId are required fields" });
+    if (electionId === undefined || tpsId === undefined || boothId === undefined) {
+      return res.status(400).json({ message: "electionId, tpsId, and boothId are required" });
     }
 
     const eId = Number(electionId);
     const tId = Number(tpsId);
-    const vId = Number(voterId);
 
-    if (isNaN(eId) || isNaN(tId) || isNaN(vId)) {
+    if (isNaN(eId) || isNaN(tId)) {
       return res.status(400).json({ message: "Invalid ID parameter formats" });
     }
 
@@ -63,93 +52,41 @@ router.post("/", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: 
       return res.status(404).json({ message: "TPS not found" });
     }
 
-    // Check TPS belongs to election
-    if (tps.election_id !== eId) {
-      return res.status(400).json({ message: "TPS does not belong to the selected election" });
-    }
-
-    // Check voter exists
-    const voter = VotersService.getById(vId, true);
-    if (!voter) {
-      return res.status(404).json({ message: "Voter not found" });
-    }
-
-    // Check voter belongs to same election and TPS
-    if (voter.election_id !== eId || voter.tps_id !== tId) {
-      return res.status(400).json({ message: "Voter does not belong to the selected election and TPS" });
-    }
-
     // Check KPPS assigned_tps_id must match tpsId
     if (req.user?.role === "KPPS" && req.user.assignedTpsId !== tId) {
       return res.status(403).json({ message: "Access forbidden: KPPS cannot manage voting sessions for this TPS" });
     }
 
-    // Check voter has_voted must be false (0)
-    if (voter.has_voted !== 0) {
-      return res.status(400).json({ message: "Voter has already cast a vote" });
-    }
-
-    // Check voter verification_status must not be REJECTED
-    if (voter.verification_status === "REJECTED") {
-      return res.status(400).json({ message: "Voter verification status is REJECTED" });
-    }
-
-    // Check no other ACTIVE session exists for the same voter
-    const activeVoterSession = VotingSessionsService.getActiveSessionForVoter(vId);
-    if (activeVoterSession) {
-      return res.status(409).json({ message: "Voter already has an active voting session" });
-    }
-
-    // Check no other ACTIVE session exists for the same booth
-    const activeBoothSession = VotingSessionsService.getActiveSessionForBooth(tId, boothId.trim());
-    if (activeBoothSession) {
-      return res.status(409).json({ message: "This booth currently has an active voting session" });
-    }
-
-    // Expiry minutes config
     const expiresMinutesVal = process.env.VOTING_SESSION_EXPIRES_MINUTES;
     const expiresMinutes = expiresMinutesVal ? Number(expiresMinutesVal) : 5;
-    const createdByUserId = req.user?.sub ? Number(req.user.sub) : 0;
+    const createdByUserId = req.user?.sub ? Number(req.user.sub) : null;
 
-    // Create session
-    const session = VotingSessionsService.create({
+    const session = VotingSessionsService.generateToken({
       electionId: eId,
       tpsId: tId,
-      voterId: vId,
-      boothId: boothId.trim(),
+      boothId: String(boothId),
       expiresMinutes,
       createdByUserId,
     });
 
-    // Log voting session creation
     AuditLogsService.log({
       electionId: session.election_id,
       tpsId: session.tps_id,
       actorUserId: req.user?.sub ? Number(req.user.sub) : null,
       actorRole: req.user?.role || null,
-      action: "VOTING_SESSION_CREATED",
+      action: "VOTING_SESSION_TOKEN_GENERATED",
       entityType: "VOTING_SESSION",
       entityId: session.id,
-      description: `Voting session created for booth ${session.booth_id}`,
-      metadataJson: {
-        boothId: session.booth_id
-      }
+      description: `Voting token generated`,
+      metadataJson: { token: session.token }
     });
 
     return res.status(201).json({
-      data: {
-        id: session.id,
-        electionId: session.election_id,
-        tpsId: session.tps_id,
-        voterId: session.voter_id,
-        boothId: session.booth_id,
-        status: session.status,
-        expiresAt: session.expires_at,
-        createdAt: session.created_at,
-      },
+      data: sanitizeSession(session),
     });
   } catch (error: any) {
-    return res.status(500).json({ message: "Failed to create voting session" });
+    console.error("Error in POST /unlock:", error);
+    return res.status(500).json({ message: "Failed to generate token", error: error.message });
   }
 });
 
@@ -184,37 +121,62 @@ router.get("/", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: A
   }
 });
 
-// 4. GET /voting-sessions/booth/:boothId/active (put this before /:id to avoid matching :id route)
-router.get("/booth/:boothId/active", async (req, res) => {
+// 3. POST /voting-sessions/booth/login
+router.post("/booth/login", async (req, res) => {
   try {
-    const { boothId } = req.params;
-    const { tpsId } = req.query;
+    const { token, boothId } = req.body;
 
+    if (!token || typeof token !== "string" || token.trim() === "") {
+      return res.status(400).json({ message: "Token is required" });
+    }
+    
     if (!boothId || typeof boothId !== "string" || boothId.trim() === "") {
-      return res.status(400).json({ message: "boothId is required" });
+      return res.status(400).json({ message: "Booth ID is required" });
     }
 
-    const activeSession = VotingSessionsService.getBoothActiveSession(
-      boothId.trim(),
-      tpsId !== undefined ? Number(tpsId) : undefined
-    );
+    const session = VotingSessionsService.getByToken(token.trim().toUpperCase());
 
-    if (!activeSession) {
-      return res.json({
-        data: null,
-        message: "No active voting session",
-      });
+    if (!session) {
+      return res.status(401).json({ message: "Token tidak valid atau sudah kadaluarsa/digunakan" });
     }
+
+    // Update session to record which booth it's used on
+    VotingSessionsService.updateBoothId(session.sessionId, boothId.trim());
+    session.boothId = boothId.trim();
 
     return res.json({
-      data: activeSession,
+      data: session,
     });
   } catch (error: any) {
-    return res.status(500).json({ message: "Failed to poll active voting session" });
+    return res.status(500).json({ message: "Failed to login to booth" });
   }
 });
 
-// 3. GET /voting-sessions/:id
+// 3b. GET /voting-sessions/booth/:boothId/status
+router.get("/booth/:boothId/status", async (req, res) => {
+  try {
+    const { boothId } = req.params;
+    
+    if (!boothId || typeof boothId !== "string" || boothId.trim() === "") {
+      return res.status(400).json({ message: "Booth ID is required" });
+    }
+
+    const session = VotingSessionsService.getActiveSessionForBooth(boothId.trim());
+
+    if (!session) {
+      return res.json({ status: "LOCKED" });
+    }
+
+    return res.json({
+      status: "UNLOCKED",
+      data: session,
+    });
+  } catch (error: any) {
+    return res.status(500).json({ message: "Failed to check booth status" });
+  }
+});
+
+// 4. GET /voting-sessions/:id
 router.get("/:id", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
@@ -255,12 +217,10 @@ router.post("/:id/cancel", authenticateToken, requireRole(["ADMIN", "KPPS"]), as
     }
 
     const updated = VotingSessionsService.updateStatus(id, "CANCELLED");
-
     if (!updated) {
       return res.status(404).json({ message: "Voting session not found" });
     }
 
-    // Log voting session cancellation
     AuditLogsService.log({
       electionId: updated.election_id,
       tpsId: updated.tps_id,
@@ -270,9 +230,7 @@ router.post("/:id/cancel", authenticateToken, requireRole(["ADMIN", "KPPS"]), as
       entityType: "VOTING_SESSION",
       entityId: updated.id,
       description: `Voting session ID ${updated.id} cancelled`,
-      metadataJson: {
-        boothId: updated.booth_id
-      }
+      metadataJson: { boothId: updated.booth_id }
     });
 
     return res.json({ data: sanitizeSession(updated) });

@@ -28,30 +28,11 @@ const ADMIN_KEY = 'evoting_admin';
 // Initialize mock data
 export const initializeMockData = () => {
   if (!localStorage.getItem(VOTERS_KEY)) {
-    const tpsOptions = ['TPS 01', 'TPS 02', 'TPS 03'];
-    const mockVoters: Voter[] = [
-      { nik: '3301012001850001', name: 'Budi Santoso', dob: '1985-01-20', hasVoted: false, tps: 'TPS 01' },
-      { nik: '3301022002900002', name: 'Siti Aminah', dob: '1990-02-20', hasVoted: false, tps: 'TPS 01' },
-      { nik: '3301032003920003', name: 'Ahmad Wijaya', dob: '1992-03-20', hasVoted: false, tps: 'TPS 01' },
-      { nik: '3301042004880004', name: 'Dewi Lestari', dob: '1988-04-20', hasVoted: false, tps: 'TPS 02' },
-      { nik: '3301052005910005', name: 'Eko Prasetyo', dob: '1991-05-20', hasVoted: false, tps: 'TPS 02' },
-      { nik: '3301062006930006', name: 'Fitri Handayani', dob: '1993-06-20', hasVoted: false, tps: 'TPS 02' },
-      { nik: '3301072007890007', name: 'Gunawan Setiawan', dob: '1989-07-20', hasVoted: false, tps: 'TPS 03' },
-      // Duplicate NIK sample for data diversity
-      { nik: '3301012001850001', name: 'Budi Palsu', dob: '1985-01-20', hasVoted: false, tps: 'TPS 01' },
-      { nik: '3301082008200008', name: 'Anak Kecil', dob: '2020-08-20', hasVoted: false, tps: 'TPS 03' },
-      { nik: '3301092009190009', name: 'Orang Tua', dob: '1900-09-20', hasVoted: false, tps: 'TPS 03' },
-    ];
-    localStorage.setItem(VOTERS_KEY, JSON.stringify(mockVoters));
+    localStorage.setItem(VOTERS_KEY, JSON.stringify([]));
   }
 
   if (!localStorage.getItem(CANDIDATES_KEY)) {
-    const mockCandidates: Candidate[] = [
-      { id: 'candidate-a', name: 'H. Supriyadi, S.Sos', description: 'Calon Kepala Desa dengan pengalaman 10 tahun di pemerintahan desa. Fokus pada pembangunan infrastruktur dan peningkatan ekonomi warga.', voteCount: 0 },
-      { id: 'candidate-b', name: 'Drs. Bambang Hartono', description: 'Pengusaha lokal yang berkomitmen memajukan UMKM desa. Visi: Desa Krandon mandiri dan sejahtera.', voteCount: 0 },
-      { id: 'candidate-c', name: 'Hj. Sri Wahyuni, M.Pd', description: 'Mantan kepala sekolah dengan dedikasi tinggi. Prioritas: pendidikan, kesehatan, dan pemberdayaan perempuan.', voteCount: 0 },
-    ];
-    localStorage.setItem(CANDIDATES_KEY, JSON.stringify(mockCandidates));
+    localStorage.setItem(CANDIDATES_KEY, JSON.stringify([]));
   }
 
   if (!localStorage.getItem(ADMIN_KEY)) {
