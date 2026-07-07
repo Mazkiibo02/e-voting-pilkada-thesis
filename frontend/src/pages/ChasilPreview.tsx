@@ -36,6 +36,68 @@ const ChasilPreview = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
 
+  // New processing state for closing voting
+  const [processingRecap, setProcessingRecap] = useState(false);
+
+  const handleCloseVotingAndGenerateRecap = async () => {
+    if (selectedTpsId === null) return;
+    if (!confirm("Apakah Anda yakin ingin menutup pemungutan suara di TPS ini dan men-generate rekapitulasi hasil? Setelah ditutup, pemilih tidak dapat mengirimkan suara lagi.")) return;
+
+    setProcessingRecap(true);
+    try {
+      const token = localStorage.getItem('token');
+      
+      // 1. Close TPS status
+      const statusRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/tps/${selectedTpsId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: 'CLOSED' })
+      });
+
+      if (!statusRes.ok) {
+        const errData = await statusRes.json().catch(() => ({}));
+        throw new Error(errData.message || 'Gagal mengubah status TPS.');
+      }
+
+      // 2. Generate Recap
+      const recapRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/recaps/tps/${selectedTpsId}/generate`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!recapRes.ok) {
+        const errData = await recapRes.json().catch(() => ({}));
+        throw new Error(errData.message || 'Gagal men-generate rekapitulasi suara.');
+      }
+
+      // 3. Generate Form C.Hasil
+      const docRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/documents/tps/${selectedTpsId}/chasil/generate`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!docRes.ok) {
+        const errData = await docRes.json().catch(() => ({}));
+        throw new Error(errData.message || 'Gagal men-generate dokumen C.Hasil.');
+      }
+
+      toast.success('Pemungutan suara berhasil ditutup dan rekapitulasi selesai!');
+      await fetchTpsData(selectedTpsId);
+    } catch (err: any) {
+      toast.error(err.message || 'Terjadi kesalahan saat memproses penutupan pemilu.');
+    } finally {
+      setProcessingRecap(false);
+    }
+  };
+
+
   // Authenticate on mount
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -345,9 +407,25 @@ const ChasilPreview = () => {
                   TPS ini belum memiliki data rekapitulasi yang valid. KPPS harus menutup pemungutan suara di TPS
                   dan men-generate rekapitulasi data suara terlebih dahulu.
                 </p>
+                <Button 
+                  size="sm" 
+                  className="mt-3 bg-amber-600 hover:bg-amber-700 text-white font-semibold flex items-center gap-2"
+                  onClick={handleCloseVotingAndGenerateRecap}
+                  disabled={processingRecap}
+                >
+                  {processingRecap ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin text-white" />
+                      Memproses...
+                    </>
+                  ) : (
+                    "Tutup Pemungutan Suara & Generate Rekap"
+                  )}
+                </Button>
               </div>
             </CardContent>
           </Card>
+
         ) : previewData ? (
           <>
             <Card className="printable-area bg-white border-slate-200/80 shadow-sm overflow-hidden">
@@ -394,8 +472,13 @@ const ChasilPreview = () => {
                     </section>
 
                     <section className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/50 p-6">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-between gap-3">
                         <Badge variant="outline" className="bg-white font-bold text-[10px] uppercase">Ringkasan Partisipasi</Badge>
+                        {recapData?.validationStatus && (
+                          <Badge className={`font-bold text-[10px] uppercase ${recapData.validationStatus === 'VALID' ? 'bg-emerald-600 hover:bg-emerald-600 text-white border-none shadow-sm' : 'bg-rose-600 hover:bg-rose-600 text-white border-none shadow-sm'}`}>
+                            Validasi: {recapData.validationStatus}
+                          </Badge>
+                        )}
                       </div>
                       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                         <div className="rounded-lg border border-slate-200 bg-white p-4">

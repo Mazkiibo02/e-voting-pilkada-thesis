@@ -59,7 +59,7 @@ function seed() {
         "MAYOR",
         "Kota Tegal",
         "2026-07-01",
-        "DRAFT",
+        "ACTIVE",
       ];
       const electionResult = electionStmt.run(...electionInfo);
       electionId = Number(electionResult.lastInsertRowid);
@@ -69,9 +69,9 @@ function seed() {
         `INSERT INTO tps (election_id, tps_number, tps_code, province, city_regency, district, village, address, registered_voters_total, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       );
       const tpsList = [
-        [electionId, "001", "TPS-001", "DemoProv", "DemoCity", "DemoDistrict", "DemoVillage", "Near Hall", 100, "DRAFT"],
-        [electionId, "002", "TPS-002", "DemoProv", "DemoCity", "DemoDistrict", "DemoVillage", "Community Center", 120, "DRAFT"],
-        [electionId, "003", "TPS-003", "DemoProv", "DemoCity", "DemoDistrict", "DemoVillage", "School", 90, "DRAFT"],
+        [electionId, "001", "TPS-001", "Jawa Tengah", "Kota Tegal", "Tegal Timur", "Kejambon", "Kecamatan Tegal Timur, Kelurahan Kejambon", 100, "OPEN"],
+        [electionId, "002", "TPS-002", "Jawa Tengah", "Kota Tegal", "Tegal Selatan", "Randugunting", "Kecamatan Tegal Selatan, Kelurahan Randugunting", 100, "OPEN"],
+        [electionId, "003", "TPS-003", "Jawa Tengah", "Kota Tegal", "Margadana", "Sumurpanggang", "Kecamatan Margadana, Kelurahan Sumurpanggang", 100, "OPEN"],
       ];
       for (const t of tpsList) {
         const r = tpsStmt.run(...t);
@@ -100,10 +100,11 @@ function seed() {
     // - kpps@example.local / Kpps123!
     // - witness@example.local / Witness123!
     const userStmt = db.prepare(`
-      INSERT INTO users (name, email, password_hash, role, assigned_tps_id, status)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO users (name, full_name, email, password_hash, role, assigned_tps_id, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(email) DO UPDATE SET
         name = excluded.name,
+        full_name = excluded.full_name,
         password_hash = excluded.password_hash,
         role = excluded.role,
         assigned_tps_id = COALESCE(excluded.assigned_tps_id, users.assigned_tps_id),
@@ -111,9 +112,9 @@ function seed() {
         updated_at = CURRENT_TIMESTAMP
     `);
 
-    userStmt.run("Admin Demo", "admin@example.local", hashPassword("Admin123!"), "ADMIN", null, "ACTIVE");
-    userStmt.run("KPPS Demo", "kpps@example.local", hashPassword("Kpps123!"), "KPPS", targetTpsId, "ACTIVE");
-    userStmt.run("Witness Demo", "witness@example.local", hashPassword("Witness123!"), "WITNESS", targetTpsId, "ACTIVE");
+    userStmt.run("Admin Demo", "Super Administrator", "admin@example.local", hashPassword("Admin123!"), "ADMIN", null, "ACTIVE");
+    userStmt.run("KPPS Demo", "Ketua KPPS Demo", "kpps@example.local", hashPassword("Kpps123!"), "KPPS", targetTpsId, "ACTIVE");
+    userStmt.run("Witness Demo", "Saksi TPS Demo", "witness@example.local", hashPassword("Witness123!"), "WITNESS", targetTpsId, "ACTIVE");
 
     db.exec("COMMIT;");
 

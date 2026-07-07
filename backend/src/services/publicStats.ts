@@ -11,9 +11,8 @@ export const PublicService = {
 
     // Get total registered
     const totalRegisteredRow = db.prepare(`
-      SELECT COUNT(*) as total
-      FROM voters v
-      JOIN tps t ON v.tps_id = t.id
+      SELECT SUM(t.registered_voters_total) as total
+      FROM tps t
       ${tpsCondition}
     `).get(...params) as { total: number };
 
@@ -68,11 +67,13 @@ export const PublicService = {
       percentage: totalVotesRow.total > 0 ? Number(((c.voteCount / totalVotesRow.total) * 100).toFixed(1)) : 0
     }));
 
+    const totalReg = totalRegisteredRow.total || 0;
+
     return {
-      totalRegistered: totalRegisteredRow.total,
+      totalRegistered: totalReg,
       totalVotes: totalVotesRow.total,
-      participation: totalRegisteredRow.total > 0 
-        ? Number(((totalVotesRow.total / totalRegisteredRow.total) * 100).toFixed(1)) 
+      participation: totalReg > 0 
+        ? Number(((totalVotesRow.total / totalReg) * 100).toFixed(1)) 
         : 0,
       candidates: candidatesFormatted,
       tpsList: tpsList.map(t => t.tpsCode)

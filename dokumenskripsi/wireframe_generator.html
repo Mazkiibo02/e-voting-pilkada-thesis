@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Balsamiq Wireframe - E-Voting Pilkada Kota Tegal</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Comic Neue (Handwriting / Sketch Style) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    body, button, input, select, textarea {
+      font-family: 'Comic Neue', cursive, sans-serif;
+    }
+    /* Wireframe Image Placeholder Style with crisp dark-gray X cross */
+    .wireframe-img {
+      position: relative;
+      background-color: #f8fafc;
+      border: 2px solid #27272a;
+    }
+    .wireframe-img::before, .wireframe-img::after {
+      content: "";
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+    }
+    .wireframe-img::before {
+      background: linear-gradient(to top right, transparent calc(50% - 1.5px), #27272a, transparent calc(50% + 1.5px));
+    }
+    .wireframe-img::after {
+      background: linear-gradient(to bottom right, transparent calc(50% - 1.5px), #27272a, transparent calc(50% + 1.5px));
+    }
+    /* Balsamiq styled element classes */
+    .sketch-border {
+      border: 2px solid #27272a;
+    }
+    .sketch-border-thick {
+      border: 3px solid #27272a;
+    }
+    .sketch-shadow {
+      box-shadow: 2px 2px 0px 0px #27272a;
+    }
+    .sketch-shadow-lg {
+      box-shadow: 4px 4px 0px 0px #27272a;
+    }
+  </style>
+</head>
+<body class="bg-zinc-100 text-zinc-800 flex h-screen overflow-hidden select-none">
+
+  <!-- Sidebar Navigasi Aksi (Kontrol Galeri) -->
+  <aside class="w-80 bg-white border-r-2 border-zinc-800 flex flex-col shrink-0 h-full">
+    <div class="p-4 border-b-2 border-zinc-800 bg-zinc-50">
+      <h1 class="text-md font-bold tracking-tight text-zinc-900 flex items-center gap-1.5">
+        <span>✏️</span> Balsamiq Wireframe Panel
+      </h1>
+      <p class="text-[10px] text-zinc-500 font-mono mt-0.5">Sketsa Tugas Akhir E-Voting Tegal</p>
+    </div>
+    <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+      <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block px-2 mb-1">Publik</span>
+      <button id="menu-1" onclick="showView(1)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">01</span> Lihat Quick Count
+      </button>
+      <button id="menu-2" onclick="showView(2)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">02</span> Lihat Profil Paslon
+      </button>
+
+      <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block px-2 mt-3 mb-1">Otentikasi & Sesi</span>
+      <button id="menu-3" onclick="showView(3)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">03</span> Login Auth
+      </button>
+      <button id="menu-4" onclick="showView(4)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">04</span> Validasi Sesi Aktif
+      </button>
+      <button id="menu-5" onclick="showView(5)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">05</span> Buka Bilik Suara
+      </button>
+      <button id="menu-6" onclick="showView(6)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">06</span> Batalkan Sesi
+      </button>
+
+      <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block px-2 mt-3 mb-1">KPPS (Rekap & C Hasil)</span>
+      <button id="menu-7" onclick="showView(7)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">07</span> Generate Rekap TPS
+      </button>
+      <button id="menu-8" onclick="showView(8)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">08</span> Finalisasi Hasil
+      </button>
+      <button id="menu-9" onclick="showView(9)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">09</span> Generate C Hasil
+      </button>
+      <button id="menu-10" onclick="showView(10)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">10</span> Upload C Hasil
+      </button>
+
+      <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block px-2 mt-3 mb-1">Saksi TPS</span>
+      <button id="menu-11" onclick="showView(11)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">11</span> Verifikasi Rekap TPS
+      </button>
+      <button id="menu-12" onclick="showView(12)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">12</span> Upload Bukti Keberatan
+      </button>
+
+      <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block px-2 mt-3 mb-1">Admin KPU</span>
+      <button id="menu-13" onclick="showView(13)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">13</span> Manajemen Akun KPPS & Saksi
+      </button>
+      <button id="menu-14" onclick="showView(14)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">14</span> Manajemen DPT
+      </button>
+      <button id="menu-15" onclick="showView(15)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">15</span> Manajemen TPS
+      </button>
+      <button id="menu-16" onclick="showView(16)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">16</span> Manajemen Paslon
+      </button>
+      <button id="menu-17" onclick="showView(17)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">17</span> Pantau Audit Logs
+      </button>
+
+      <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block px-2 mt-3 mb-1">Bilik Suara (Pemilih)</span>
+      <button id="menu-18" onclick="showView(18)" class="w-full text-left px-2.5 py-1.5 rounded text-xs text-zinc-600 hover:bg-zinc-100 transition-colors flex items-center gap-2">
+        <span class="font-mono text-[9px] text-zinc-400">18</span> Pilih dan Confirm Paslon
+      </button>
+    </nav>
+    <div class="p-3 border-t-2 border-zinc-800 bg-zinc-50 text-[9px] text-zinc-400 flex flex-col gap-1">
+      <p class="font-bold text-zinc-500">Skripsi: E-Voting Tegal Mockup</p>
+      <p>© 2026. Hak Cipta Dilindungi.</p>
+    </div>
+  </aside>
+
+  <!-- Area Mockup Browser Desktop (Balsamiq Style) -->
+  <main class="flex-1 flex flex-col overflow-hidden p-6 bg-zinc-100">
+    <div class="flex-1 bg-white border-[3px] border-zinc-850 rounded shadow-md flex flex-col overflow-hidden sketch-border-thick">
+      
+      <!-- Mock Browser Header (Balsamiq Style) -->
+      <div class="h-10 bg-zinc-200 border-b-2 border-zinc-800 px-4 flex items-center gap-3 shrink-0 justify-between">
+        <!-- Judul Windows Browser -->
+        <span class="text-xs font-bold text-zinc-700 font-mono tracking-tight" id="browser-title-display">E-Voting Pilkada Kota Tegal</span>
+        <!-- Close Window Button (Balsamiq style box with X) -->
+        <div class="w-5 h-5 border-2 border-zinc-800 bg-white flex items-center justify-center text-[10px] font-bold text-zinc-800 rounded shadow-sm select-none cursor-pointer">X</div>
+      </div>
+
+      <!-- Address Bar Row -->
+      <div class="h-10 bg-white border-b-2 border-zinc-800 px-3 flex items-center gap-2 shrink-0">
+        <!-- Back, Forward, Refresh Buttons (Balsamiq style) -->
+        <div class="flex items-center gap-1">
+          <div class="w-6 h-6 border-2 border-zinc-800 bg-white rounded flex items-center justify-center text-xs font-bold shadow-sm">&lt;-</div>
+          <div class="w-6 h-6 border-2 border-zinc-800 bg-white rounded flex items-center justify-center text-xs font-bold shadow-sm">-&gt;</div>
+          <div class="w-6 h-6 border-2 border-zinc-800 bg-white rounded flex items-center justify-center text-xs font-bold shadow-sm">⟳</div>
+        </div>
+        <!-- Address input -->
+        <div class="flex-1 flex items-center bg-white border-2 border-zinc-800 rounded px-2 py-0.5 text-xs text-zinc-600 font-mono shadow-sm">
+          <input type="text" id="mock-address-bar" readonly class="w-full bg-transparent outline-none cursor-default font-mono text-[10px]" value="https://e-voting-tegal.local/">
+        </div>
+      </div>
+
+      <!-- Browser Content Area (Balsamiq Mockup Content) -->
+      <div class="flex-1 overflow-auto bg-white p-6 relative">
+
+        <!-- ==================== VIEW 1: LIHAT QUICK COUNT ==================== -->
+        <div id="view-1" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">E-VOTING PILKADA KOTA TEGAL</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Role: Publik (Tanpa Otorisasi)</div>
+            </div>
+            <div class="border-2 border-zinc-800 bg-zinc-100 rounded px-2.5 py-0.5 text-xs font-bold">Live Status</div>
+          </div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Diagram & Legend -->
+            <div class="lg:col-span-2 border-2 border-zinc-800 rounded bg-white p-4 flex flex-col shadow-sm">
+              <div class="text-xs font-bold text-zinc-700 uppercase tracking-wider mb-3">Hasil Perolehan Suara Sementara (Quick Count)</div>
+              <div class="flex flex-col sm:flex-row items-center justify-center gap-8 py-4">
+                <!-- Visual Donut Chart Wireframe (Thick outline and divide lines) -->
+                <div class="w-40 h-40 rounded-full border-4 border-zinc-850 flex items-center justify-center relative shrink-0">
+                  <div class="absolute inset-4 rounded-full border-2 border-zinc-800 bg-zinc-50 flex flex-col items-center justify-center text-center">
+                    <span class="text-[10px] text-zinc-400 font-bold uppercase">Total Suara</span>
+                    <span class="text-lg font-black text-zinc-700">1.250</span>
+                  </div>
+                  <!-- Arc dividers in mockup -->
+                  <div class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-zinc-800"></div>
+                  <div class="absolute left-0 right-0 top-1/2 h-0.5 bg-zinc-800"></div>
+                </div>
+                <!-- Legend -->
+                <div class="space-y-2 w-full max-w-xs text-xs">
+                  <div class="border-2 border-zinc-800 rounded p-2 bg-white flex justify-between items-center shadow-sm">
+                    <div>
+                      <span class="font-bold block">[Paslon 01] Amir & Budi</span>
+                      <div class="h-1.5 bg-zinc-300 rounded-full w-24 mt-1"></div> <!-- Text placeholder -->
+                    </div>
+                    <span class="font-bold bg-zinc-100 border border-zinc-800 px-1 rounded">48.2%</span>
+                  </div>
+                  <div class="border-2 border-zinc-800 rounded p-2 bg-white flex justify-between items-center shadow-sm">
+                    <div>
+                      <span class="font-bold block">[Paslon 02] Citra & Dani</span>
+                      <div class="h-1.5 bg-zinc-300 rounded-full w-16 mt-1"></div>
+                    </div>
+                    <span class="font-bold bg-zinc-100 border border-zinc-800 px-1 rounded">35.4%</span>
+                  </div>
+                  <div class="border-2 border-zinc-800 rounded p-2 bg-white flex justify-between items-center shadow-sm">
+                    <div>
+                      <span class="font-bold block">[Paslon 03] Eko & Feri</span>
+                      <div class="h-1.5 bg-zinc-300 rounded-full w-20 mt-1"></div>
+                    </div>
+                    <span class="font-bold bg-zinc-100 border border-zinc-800 px-1 rounded">16.4%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Metrics Panel -->
+            <div class="border-2 border-zinc-800 rounded bg-white p-4 space-y-4 shadow-sm">
+              <div class="text-xs font-bold text-zinc-700 uppercase tracking-wider">Statistik Pemilihan</div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="border-2 border-zinc-800 rounded p-2 bg-zinc-50 text-center">
+                  <div class="text-[9px] text-zinc-400 font-bold uppercase">Total DPT</div>
+                  <div class="text-md font-bold text-zinc-700 mt-1">1.500</div>
+                </div>
+                <div class="border-2 border-zinc-800 rounded p-2 bg-zinc-50 text-center">
+                  <div class="text-[9px] text-zinc-400 font-bold uppercase">Partisipasi</div>
+                  <div class="text-md font-bold text-zinc-700 mt-1">83.3%</div>
+                </div>
+                <div class="border-2 border-zinc-800 rounded p-2 bg-zinc-50 text-center">
+                  <div class="text-[9px] text-zinc-400 font-bold uppercase">TPS Masuk</div>
+                  <div class="text-md font-bold text-zinc-700 mt-1">3 / 3</div>
+                </div>
+                <div class="border-2 border-zinc-800 rounded p-2 bg-zinc-50 text-center">
+                  <div class="text-[9px] text-zinc-400 font-bold uppercase">Status Kunci</div>
+                  <div class="text-xs font-bold text-zinc-700 mt-1.5">Ter-Jangkar</div>
+                </div>
+              </div>
+              <div class="border-2 border-dashed border-zinc-500 rounded p-2 text-[10px] text-zinc-500 leading-tight">
+                <span class="font-bold text-zinc-700 block">Protokol Transparansi</span>
+                Data ditarik secara real-time dari database lokal dan diverifikasi silang dengan transaksi blockchain.
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabel Status TPS & Verifikasi Blockchain -->
+          <div class="border-2 border-zinc-800 rounded overflow-hidden shadow-sm">
+            <div class="p-3 border-b-2 border-zinc-800 bg-zinc-50 text-xs font-bold text-zinc-700">Verifikasi Integritas Data TPS</div>
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-zinc-150 border-b-2 border-zinc-800 text-zinc-600 font-bold">
+                  <th class="p-2 border-r-2 border-zinc-800 w-12">No</th>
+                  <th class="p-2 border-r-2 border-zinc-800">TPS</th>
+                  <th class="p-2 border-r-2 border-zinc-800">Wilayah</th>
+                  <th class="p-2 border-r-2 border-zinc-800">Status Alur</th>
+                  <th class="p-2 border-r-2 border-zinc-800">SHA-256 Hash</th>
+                  <th class="p-2">Blockchain Tx Hash</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y-2 divide-zinc-800">
+                <tr class="hover:bg-zinc-50">
+                  <td class="p-2 border-r-2 border-zinc-800">1</td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-bold">TPS 01</td>
+                  <td class="p-2 border-r-2 border-zinc-800">Kec. Tegal Barat, Kel. Tegalsari</td>
+                  <td class="p-2 border-r-2 border-zinc-800"><span class="px-2 py-0.5 border border-zinc-800 rounded bg-zinc-100 text-[10px] font-bold">ANCHORED</span></td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-mono text-[9px]">a5d8f2...78de1f</td>
+                  <td class="p-2 font-mono text-[9px]">0x89ab...f12e</td>
+                </tr>
+                <tr class="hover:bg-zinc-50">
+                  <td class="p-2 border-r-2 border-zinc-800">2</td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-bold">TPS 02</td>
+                  <td class="p-2 border-r-2 border-zinc-800">Kec. Tegal Barat, Kel. Tegalsari</td>
+                  <td class="p-2 border-r-2 border-zinc-800"><span class="px-2 py-0.5 border border-zinc-800 rounded bg-zinc-100 text-[10px] font-bold">ANCHORED</span></td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-mono text-[9px]">d47a12...99ccef</td>
+                  <td class="p-2 font-mono text-[9px]">0x3f5c...99aa</td>
+                </tr>
+                <tr class="hover:bg-zinc-50">
+                  <td class="p-2 border-r-2 border-zinc-800">3</td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-bold">TPS 03</td>
+                  <td class="p-2 border-r-2 border-zinc-800">Kec. Tegal Barat, Kel. Tegalsari</td>
+                  <td class="p-2 border-r-2 border-zinc-800"><span class="px-2 py-0.5 border border-zinc-800 rounded bg-zinc-100 text-[10px] font-bold">OPEN</span></td>
+                  <td class="p-2 border-r-2 border-zinc-800 text-zinc-400 font-mono text-[9px]">- Belum Rekap -</td>
+                  <td class="p-2 text-zinc-400 font-mono text-[9px]">- Belum Anchor -</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 2: LIHAT PROFIL PASLON ==================== -->
+        <div id="view-2" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Daftar Pasangan Calon Wali Kota & Wakil Wali Kota Tegal</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Role: Publik (Transparansi Kandidat)</div>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Paslon Card 1 -->
+            <div class="border-2 border-zinc-800 rounded bg-white overflow-hidden flex flex-col shadow-sm">
+              <!-- Diagonal wireframe box placeholder for photo -->
+              <div class="wireframe-img h-40 w-full flex items-center justify-center text-zinc-700 text-xs font-bold">
+                [ Foto Paslon 01 ]
+              </div>
+              <div class="p-4 flex-1 flex flex-col space-y-3">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-full border-2 border-zinc-800 bg-zinc-100 flex items-center justify-center font-bold text-xs">01</div>
+                  <div class="font-bold text-sm">Amir Mahmud & Budi Santoso</div>
+                </div>
+                <div class="border-t-2 border-zinc-200 pt-2 flex-1 space-y-2 text-xs">
+                  <div>
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Motto</span>
+                    <p class="italic">"Tegal Maju Bersama, Transparan & Mandiri."</p>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Visi</span>
+                    <p>Mewujudkan Kota Tegal sebagai sentra industri kelautan yang modern dan berintegritas tinggi.</p>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Misi</span>
+                    <div class="h-1.5 bg-zinc-300 rounded-full w-full my-1.5"></div> <!-- Placeholder text bars -->
+                    <div class="h-1.5 bg-zinc-300 rounded-full w-5/6 my-1.5"></div>
+                    <div class="h-1.5 bg-zinc-300 rounded-full w-3/4 my-1.5"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paslon Card 2 -->
+            <div class="border-2 border-zinc-800 rounded bg-white overflow-hidden flex flex-col shadow-sm">
+              <div class="wireframe-img h-40 w-full flex items-center justify-center text-zinc-700 text-xs font-bold">
+                [ Foto Paslon 02 ]
+              </div>
+              <div class="p-4 flex-1 flex flex-col space-y-3">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-full border-2 border-zinc-800 bg-zinc-100 flex items-center justify-center font-bold text-xs">02</div>
+                  <div class="font-bold text-sm">Citra Lestari & Dani Setiawan</div>
+                </div>
+                <div class="border-t-2 border-zinc-200 pt-2 flex-1 space-y-2 text-xs">
+                  <div>
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Motto</span>
+                    <p class="italic">"Tegal Kota Pintar, Berbudaya & Sejahtera."</p>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Visi</span>
+                    <p>Pendidikan berkualitas merata dan optimalisasi teknologi informasi untuk Tegal Madani.</p>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Misi</span>
+                    <div class="h-1.5 bg-zinc-300 rounded-full w-full my-1.5"></div>
+                    <div class="h-1.5 bg-zinc-300 rounded-full w-4/5 my-1.5"></div>
+                    <div class="h-1.5 bg-zinc-300 rounded-full w-2/3 my-1.5"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paslon Card 3 -->
+            <div class="border-2 border-zinc-800 rounded bg-white overflow-hidden flex flex-col shadow-sm">
+              <div class="wireframe-img h-40 w-full flex items-center justify-center text-zinc-700 text-xs font-bold">
+                [ Foto Paslon 03 ]
+              </div>
+              <div class="p-4 flex-1 flex flex-col space-y-3">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-full border-2 border-zinc-800 bg-zinc-100 flex items-center justify-center font-bold text-xs">03</div>
+                  <div class="font-bold text-sm">Eko Prasetyo & Feri Irawan</div>
+                </div>
+                <div class="border-t-2 border-zinc-200 pt-2 flex-1 space-y-2 text-xs">
+                  <div>
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Motto</span>
+                    <p class="italic">"Pembangunan Merata dan Ekonomi Mandiri."</p>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Visi</span>
+                    <p>Memperkuat ekonomi UMKM Kota Tegal yang mandiri dan memperluas lapangan pekerjaan lokal.</p>
+                  </div>
+                  <div>
+                    <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Misi</span>
+                    <div class="h-1.5 bg-zinc-300 rounded-full w-full my-1.5"></div>
+                    <div class="h-1.5 bg-zinc-300 rounded-full w-3/4 my-1.5"></div>
+                    <div class="h-1.5 bg-zinc-300 rounded-full w-5/6 my-1.5"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 3: LOGIN AUTH ==================== -->
+        <div id="view-3" class="hidden h-full flex items-center justify-center">
+          <!-- Centered Card with Balsamiq styling (thick borders & shadow) -->
+          <div class="w-full max-w-sm border-[3px] border-zinc-800 bg-white p-6 shadow-sm space-y-5 rounded sketch-shadow">
+            <div class="text-center space-y-1.5">
+              <div class="w-12 h-12 rounded-full border-2 border-zinc-800 bg-zinc-100 flex items-center justify-center mx-auto text-xl shadow-sm">🗳️</div>
+              <h2 class="text-md font-bold text-zinc-850">Login Sistem E-Voting</h2>
+              <div class="h-1.5 bg-zinc-300 rounded-full w-3/4 mx-auto mt-1"></div> <!-- Text placeholder -->
+            </div>
+            
+            <form onsubmit="return false;" class="space-y-4 text-xs">
+              <div class="space-y-1">
+                <label class="font-bold text-zinc-500 uppercase block text-[9px] tracking-wide">Alamat Email</label>
+                <!-- Input with thick border and icon box -->
+                <div class="flex">
+                  <span class="px-2.5 py-1.5 border-2 border-r-0 border-zinc-800 bg-zinc-100 rounded-l font-bold text-zinc-600">[✉]</span>
+                  <input type="email" placeholder="email@tps.local" class="w-full px-3 py-1.5 border-2 border-zinc-800 rounded-r outline-none font-mono text-xs">
+                </div>
+              </div>
+              
+              <div class="space-y-1">
+                <div class="flex justify-between items-center">
+                  <label class="font-bold text-zinc-500 uppercase block text-[9px] tracking-wide">Kata Sandi</label>
+                  <a href="#" class="text-[9px] text-zinc-400 hover:underline">Lupa password?</a>
+                </div>
+                <div class="flex">
+                  <span class="px-2.5 py-1.5 border-2 border-r-0 border-zinc-800 bg-zinc-100 rounded-l font-bold text-zinc-600">[🔒]</span>
+                  <input type="password" value="••••••••" class="w-full px-3 py-1.5 border-2 border-zinc-800 rounded-r outline-none text-xs">
+                </div>
+              </div>
+              
+              <button class="w-full py-2 bg-white border-[3px] border-zinc-800 hover:bg-zinc-50 font-bold rounded flex items-center justify-center gap-1.5 transition-all shadow-sm sketch-shadow">
+                <span>[🔒]</span> Masuk Dasbor
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 4: VALIDASI SESI AKTIF ==================== -->
+        <div id="view-4" class="hidden h-full flex items-center justify-center">
+          <div class="w-full max-w-md border-[3px] border-zinc-800 bg-white p-8 text-center space-y-5 rounded sketch-shadow">
+            <div class="w-14 h-14 rounded-full border-2 border-zinc-800 bg-zinc-50 flex items-center justify-center mx-auto shadow-sm">
+              <span class="text-2xl text-zinc-800">[🔒]</span>
+            </div>
+            <div class="space-y-2">
+              <span class="px-2 py-0.5 border-2 border-zinc-800 bg-zinc-100 rounded text-[9px] font-bold uppercase tracking-wider inline-block">
+                Layar Terkunci (Locked)
+              </span>
+              <h2 class="text-md font-bold text-zinc-800">Menunggu Verifikasi KPPS</h2>
+              <!-- Description styled as mix of readable text and wireframe bars -->
+              <div class="flex flex-col items-center justify-center space-y-1.5 py-2">
+                <span class="text-xs text-zinc-600 font-bold">Silakan menunggu Ketua KPPS mengaktifkan bilik suara...</span>
+                <div class="h-1.5 bg-zinc-300 rounded-full w-4/5"></div>
+                <div class="h-1.5 bg-zinc-300 rounded-full w-2/3"></div>
+              </div>
+            </div>
+            
+            <div class="border-t-2 border-zinc-200 pt-4 flex flex-col gap-2 items-center text-xs">
+              <span class="text-[9px] font-mono text-zinc-400">Terminal Kiosk ID: BOOTH-01</span>
+              <div class="w-4 h-4 border-2 border-zinc-400 border-t-zinc-800 rounded-full animate-spin"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 5: BUKA BILIK SUARA ==================== -->
+        <div id="view-5" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Dasbor Ketua KPPS - TPS 01 Tegalsari</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Fungsi: Manajemen Keamanan Sesi Voting Bilik</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Panel Booth 1 -->
+            <div class="border-[3px] border-zinc-800 rounded bg-white p-4 space-y-3 shadow-sm sketch-shadow">
+              <div class="flex justify-between items-center">
+                <span class="font-bold text-xs">Bilik Suara #1 (BOOTH-01)</span>
+                <span class="px-2 py-0.5 border border-zinc-850 bg-zinc-100 rounded font-bold text-[9px] uppercase">LOCKED</span>
+              </div>
+              <div class="border-2 border-dashed border-zinc-400 rounded p-2.5 bg-zinc-50 text-xs">
+                <div class="h-1.5 bg-zinc-300 rounded-full w-full my-1"></div>
+                <div class="h-1.5 bg-zinc-300 rounded-full w-5/6 my-1"></div>
+                <p class="font-bold text-zinc-700 mt-2">Bilik siap digunakan. Klik untuk membuka.</p>
+              </div>
+              <button class="w-full py-1.5 bg-white border-2 border-zinc-800 hover:bg-zinc-50 rounded text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-sm">
+                <span>[🔓]</span> Buka Kunci Bilik (Generate Sesi)
+              </button>
+            </div>
+
+            <!-- Panel Booth 2 -->
+            <div class="border-[3px] border-zinc-800 rounded bg-white p-4 space-y-3 shadow-sm sketch-shadow">
+              <div class="flex justify-between items-center">
+                <span class="font-bold text-xs">Bilik Suara #2 (BOOTH-02)</span>
+                <span class="px-2 py-0.5 border border-zinc-850 bg-zinc-200 rounded font-bold text-[9px] uppercase">ACTIVE</span>
+              </div>
+              <div class="border-2 border-zinc-800 rounded p-2 bg-zinc-50 space-y-1.5 text-xs font-mono">
+                <div class="flex justify-between">
+                  <span class="text-[9px] text-zinc-400">Token Sesi:</span>
+                  <span class="font-bold text-zinc-800">5a9e2f</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-[9px] text-zinc-400">Batas Waktu:</span>
+                  <span class="font-bold text-zinc-800">04 Menit 12 Detik</span>
+                </div>
+              </div>
+              <button class="w-full py-1.5 bg-zinc-100 border-2 border-zinc-400 text-zinc-400 rounded text-xs font-bold cursor-not-allowed flex items-center justify-center gap-1.5" disabled>
+                <span>[🔓]</span> Sedang Digunakan Pemilih
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 6: BATALKAN SESI ==================== -->
+        <div id="view-6" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Dasbor Ketua KPPS - TPS 01 Tegalsari</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Aksi: Pembatalan Paksa Token Sesi Bilik</div>
+            </div>
+          </div>
+
+          <div class="border-[3px] border-zinc-800 rounded bg-white p-4 space-y-3 max-w-xl shadow-sm sketch-shadow">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-xs">Bilik Suara #1 (BOOTH-01)</span>
+              <span class="px-2 py-0.5 border border-zinc-850 bg-zinc-100 rounded font-bold text-[9px] uppercase">ACTIVE</span>
+            </div>
+            <div class="border-2 border-dashed border-zinc-400 rounded p-2 bg-zinc-50 text-xs">
+              <p class="font-bold">Pemilih tidak hadir atau terjadi kesalahan sesi.</p>
+              <div class="h-1.5 bg-zinc-300 rounded-full w-full my-1.5"></div>
+              <div class="h-1.5 bg-zinc-300 rounded-full w-3/4 my-1.5"></div>
+            </div>
+            <button class="px-3 py-1.5 bg-white border-2 border-zinc-850 text-rose-600 hover:bg-rose-50 rounded text-xs font-bold transition-all shadow-sm">
+              <span>[⚠️]</span> Batalkan Sesi & Kunci Bilik
+            </button>
+          </div>
+
+          <!-- Mockup Modal Konfirmasi Batal Sesi -->
+          <div class="border-[3px] border-zinc-800 rounded bg-white p-5 max-w-md shadow-lg space-y-3 sketch-shadow-lg mt-6">
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-full border-2 border-zinc-800 bg-zinc-50 flex items-center justify-center text-rose-600 font-bold shrink-0 shadow-sm">⚠️</div>
+              <div class="space-y-1.5 flex-1">
+                <span class="font-bold text-sm block leading-none">Konfirmasi Pembatalan Sesi</span>
+                <div class="h-1.5 bg-zinc-300 rounded-full w-full"></div>
+                <div class="h-1.5 bg-zinc-300 rounded-full w-5/6"></div>
+                <p class="text-xs font-bold text-zinc-700">Batalkan token sesi voting Bilik #1?</p>
+              </div>
+            </div>
+            <div class="flex justify-end gap-2 border-t-2 border-zinc-100 pt-3 text-xs">
+              <button class="px-3 py-1 border-2 border-zinc-850 hover:bg-zinc-50 rounded font-bold">Batal</button>
+              <button class="px-3 py-1 bg-white border-2 border-rose-600 text-rose-600 hover:bg-rose-50 rounded font-bold">Ya, Batalkan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 7: GENERATE REKAP TPS ==================== -->
+        <div id="view-7" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Rekapitulasi Suara Tingkat TPS</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Role: KPPS | Status TPS: CLOSED</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-6">
+              <!-- Tabel Input/Kalkulasi Suara -->
+              <div class="border-[3px] border-zinc-800 rounded bg-white overflow-hidden shadow-sm">
+                <div class="p-3 border-b-2 border-zinc-800 bg-zinc-50 text-xs font-bold">Penghitungan Perolehan Suara TPS</div>
+                <table class="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr class="bg-zinc-100 border-b-2 border-zinc-800 font-bold">
+                      <th class="p-2 border-r-2 border-zinc-800 w-16">No Urut</th>
+                      <th class="p-2 border-r-2 border-zinc-800">Pasangan Calon</th>
+                      <th class="p-2 text-right">Suara Sah (Database)</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y-2 divide-zinc-800">
+                    <tr>
+                      <td class="p-2 border-r-2 border-zinc-800">01</td>
+                      <td class="p-2 border-r-2 border-zinc-800 font-bold">Amir Mahmud & Budi Santoso</td>
+                      <td class="p-2 text-right font-mono font-bold">205 Suara</td>
+                    </tr>
+                    <tr>
+                      <td class="p-2 border-r-2 border-zinc-800">02</td>
+                      <td class="p-2 border-r-2 border-zinc-800 font-bold">Citra Lestari & Dani Setiawan</td>
+                      <td class="p-2 text-right font-mono font-bold">148 Suara</td>
+                    </tr>
+                    <tr>
+                      <td class="p-2 border-r-2 border-zinc-800">03</td>
+                      <td class="p-2 border-r-2 border-zinc-800 font-bold">Eko Prasetyo & Feri Irawan</td>
+                      <td class="p-2 text-right font-mono font-bold">97 Suara</td>
+                    </tr>
+                    <tr class="bg-zinc-50 font-bold border-t-2 border-zinc-800">
+                      <td class="p-2 border-r-2 border-zinc-800" colspan="2">TOTAL SUARA SAH</td>
+                      <td class="p-2 text-right font-mono">450 Suara</td>
+                    </tr>
+                    <tr class="bg-zinc-50 text-zinc-500">
+                      <td class="p-2 border-r-2 border-zinc-800" colspan="2">SUARA TIDAK SAH</td>
+                      <td class="p-2 text-right font-mono font-bold">5 Suara</td>
+                    </tr>
+                    <tr class="bg-zinc-100 font-bold border-t-2 border-zinc-800">
+                      <td class="p-2 border-r-2 border-zinc-800" colspan="2">TOTAL SUARA MASUK</td>
+                      <td class="p-2 text-right font-mono">455 Suara</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Panel Aksi Generate Rekap -->
+            <div class="border-[3px] border-zinc-800 rounded bg-white p-4 space-y-3 h-fit shadow-sm sketch-shadow">
+              <div class="text-xs font-bold text-zinc-700 uppercase tracking-wider">Aksi Rekapitulasi</div>
+              <div class="border-2 border-zinc-800 rounded p-2 bg-zinc-50 text-xs space-y-1 font-mono">
+                <div class="flex justify-between">
+                  <span>Partisipasi:</span>
+                  <span class="font-bold">455 / 500 DPT</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Persentase:</span>
+                  <span class="font-bold">91.0%</span>
+                </div>
+              </div>
+              <div class="text-[10px] text-zinc-500 leading-tight">
+                Data akan direkap secara transaksional ke database internal TPS.
+              </div>
+              <button class="w-full py-2 bg-white border-2 border-zinc-800 hover:bg-zinc-50 rounded text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm">
+                <span>[⚙️]</span> Generate Rekap TPS
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 8: FINALISASI HASIL ==================== -->
+        <div id="view-8" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Finalisasi Hasil & Blockchain Anchor</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Role: KPPS | Status TPS: RECAP_GENERATED</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-4">
+              <!-- Ringkasan Data Rekap -->
+              <div class="border-[3px] border-zinc-800 rounded bg-white p-4 space-y-2 shadow-sm sketch-shadow">
+                <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider block">Ringkasan Metadata Rekap TPS</span>
+                <div class="grid grid-cols-2 gap-3 text-xs font-mono">
+                  <div class="border-2 border-zinc-850 rounded p-2 bg-zinc-50">
+                    <span class="text-[9px] text-zinc-400 block">TPS Code:</span>
+                    <span class="font-bold block">TPS-01-TEGALSARI</span>
+                  </div>
+                  <div class="border-2 border-zinc-850 rounded p-2 bg-zinc-50">
+                    <span class="text-[9px] text-zinc-400 block">SHA-256 Hash C.Hasil:</span>
+                    <span class="font-bold block text-[9px] truncate">a5d8f2b7...78de1f2a</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Console Log Smart Contract (Simulated in Comic Neue / Balsamiq box) -->
+              <div class="border-2 border-zinc-800 rounded bg-zinc-50 p-3 text-zinc-600 font-mono text-[9px] space-y-1">
+                <div>[INFO] Memproses jangkar data ke Blockchain...</div>
+                <div class="h-1.5 bg-zinc-300 rounded-full w-3/4"></div>
+                <div class="h-1.5 bg-zinc-300 rounded-full w-5/6"></div>
+              </div>
+            </div>
+
+            <!-- Panel Aksi Blockchain Anchor -->
+            <div class="border-[3px] border-zinc-800 rounded bg-white p-4 space-y-3 h-fit shadow-sm sketch-shadow">
+              <div class="text-xs font-bold text-zinc-700 uppercase tracking-wider">Finalisasi Data</div>
+              <div class="text-[10px] text-zinc-500 leading-tight">
+                Mengunci rekapitulasi secara kriptografis pada smart contract blockchain lokal.
+              </div>
+              <button class="w-full py-2 bg-white border-2 border-zinc-800 hover:bg-zinc-50 text-emerald-600 rounded text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm">
+                <span>[🔗]</span> Finalisasi & Anchor ke Blockchain
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 9: GENERATE C HASIL ==================== -->
+        <div id="view-9" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Generate Formulir C.Hasil-KWK</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Role: KPPS | Status Dokumen: PENDING</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Preview Form Layout -->
+            <div class="lg:col-span-2 border-[3px] border-zinc-800 rounded bg-white p-5 shadow-sm space-y-4 sketch-shadow">
+              <div class="text-center border-b-2 border-zinc-800 pb-2">
+                <div class="text-xs font-bold uppercase">MODEL C.HASIL-KWK TEMPLATE</div>
+                <div class="text-[9px] text-zinc-400">PENGHITUNGAN SUARA DI TPS KOTA TEGAL</div>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-3 text-[10px] font-mono">
+                <div>
+                  <span class="text-zinc-400 block text-[8px] uppercase font-bold">Kecamatan</span>
+                  <span class="border-b border-zinc-800 block pb-0.5">Tegal Barat</span>
+                </div>
+                <div>
+                  <span class="text-zinc-400 block text-[8px] uppercase font-bold">Kelurahan</span>
+                  <span class="border-b border-zinc-800 block pb-0.5">Tegalsari</span>
+                </div>
+              </div>
+
+              <!-- Dotted Lines representing empty text / template layout -->
+              <div class="border-2 border-dashed border-zinc-400 rounded p-3 bg-zinc-50 space-y-2">
+                <div class="h-1.5 bg-zinc-300 rounded-full w-3/4"></div>
+                <div class="h-1.5 bg-zinc-300 rounded-full w-1/2"></div>
+                <div class="h-1.5 bg-zinc-300 rounded-full w-5/6"></div>
+              </div>
+            </div>
+
+            <!-- Panel Tombol Aksi -->
+            <div class="border-[3px] border-zinc-800 rounded bg-white p-4 space-y-3 h-fit shadow-sm sketch-shadow">
+              <div class="text-xs font-bold text-zinc-700 uppercase tracking-wider">Generate Dokumen</div>
+              <div class="text-[10px] text-zinc-500 leading-tight">
+                Membentuk file dokumen PDF tiruan resmi berbasis rekapitulasi data TPS.
+              </div>
+              <button class="w-full py-2 bg-white border-2 border-zinc-800 hover:bg-zinc-50 rounded text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm">
+                <span>[📄]</span> Generate Dokumen C.Hasil
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 10: UPLOAD C HASIL ==================== -->
+        <div id="view-10" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Upload Dokumen C.Hasil Fisik</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Role: KPPS | Status: Dokumen Ter-Generate</div>
+            </div>
+          </div>
+
+          <div class="max-w-2xl border-[3px] border-zinc-800 rounded bg-white p-5 space-y-5 shadow-sm sketch-shadow">
+            <div class="text-xs font-bold text-zinc-700 uppercase tracking-wider">Unggah Formulir C.Hasil-KWK Fisik Ber-tanda tangan basah</div>
+            
+            <!-- Area Dropzone File Wireframe -->
+            <div class="border-2 border-dashed border-zinc-500 hover:border-zinc-800 bg-zinc-50 rounded p-6 text-center cursor-pointer transition-colors space-y-2">
+              <div class="w-10 h-10 rounded-full border border-zinc-400 bg-white flex items-center justify-center mx-auto text-lg shadow-sm">📄</div>
+              <div>
+                <span class="text-xs font-bold text-zinc-700 block">Pilih Berkas PDF / JPG / PNG</span>
+                <span class="text-[9px] text-zinc-400 block mt-0.5">Batas Ukuran File: 10MB</span>
+              </div>
+            </div>
+
+            <!-- Form metadata hash -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div class="space-y-1">
+                <label class="text-[9px] font-bold text-zinc-400 uppercase block">Kalkulasi SHA-256 (Otomatis)</label>
+                <input type="text" readonly placeholder="Menunggu berkas..." class="w-full p-2 border-2 border-zinc-800 rounded outline-none bg-zinc-150 font-mono text-[9px]">
+              </div>
+              <div class="space-y-1">
+                <label class="text-[9px] font-bold text-zinc-400 uppercase block">Nama File</label>
+                <input type="text" readonly placeholder="c_hasil_tps01.pdf" class="w-full p-2 border-2 border-zinc-800 rounded outline-none bg-zinc-150 font-mono text-[9px]">
+              </div>
+            </div>
+
+            <button class="px-4 py-2 bg-white border-2 border-zinc-800 hover:bg-zinc-50 rounded text-xs font-bold transition-all shadow-sm">
+              <span>[📤]</span> Unggah & Simpan Dokumen
+            </button>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 11: VERIFIKASI REKAP TPS ==================== -->
+        <div id="view-11" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Verifikasi Hasil Rekapitulasi TPS</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Role: Saksi TPS 01 (WITNESS) | Status Sesi: AWAITING_WITNESS</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-6">
+              <!-- Hasil Rekap Yang Ingin Diverifikasi -->
+              <div class="border-[3px] border-zinc-800 rounded bg-white overflow-hidden shadow-sm">
+                <div class="p-3 border-b-2 border-zinc-800 bg-zinc-50 text-xs font-bold">Data Perolehan Suara TPS 01 Tegalsari</div>
+                <table class="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr class="bg-zinc-100 border-b-2 border-zinc-800 font-bold">
+                      <th class="p-2 border-r-2 border-zinc-800 w-16">No Urut</th>
+                      <th class="p-2 border-r-2 border-zinc-800">Nama Pasangan Calon</th>
+                      <th class="p-2 text-right">Suara Sah</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y-2 divide-zinc-800">
+                    <tr>
+                      <td class="p-2 border-r-2 border-zinc-800">01</td>
+                      <td class="p-2 border-r-2 border-zinc-800 font-bold">Amir Mahmud & Budi Santoso</td>
+                      <td class="p-2 text-right font-mono">205 Suara</td>
+                    </tr>
+                    <tr>
+                      <td class="p-2 border-r-2 border-zinc-800">02</td>
+                      <td class="p-2 border-r-2 border-zinc-800 font-bold">Citra Lestari & Dani Setiawan</td>
+                      <td class="p-2 text-right font-mono">148 Suara</td>
+                    </tr>
+                    <tr>
+                      <td class="p-2 border-r-2 border-zinc-800">03</td>
+                      <td class="p-2 border-r-2 border-zinc-800 font-bold">Eko Prasetyo & Feri Irawan</td>
+                      <td class="p-2 text-right font-mono">97 Suara</td>
+                    </tr>
+                    <tr class="bg-zinc-50 font-bold border-t-2 border-zinc-800">
+                      <td class="p-2 border-r-2 border-zinc-800" colspan="2">TOTAL SUARA SAH</td>
+                      <td class="p-2 text-right font-mono">450 Suara</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Form Persetujuan Saksi -->
+            <div class="border-[3px] border-zinc-800 rounded bg-white p-4 space-y-3 h-fit shadow-sm sketch-shadow">
+              <div class="text-xs font-bold text-zinc-700 uppercase tracking-wider">Persetujuan & Catatan</div>
+              <div class="space-y-1">
+                <label class="text-[9px] font-bold text-zinc-400 uppercase block">Catatan Tambahan Saksi</label>
+                <textarea rows="3" placeholder="Tulis catatan jika ada..." class="w-full p-2 border-2 border-zinc-800 rounded text-xs outline-none bg-zinc-50 focus:bg-white"></textarea>
+              </div>
+              <button class="w-full py-2 bg-white border-2 border-zinc-800 hover:bg-zinc-50 text-emerald-600 rounded text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm">
+                <span>[✓]</span> Setujui Rekap TPS (APPROVED)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 12: UPLOAD BUKTI KEBERATAN ==================== -->
+        <div id="view-12" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Laporan Keberatan Hasil Perhitungan</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Role: Saksi TPS 01 (WITNESS)</div>
+            </div>
+          </div>
+
+          <div class="max-w-2xl border-[3px] border-zinc-800 rounded bg-white p-5 space-y-4 shadow-sm sketch-shadow">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full border border-rose-450 bg-rose-50 flex items-center justify-center text-rose-600 font-bold text-xs shadow-sm">⚠️</div>
+              <span class="font-bold text-xs">Form Keberatan dan Sanggahan Saksi</span>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div class="space-y-1">
+                <label class="text-[9px] font-bold text-zinc-400 uppercase block">Alasan Keberatan / Sengketa</label>
+                <textarea rows="3" placeholder="Tulis alasan penolakan/keberatan..." class="w-full p-2 border-2 border-zinc-800 rounded text-xs outline-none bg-zinc-50 focus:bg-white"></textarea>
+              </div>
+
+              <!-- Upload Bukti Fisik -->
+              <div class="space-y-1">
+                <label class="text-[9px] font-bold text-zinc-400 uppercase block">Unggah Foto Bukti Fisik</label>
+                <div class="border-2 border-dashed border-zinc-400 rounded p-3 bg-zinc-50 flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg">📷</span>
+                    <span class="text-xs">bukti_keberatan.jpg (1.8 MB)</span>
+                  </div>
+                  <button class="px-2 py-0.5 border border-rose-300 text-rose-600 rounded text-[9px] hover:bg-rose-50 font-bold">Hapus</button>
+                </div>
+              </div>
+
+              <button class="px-4 py-2 bg-white border-2 border-zinc-850 text-rose-600 hover:bg-rose-50 rounded text-xs font-bold transition-all shadow-sm">
+                <span>[⚠️]</span> Kirim Laporan Keberatan (OBJECTED)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 13: MANAJEMEN AKUN KPPS & SAKSI ==================== -->
+        <div id="view-13" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Manajemen Pengguna - Dasbor Admin KPU</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Fungsi: Penjanaan Akun Petugas TPS Massal</div>
+            </div>
+            <button class="px-3 py-1.5 bg-white border-2 border-zinc-805 hover:bg-zinc-50 rounded text-xs font-bold transition-all shadow-sm">
+              [⚙️] Generate Akun Otomatis
+            </button>
+          </div>
+
+          <!-- Tabel Akun Ter-generate -->
+          <div class="border-2 border-zinc-800 rounded overflow-hidden shadow-sm">
+            <div class="p-3 border-b-2 border-zinc-800 bg-zinc-50 flex justify-between items-center text-xs">
+              <span class="font-bold">Daftar Akun Petugas TPS</span>
+              <button class="px-2 py-0.5 border border-zinc-400 bg-white rounded font-bold text-[10px] hover:bg-zinc-100">Ekspor File</button>
+            </div>
+            <table class="w-full text-left text-xs border-collapse font-mono">
+              <thead>
+                <tr class="bg-zinc-100 border-b-2 border-zinc-800 text-zinc-650 font-bold font-sans">
+                  <th class="p-2 border-r-2 border-zinc-800">TPS</th>
+                  <th class="p-2 border-r-2 border-zinc-800">Peran</th>
+                  <th class="p-2 border-r-2 border-zinc-800">Alamat Email</th>
+                  <th class="p-2 border-r-2 border-zinc-800">Password Asli</th>
+                  <th class="p-2">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y-2 divide-zinc-800">
+                <tr>
+                  <td class="p-2 border-r-2 border-zinc-800 font-bold font-sans text-xs">TPS 01</td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-sans text-[10px]">KPPS</td>
+                  <td class="p-2 border-r-2 border-zinc-800">kpps.tps01.tegalsari@kpu.local</td>
+                  <td class="p-2 border-r-2 border-zinc-800">kpps_9aF8d1</td>
+                  <td class="p-2 font-sans text-zinc-700 font-bold text-[10px]">Tersimpan</td>
+                </tr>
+                <tr>
+                  <td class="p-2 border-r-2 border-zinc-800 font-bold font-sans text-xs">TPS 01</td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-sans text-[10px]">WITNESS</td>
+                  <td class="p-2 border-r-2 border-zinc-800">witness.tps01.tegalsari@kpu.local</td>
+                  <td class="p-2 border-r-2 border-zinc-800">saksi_f47Kaa</td>
+                  <td class="p-2 font-sans text-zinc-700 font-bold text-[10px]">Tersimpan</td>
+                </tr>
+                <tr>
+                  <td class="p-2 border-r-2 border-zinc-800 font-bold font-sans text-xs">TPS 02</td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-sans text-[10px]">KPPS</td>
+                  <td class="p-2 border-r-2 border-zinc-800">kpps.tps02.tegalsari@kpu.local</td>
+                  <td class="p-2 border-r-2 border-zinc-800">kpps_7bH2ee</td>
+                  <td class="p-2 font-sans text-zinc-700 font-bold text-[10px]">Tersimpan</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 14: MANAJEMEN DPT ==================== -->
+        <div id="view-14" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Manajemen DPT (Daftar Pemilih Tetap)</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Dasbor Admin KPU | Regulasi Kuota Maksimal: 500</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Tabel DPT per TPS -->
+            <div class="lg:col-span-2 border-2 border-zinc-800 rounded bg-white overflow-hidden shadow-sm">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-zinc-100 border-b-2 border-zinc-800 font-bold">
+                    <th class="p-2 border-r-2 border-zinc-800">Nomor TPS</th>
+                    <th class="p-2 border-r-2 border-zinc-800">Kelurahan</th>
+                    <th class="p-2 border-r-2 border-zinc-800 text-right">Kuota DPT</th>
+                    <th class="p-2 text-center">Status Batas</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y-2 divide-zinc-800">
+                  <tr class="bg-zinc-50 font-bold">
+                    <td class="p-2 border-r-2 border-zinc-800">TPS 01</td>
+                    <td class="p-2 border-r-2 border-zinc-800">Tegalsari, Tegal Barat</td>
+                    <td class="p-2 border-r-2 border-zinc-800 text-right font-mono">500</td>
+                    <td class="p-2 text-center"><span class="px-2 py-0.5 border border-zinc-800 bg-zinc-150 rounded text-[9px]">MAX LIMIT</span></td>
+                  </tr>
+                  <tr>
+                    <td class="p-2 border-r-2 border-zinc-800">TPS 02</td>
+                    <td class="p-2 border-r-2 border-zinc-800">Tegalsari, Tegal Barat</td>
+                    <td class="p-2 border-r-2 border-zinc-800 text-right font-mono">485</td>
+                    <td class="p-2 text-center"><span class="px-2 py-0.5 border border-zinc-800 bg-zinc-100 rounded text-[9px]">AMAN</span></td>
+                  </tr>
+                  <tr>
+                    <td class="p-2 border-r-2 border-zinc-800">TPS 03</td>
+                    <td class="p-2 border-r-2 border-zinc-800">Tegalsari, Tegal Barat</td>
+                    <td class="p-2 border-r-2 border-zinc-800 text-right font-mono">320</td>
+                    <td class="p-2 text-center"><span class="px-2 py-0.5 border border-zinc-800 bg-zinc-100 rounded text-[9px]">AMAN</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Form Edit Kuota DPT -->
+            <div class="border-[3px] border-zinc-800 rounded bg-white p-4 space-y-3 h-fit shadow-sm sketch-shadow">
+              <div class="text-xs font-bold text-zinc-700 uppercase tracking-wider">Konfigurasi Kuota TPS</div>
+              <form onsubmit="return false;" class="space-y-3 text-xs">
+                <div class="space-y-1">
+                  <label class="font-bold text-zinc-500">Pilih TPS</label>
+                  <select class="w-full p-1.5 border-2 border-zinc-800 rounded outline-none bg-zinc-50">
+                    <option>TPS 01 Tegalsari</option>
+                    <option>TPS 02 Tegalsari</option>
+                  </select>
+                </div>
+                <div class="space-y-1">
+                  <label class="font-bold text-zinc-500">Jumlah DPT Baru</label>
+                  <div class="flex">
+                    <span class="px-2.5 py-1.5 border-2 border-r-0 border-zinc-800 bg-zinc-100 rounded-l font-bold text-zinc-600">#</span>
+                    <input type="number" value="500" class="w-full px-3 py-1.5 border-2 border-zinc-800 rounded-r outline-none text-xs">
+                  </div>
+                </div>
+                <button class="w-full py-1.5 bg-white border-2 border-zinc-800 hover:bg-zinc-50 rounded text-xs font-bold transition-all shadow-sm">
+                  Perbarui Kuota DPT
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 15: MANAJEMEN TPS ==================== -->
+        <div id="view-15" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Manajemen Wilayah & Data TPS</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Dasbor Admin KPU | Konfigurasi Struktur Pilkada</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Form Tambah Pemilihan & TPS -->
+            <div class="border-[3px] border-zinc-800 rounded bg-white p-4 space-y-3 h-fit shadow-sm sketch-shadow">
+              <div class="text-xs font-bold text-zinc-700 uppercase tracking-wider">Tambah TPS Baru</div>
+              <form onsubmit="return false;" class="space-y-3 text-xs">
+                <div class="space-y-1">
+                  <label class="font-bold text-zinc-500">Nomor TPS</label>
+                  <input type="text" placeholder="Contoh: 04" class="w-full p-1.5 border-2 border-zinc-800 rounded outline-none bg-zinc-50">
+                </div>
+                <div class="space-y-1">
+                  <label class="font-bold text-zinc-500">Kelurahan</label>
+                  <input type="text" placeholder="Contoh: Tegalsari" class="w-full p-1.5 border-2 border-zinc-800 rounded outline-none bg-zinc-50">
+                </div>
+                <div class="space-y-1">
+                  <label class="font-bold text-zinc-500">Alamat TPS</label>
+                  <textarea placeholder="Contoh: Balai Warga" class="w-full p-1.5 border-2 border-zinc-800 rounded outline-none bg-zinc-50"></textarea>
+                </div>
+                <button class="w-full py-1.5 bg-white border-2 border-zinc-800 hover:bg-zinc-50 rounded text-xs font-bold transition-all shadow-sm">
+                  Daftarkan TPS
+                </button>
+              </form>
+            </div>
+
+            <!-- Tabel Data Wilayah TPS -->
+            <div class="lg:col-span-2 border-2 border-zinc-800 rounded bg-white overflow-hidden shadow-sm">
+              <div class="p-3 border-b-2 border-zinc-800 bg-zinc-50 text-xs font-bold text-zinc-750">Daftar TPS Terdaftar</div>
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-zinc-100 border-b-2 border-zinc-800 font-bold">
+                    <th class="p-2 border-r-2 border-zinc-800">No. TPS</th>
+                    <th class="p-2 border-r-2 border-zinc-800">Wilayah Kelurahan</th>
+                    <th class="p-2 border-r-2 border-zinc-800">Lokasi Fisik</th>
+                    <th class="p-2 text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y-2 divide-zinc-800">
+                  <tr>
+                    <td class="p-2 border-r-2 border-zinc-800 font-bold text-xs">TPS 01</td>
+                    <td class="p-2 border-r-2 border-zinc-800">Tegalsari, Tegal Barat</td>
+                    <td class="p-2 border-r-2 border-zinc-800 text-zinc-500">Balai Kelurahan Tegalsari</td>
+                    <td class="p-2 text-center">
+                      <button class="text-rose-600 font-bold hover:underline">Hapus</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="p-2 border-r-2 border-zinc-800 font-bold text-xs">TPS 02</td>
+                    <td class="p-2 border-r-2 border-zinc-800">Tegalsari, Tegal Barat</td>
+                    <td class="p-2 border-r-2 border-zinc-800 text-zinc-500">SD Negeri Tegalsari 02</td>
+                    <td class="p-2 text-center">
+                      <button class="text-rose-600 font-bold hover:underline">Hapus</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 16: MANAJEMEN PASLON ==================== -->
+        <div id="view-16" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Pendaftaran Pasangan Calon Baru</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Dasbor Admin KPU | Manajemen Kandidat Pilkada</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Form Input Paslon -->
+            <div class="lg:col-span-2 border-[3px] border-zinc-800 rounded bg-white p-4 space-y-3 shadow-sm sketch-shadow">
+              <div class="text-xs font-bold text-zinc-700 uppercase tracking-wider border-b-2 border-zinc-200 pb-2">Form Data Calon & Wakil Calon</div>
+              <form onsubmit="return false;" class="space-y-3 text-xs">
+                <div class="grid grid-cols-3 gap-3">
+                  <div class="space-y-1">
+                    <label class="font-bold text-zinc-500">Nomor Urut</label>
+                    <input type="number" placeholder="04" class="w-full p-1.5 border-2 border-zinc-800 rounded outline-none bg-zinc-50">
+                  </div>
+                  <div class="col-span-2 space-y-1">
+                    <label class="font-bold text-zinc-500">Motto Kampanye</label>
+                    <input type="text" placeholder="Tegal Keren & Berjaya" class="w-full p-1.5 border-2 border-zinc-800 rounded outline-none bg-zinc-50">
+                  </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div class="space-y-1">
+                    <label class="font-bold text-zinc-500">Nama Calon Wali Kota</label>
+                    <input type="text" placeholder="Nama Calon" class="w-full p-1.5 border-2 border-zinc-800 rounded outline-none bg-zinc-50">
+                  </div>
+                  <div class="space-y-1">
+                    <label class="font-bold text-zinc-500">Nama Calon Wakil Wali Kota</label>
+                    <input type="text" placeholder="Nama Wakil" class="w-full p-1.5 border-2 border-zinc-800 rounded outline-none bg-zinc-50">
+                  </div>
+                </div>
+
+                <div class="space-y-1">
+                  <label class="font-bold text-zinc-500">Pernyataan Visi</label>
+                  <textarea rows="2" placeholder="Tulis visi..." class="w-full p-1.5 border-2 border-zinc-800 rounded outline-none bg-zinc-50"></textarea>
+                </div>
+
+                <button class="px-4 py-1.5 bg-white border-2 border-zinc-800 hover:bg-zinc-50 rounded font-bold transition-all shadow-sm">
+                  Daftarkan Pasangan Calon
+                </button>
+              </form>
+            </div>
+
+            <!-- Upload Panel & Preview Foto -->
+            <div class="border-[3px] border-zinc-800 rounded bg-white p-4 space-y-3 h-fit shadow-sm sketch-shadow">
+              <div class="text-xs font-bold text-zinc-700 uppercase tracking-wider">Foto Pasangan Calon</div>
+              <div class="wireframe-img h-40 w-full flex items-center justify-center text-zinc-700 text-xs font-bold">
+                [ Silang Wireframe Foto ]
+              </div>
+              <div class="space-y-2 text-xs">
+                <label class="text-[9px] font-bold text-zinc-400 uppercase block">Pilih File Foto Kandidat</label>
+                <div class="border-2 border-zinc-800 bg-zinc-50 p-1.5 rounded flex items-center justify-between text-[10px]">
+                  <span class="text-zinc-400">Belum ada file...</span>
+                  <button class="px-2 py-0.5 border border-zinc-400 bg-white rounded font-bold">Cari...</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 17: PANTAU AUDIT LOGS ==================== -->
+        <div id="view-17" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">Sistem Audit Trail (Jejak Aktivitas)</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Role: Admin KPU / Pengawas | Keperluan: Auditabilitas & Forensik</div>
+            </div>
+          </div>
+
+          <!-- Tabel Audit Logs -->
+          <div class="border-2 border-zinc-800 rounded overflow-hidden shadow-sm">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-zinc-100 border-b-2 border-zinc-800 font-bold">
+                  <th class="p-2 border-r-2 border-zinc-800">Timestamp</th>
+                  <th class="p-2 border-r-2 border-zinc-800">Akun Aktor</th>
+                  <th class="p-2 border-r-2 border-zinc-800">Peran</th>
+                  <th class="p-2 border-r-2 border-zinc-800">Aktivitas</th>
+                  <th class="p-2">Rincian Informasi</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y-2 divide-zinc-800 font-mono text-[10px]">
+                <tr>
+                  <td class="p-2 border-r-2 border-zinc-800">03/07/2026 07:15:32</td>
+                  <td class="p-2 border-r-2 border-zinc-800">system.voter@kiosk.local</td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-sans text-[10px]">VOTER</td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-bold text-zinc-700">CAST_VOTE</td>
+                  <td class="p-2 font-sans">Perekaman suara anonim sukses, token sesi: **5a9e2f** status terpakai.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 border-r-2 border-zinc-800">03/07/2026 07:12:11</td>
+                  <td class="p-2 border-r-2 border-zinc-800">kpps.tps01.tegalsari@kpu.local</td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-sans text-[10px]">KPPS</td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-bold text-blue-600">UNLOCK_BOOTH</td>
+                  <td class="p-2 font-sans">Membuka kunci Bilik 1, men-generate token aktif: **5a9e2f**.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 border-r-2 border-zinc-800">03/07/2026 07:05:44</td>
+                  <td class="p-2 border-r-2 border-zinc-800">kpps.tps01.tegalsari@kpu.local</td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-sans text-[10px]">KPPS</td>
+                  <td class="p-2 border-r-2 border-zinc-800 font-bold text-rose-600">CANCEL_SESSION</td>
+                  <td class="p-2 font-sans">Petugas membatalkan sesi token **7b9d21** secara manual di Bilik 2.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ==================== VIEW 18: PILIH DAN CONFIRM PASLON ==================== -->
+        <div id="view-18" class="hidden space-y-6">
+          <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+            <div>
+              <div class="text-xl font-bold">MENU SURAT SUARA ELEKTRONIK</div>
+              <div class="text-[10px] text-zinc-500 font-mono">Bilik Suara #1 | Sesi Pemilih Aktif</div>
+            </div>
+            <div class="px-2.5 py-0.5 border border-emerald-500 bg-emerald-50 text-emerald-800 rounded font-bold text-[10px] animate-pulse">BILIK TERBUKA</div>
+          </div>
+
+          <!-- Paslon Option Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Card Pilihan 1 -->
+            <div class="border-2 border-zinc-800 rounded bg-white p-3 flex flex-col space-y-2 cursor-pointer shadow-sm">
+              <div class="w-7 h-7 rounded-full border-2 border-zinc-800 bg-zinc-100 flex items-center justify-center font-bold text-xs">01</div>
+              <div class="wireframe-img h-28 w-full flex items-center justify-center text-zinc-400 text-[10px] font-bold select-none">[ Paslon 01 ]</div>
+              <div class="text-center font-bold text-xs">Amir & Budi</div>
+              <button class="w-full py-1 border-2 border-zinc-800 rounded text-[10px] font-bold hover:bg-zinc-50 bg-white shadow-sm">Tekan Untuk Memilih</button>
+            </div>
+
+            <!-- Card Pilihan 2 -->
+            <div class="border-2 border-zinc-800 rounded bg-white p-3 flex flex-col space-y-2 cursor-pointer shadow-sm">
+              <div class="w-7 h-7 rounded-full border-2 border-zinc-800 bg-zinc-100 flex items-center justify-center font-bold text-xs">02</div>
+              <div class="wireframe-img h-28 w-full flex items-center justify-center text-zinc-400 text-[10px] font-bold select-none">[ Paslon 02 ]</div>
+              <div class="text-center font-bold text-xs">Citra & Dani</div>
+              <button class="w-full py-1 border-2 border-zinc-800 rounded text-[10px] font-bold hover:bg-zinc-50 bg-white shadow-sm">Tekan Untuk Memilih</button>
+            </div>
+
+            <!-- Card Pilihan 3 -->
+            <div class="border-2 border-zinc-800 rounded bg-white p-3 flex flex-col space-y-2 cursor-pointer shadow-sm">
+              <div class="w-7 h-7 rounded-full border-2 border-zinc-800 bg-zinc-100 flex items-center justify-center font-bold text-xs">03</div>
+              <div class="wireframe-img h-28 w-full flex items-center justify-center text-zinc-400 text-[10px] font-bold select-none">[ Paslon 03 ]</div>
+              <div class="text-center font-bold text-xs">Eko & Feri</div>
+              <button class="w-full py-1 border-2 border-zinc-800 rounded text-[10px] font-bold hover:bg-zinc-50 bg-white shadow-sm">Tekan Untuk Memilih</button>
+            </div>
+          </div>
+
+          <!-- Dialog Modal Konfirmasi Pilihan Pemilih (Simulated) -->
+          <div class="border-[3px] border-zinc-800 rounded bg-white p-4 max-w-sm mx-auto shadow-lg space-y-3 sketch-shadow-lg mt-6">
+            <div class="text-center space-y-1">
+              <span class="text-xs font-bold text-zinc-500 uppercase tracking-wider block">Konfirmasi Pilihan Anda</span>
+              <p class="text-[10px] text-zinc-600">Apakah pilihan Anda sudah benar?</p>
+            </div>
+            <div class="border-2 border-zinc-850 rounded p-2.5 bg-zinc-50 flex items-center gap-2">
+              <div class="w-6 h-6 rounded-full border-2 border-zinc-800 bg-zinc-100 flex items-center justify-center font-bold text-[10px]">01</div>
+              <div class="text-xs font-bold">Amir Mahmud & Budi Santoso</div>
+            </div>
+            <div class="flex justify-center gap-3 text-xs font-bold pt-1.5">
+              <button class="px-3 py-1 border-2 border-zinc-800 hover:bg-zinc-50 rounded">Batal</button>
+              <button class="px-3 py-1 bg-white border-2 border-zinc-800 hover:bg-zinc-50 rounded shadow-sm">Ya, Kirim</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Data tiruan URL browser untuk masing-masing aksi
+    const urls = {
+      1: "https://e-voting-tegal.local/results",
+      2: "https://e-voting-tegal.local/results/candidates",
+      3: "https://e-voting-tegal.local/login",
+      4: "https://e-voting-tegal.local/booth/BOOTH-01",
+      5: "https://e-voting-tegal.local/admin/booth-control",
+      6: "https://e-voting-tegal.local/admin/booth-control?action=cancel",
+      7: "https://e-voting-tegal.local/admin/recap/generate",
+      8: "https://e-voting-tegal.local/admin/recap/finalize",
+      9: "https://e-voting-tegal.local/admin/documents/chasil/generate",
+      10: "https://e-voting-tegal.local/admin/documents/chasil/upload",
+      11: "https://e-voting-tegal.local/witness/recap/verify",
+      12: "https://e-voting-tegal.local/witness/objection/upload",
+      13: "https://e-voting-tegal.local/admin/accounts/generate",
+      14: "https://e-voting-tegal.local/admin/dpt/manage",
+      15: "https://e-voting-tegal.local/admin/tps/manage",
+      16: "https://e-voting-tegal.local/admin/candidates/register",
+      17: "https://e-voting-tegal.local/admin/audit-logs",
+      18: "https://e-voting-tegal.local/booth/BOOTH-01/vote"
+    };
+
+    // Judul Windows Browser tiruan
+    const titles = {
+      1: "E-Voting Tegal - Transparansi Hasil",
+      2: "E-Voting Tegal - Profil Pasangan Calon",
+      3: "E-Voting Tegal - Login Petugas",
+      4: "Bilik Suara #1 - Menunggu Sesi",
+      5: "KPPS Dasbor - Buka Bilik Suara",
+      6: "KPPS Dasbor - Batalkan Sesi Bilik",
+      7: "KPPS Dasbor - Rekapitulasi TPS",
+      8: "KPPS Dasbor - Blockchain Anchoring",
+      9: "KPPS Dasbor - Dokumen C.Hasil",
+      10: "KPPS Dasbor - Unggah C.Hasil Fisik",
+      11: "Saksi Dasbor - Verifikasi Rekap TPS",
+      12: "Saksi Dasbor - Ajukan Keberatan Hasil",
+      13: "KPU Admin - Generate Akun Petugas",
+      14: "KPU Admin - Manajemen DPT TPS",
+      15: "KPU Admin - Pendaftaran Wilayah TPS",
+      16: "KPU Admin - Pendaftaran Pasangan Calon",
+      17: "KPU Admin - Jejak Audit logs",
+      18: "Bilik Suara #1 - Pemilihan Suara Aktif"
+    };
+
+    function showView(index) {
+      // Sembunyikan semua konten wireframe
+      for (let i = 1; i <= 18; i++) {
+        const viewEl = document.getElementById(`view-${i}`);
+        if (viewEl) {
+          viewEl.classList.add('hidden');
+        }
+        // Atur status menu sidebar menjadi tidak aktif
+        const menuEl = document.getElementById(`menu-${i}`);
+        if (menuEl) {
+          menuEl.classList.remove('bg-zinc-205', 'text-zinc-900', 'font-bold', 'sketch-border', 'sketch-shadow');
+          menuEl.classList.add('text-zinc-650', 'hover:bg-zinc-100');
+        }
+      }
+
+      // Tampilkan konten wireframe yang dipilih
+      const activeView = document.getElementById(`view-${index}`);
+      if (activeView) {
+        activeView.classList.remove('hidden');
+      }
+
+      // Atur menu sidebar yang dipilih menjadi aktif (Balsamiq styled)
+      const activeMenu = document.getElementById(`menu-${index}`);
+      if (activeMenu) {
+        activeMenu.classList.add('bg-zinc-100', 'text-zinc-900', 'font-bold', 'sketch-border', 'sketch-shadow');
+        activeMenu.classList.remove('text-zinc-650', 'hover:bg-zinc-100');
+      }
+
+      // Perbarui URL pada mock address bar browser
+      const addressInput = document.getElementById('mock-address-bar');
+      if (addressInput) {
+        addressInput.value = urls[index] || "https://e-voting-tegal.local/";
+      }
+
+      // Perbarui judul tab browser
+      const titleSpan = document.getElementById('browser-title-display');
+      if (titleSpan) {
+        titleSpan.textContent = titles[index] || "E-Voting Pilkada Kota Tegal";
+      }
+    }
+
+    // Tampilkan View 1 secara default saat pertama kali dimuat
+    document.addEventListener("DOMContentLoaded", () => {
+      showView(1);
+    });
+  </script>
+</body>
+</html>

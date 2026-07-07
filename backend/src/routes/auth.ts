@@ -15,7 +15,11 @@ router.post("/login", (req, res) => {
 
   const user = db
     .prepare(
-      `SELECT id, name, email, password_hash, role, assigned_tps_id, status FROM users WHERE LOWER(email) = LOWER(?)`
+      `SELECT u.id, u.name, u.full_name, u.email, u.password_hash, u.role, u.assigned_tps_id, u.status,
+              t.tps_code, t.tps_number, t.address as location
+       FROM users u
+       LEFT JOIN tps t ON u.assigned_tps_id = t.id
+       WHERE LOWER(u.email) = LOWER(?)`
     )
     .get(email.trim()) as any;
 
@@ -34,14 +38,20 @@ router.post("/login", (req, res) => {
       user.assigned_tps_id !== null && user.assigned_tps_id !== undefined
         ? Number(user.assigned_tps_id)
         : null,
+    full_name: user.full_name || user.name,
+    tps_code: user.tps_code ?? null,
   });
 
   const safeUser = {
     id: user.id,
     name: user.name,
+    full_name: user.full_name || user.name,
     email: user.email,
     role: user.role,
     assignedTpsId: user.assigned_tps_id ?? null,
+    tpsCode: user.tps_code ?? null,
+    tpsNumber: user.tps_number ?? null,
+    location: user.location ?? null,
     status: user.status,
   };
 
@@ -72,9 +82,13 @@ router.get("/me", authenticateToken, (req: AuthRequest, res) => {
 
   const user = db
     .prepare(
-      `SELECT id, name, email, role, assigned_tps_id, status FROM users WHERE id = ?`
+      `SELECT u.id, u.name, u.full_name, u.email, u.role, u.assigned_tps_id, u.status,
+              t.tps_code, t.tps_number, t.address as location
+       FROM users u
+       LEFT JOIN tps t ON u.assigned_tps_id = t.id
+       WHERE u.id = ?`
     )
-    .get(userId);
+    .get(userId) as any;
 
   if (!user) {
     return res.status(401).json({ message: "User not found" });
@@ -83,9 +97,13 @@ router.get("/me", authenticateToken, (req: AuthRequest, res) => {
   const safeUser = {
     id: user.id,
     name: user.name,
+    full_name: user.full_name || user.name,
     email: user.email,
     role: user.role,
     assignedTpsId: user.assigned_tps_id ?? null,
+    tpsCode: user.tps_code ?? null,
+    tpsNumber: user.tps_number ?? null,
+    location: user.location ?? null,
     status: user.status,
   };
 

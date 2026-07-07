@@ -83,6 +83,7 @@ export const VotingSessionsService = {
       ORDER BY ballot_number ASC
     `);
     const candidatePairs = cpStmt.all(session.election_id) as any[];
+    console.log(`[Booth API] getByToken - Election ID: ${session.election_id}, Candidates returned:`, candidatePairs);
 
     return {
       sessionId: session.id,
@@ -138,6 +139,7 @@ export const VotingSessionsService = {
       ORDER BY ballot_number ASC
     `);
     const candidatePairs = cpStmt.all(session.election_id) as any[];
+    console.log(`[Booth API] getActiveSessionForBooth - Election ID: ${session.election_id}, Candidates returned:`, candidatePairs);
 
     return {
       sessionId: session.id,

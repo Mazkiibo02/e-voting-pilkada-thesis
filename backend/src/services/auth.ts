@@ -16,6 +16,8 @@ export interface AuthPayload {
   sub: string;
   role: string;
   assignedTpsId: number | null;
+  full_name?: string;
+  tps_code?: string | null;
 }
 
 export const createAuthToken = (payload: AuthPayload) => {

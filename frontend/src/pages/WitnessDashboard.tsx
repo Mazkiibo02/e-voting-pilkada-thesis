@@ -33,6 +33,7 @@ interface TpsInfo {
   village: string;
   address: string;
   status: string;
+  registered_voters_total: number;
 }
 
 interface ElectionInfo {
@@ -364,7 +365,7 @@ const WitnessDashboard = () => {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="p-4 bg-slate-50 border rounded-lg">
                       <p className="text-[10px] font-bold text-muted-foreground uppercase">DPT Terdaftar</p>
-                      <p className="text-xl font-extrabold text-slate-800 mt-1">100</p>
+                      <p className="text-xl font-extrabold text-slate-800 mt-1">{tps.registered_voters_total}</p>
                       <p className="text-[10px] text-muted-foreground mt-0.5">Pemilih Fisik</p>
                     </div>
                     <div className="p-4 bg-slate-50 border rounded-lg">
@@ -387,7 +388,7 @@ const WitnessDashboard = () => {
                   <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-between text-xs text-blue-900 font-medium">
                     <span>Tingkat Partisipasi Pemilih:</span>
                     <span className="font-bold text-sm bg-blue-100/50 px-2 py-0.5 rounded">
-                      {`${Math.min(Math.round((recap.totalValidVotes / 100) * 100), 100)}%`}
+                      {`${tps.registered_voters_total > 0 ? Math.min(Math.round((recap.totalValidVotes / tps.registered_voters_total) * 100), 100) : 0}%`}
                     </span>
                   </div>
                 </CardContent>

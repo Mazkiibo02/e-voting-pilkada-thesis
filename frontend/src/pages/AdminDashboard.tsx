@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import { toast } from 'sonner';
-import { Shield, Users, Vote, LogOut, RotateCcw, Plus } from 'lucide-react';
+import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download, Upload } from 'lucide-react';
+import { WitnessManagement } from '@/components/WitnessManagement';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +20,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,23 +44,163 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const SearchableComboBox = ({ options, value, onChange, placeholder }: any) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredOptions = options.filter((opt: string) => 
+    opt.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <div 
+        className="flex items-center justify-between px-3 py-2 border rounded-md cursor-pointer bg-white"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className="text-sm truncate mr-2">
+          {value || placeholder}
+        </span>
+        <span className="text-gray-400">▼</span>
+      </div>
+      {isOpen && (
+        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg">
+          <div className="p-2 border-b">
+            <input
+              type="text"
+              className="w-full px-2 py-1 text-sm border rounded-sm outline-none focus:border-blue-500"
+              placeholder="Cari..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+          <ul className="max-h-60 overflow-auto">
+            <li
+              className={`px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 ${!value ? "bg-blue-50 text-blue-600" : ""}`}
+              onClick={() => {
+                onChange(null);
+                setIsOpen(false);
+                setSearchTerm("");
+              }}
+            >
+              Semua TPS
+            </li>
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((opt: string) => (
+                <li
+                  key={opt}
+                  className={`px-3 py-2 text-sm cursor-pointer hover:bg-gray-100 ${value === opt ? "bg-blue-50 text-blue-600" : ""}`}
+                  onClick={() => {
+                    onChange(opt);
+                    setIsOpen(false);
+                    setSearchTerm("");
+                  }}
+                >
+                  {opt}
+                </li>
+              ))
+            ) : (
+              <li className="px-3 py-2 text-sm text-gray-500">Tidak ada hasil</li>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const AdminDashboard = () => {
   const navigate = useNavigate();
 
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [stats, setStats] = useState<any>(null);
   const [tpsList, setTpsList] = useState<string[]>([]);
   const [selectedTps, setSelectedTps] = useState<string | null>(null);
   const [selectedBoothToUnlock, setSelectedBoothToUnlock] = useState<string>("BOOTH-01");
   const [isGeneratingToken, setIsGeneratingToken] = useState(false);
 
+  // Form states
+  const [isTpsModalOpen, setIsTpsModalOpen] = useState(false);
+  const [newTpsLocation, setNewTpsLocation] = useState("");
+  const [newTpsDpt, setNewTpsDpt] = useState("");
+  const [tpsError, setTpsError] = useState("");
+  const [isSubmittingTps, setIsSubmittingTps] = useState(false);
+
+  const handleAddTps = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTpsError("");
+    const dptValue = parseInt(newTpsDpt, 10);
+    if (isNaN(dptValue) || dptValue < 0) {
+      setTpsError("Jumlah DPT tidak valid.");
+      return;
+    }
+    if (dptValue > 500) {
+      setTpsError("Maksimal 500 DPT sesuai regulasi KPU.");
+      return;
+    }
+    if (!newTpsLocation.trim()) {
+      setTpsError("Lokasi spesifik wajib diisi.");
+      return;
+    }
+
+    setIsSubmittingTps(true);
+    try {
+      const tokenAuth = localStorage.getItem('token');
+      const res = await fetch('/api/tps', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${tokenAuth}`
+        },
+        body: JSON.stringify({
+          location: newTpsLocation,
+          registered_voters_total: dptValue
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`TPS berhasil ditambahkan: ${data.data.tps_code}`);
+        setIsTpsModalOpen(false);
+        setNewTpsLocation("");
+        setNewTpsDpt("");
+        loadData(selectedTps ?? undefined);
+      } else {
+        setTpsError(data.message || "Gagal menambah TPS");
+      }
+    } catch (e) {
+      setTpsError("Koneksi server gagal");
+    } finally {
+      setIsSubmittingTps(false);
+    }
+  };
+
   const handleUnlockBooth = async () => {
     try {
       setIsGeneratingToken(true);
       const tokenAuth = localStorage.getItem('token');
       
-      const tpsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/tps`, {
+      const tpsRes = await fetch(`/api/tps`, {
         headers: { 'Authorization': `Bearer ${tokenAuth}` }
       });
+
+      if (tpsRes.status === 401) {
+        toast.error("Sesi Anda telah berakhir, silakan login kembali.");
+        return;
+      }
+
       const tpsData = await tpsRes.json();
       const firstTps = tpsData.items?.[0];
       
@@ -58,7 +209,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/voting-sessions/unlock`, {
+      const response = await fetch(`/api/voting-sessions/unlock`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,6 +222,11 @@ const AdminDashboard = () => {
         })
       });
 
+      if (response.status === 401) {
+        toast.error("Sesi Anda telah berakhir, silakan login kembali.");
+        return;
+      }
+
       if (response.ok) {
         toast.success(`Bilik Suara ${selectedBoothToUnlock} berhasil diaktifkan.`);
       } else {
@@ -81,6 +237,84 @@ const AdminDashboard = () => {
       toast.error('Koneksi server gagal');
     } finally {
       setIsGeneratingToken(false);
+    }
+  };
+
+  // KPPS Account Management
+  const [isGeneratingKpps, setIsGeneratingKpps] = useState(false);
+  const [isImportingKpps, setIsImportingKpps] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleGenerateKpps = async () => {
+    if (!confirm("Apakah Anda yakin ingin generate otomatis akun KPPS untuk TPS yang belum memiliki akun?")) return;
+    setIsGeneratingKpps(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/kpps/generate', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message);
+      } else {
+        toast.error(data.message || "Gagal generate akun KPPS");
+      }
+    } catch (e) {
+      toast.error("Koneksi server gagal");
+    } finally {
+      setIsGeneratingKpps(false);
+    }
+  };
+
+  const handleExportKpps = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/kpps/export', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) {
+        throw new Error("Gagal export akun KPPS");
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "Data_Akun_KPPS.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      toast.error("Gagal mendownload data akun KPPS");
+    }
+  };
+
+  const handleImportKpps = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsImportingKpps(true);
+    const formData = new FormData();
+    formData.append('excelFile', file);
+    
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/kpps/import', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message);
+      } else {
+        toast.error(data.message || "Gagal import akun KPPS");
+      }
+    } catch (err) {
+      toast.error("Koneksi server gagal");
+    } finally {
+      setIsImportingKpps(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -108,13 +342,39 @@ const AdminDashboard = () => {
   };
 
   useEffect(() => {
-    const isAdmin = localStorage.getItem('isAdmin');
-    if (!isAdmin) {
-      navigate('/');
-      return;
-    }
+    const checkAuth = async () => {
+      const tokenAuth = localStorage.getItem('token');
+      if (!tokenAuth) {
+        navigate('/');
+        return;
+      }
+      
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${tokenAuth}` }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          setCurrentUser(data.user);
+          if (data.user.role === 'KPPS') {
+            setSelectedTps(data.user.tpsCode);
+            loadData(data.user.tpsCode);
+          } else {
+            loadData();
+          }
+        } else {
+          localStorage.removeItem('token');
+          navigate('/');
+        }
+      } catch (e) {
+        navigate('/');
+      } finally {
+        setIsLoadingAuth(false);
+      }
+    };
     
-    fetchDashboardData();
+    checkAuth();
   }, [navigate]);
 
 
@@ -157,33 +417,81 @@ const AdminDashboard = () => {
         {/* TPS Filter */}
         <div className="mb-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-sm font-semibold text-slate-700 mb-2">Filter Berdasarkan TPS:</p>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant={selectedTps === null ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleTpsChange(null)}
-                >
-                  Semua TPS
-                </Button>
-                {tpsList.map((tps) => (
-                  <Button
-                    key={tps}
-                    variant={selectedTps === tps ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleTpsChange(tps)}
-                  >
-                    {tps}
-                  </Button>
-                ))}
-              </div>
+            <div className="flex-1 max-w-sm">
+              {currentUser?.role === 'ADMIN' ? (
+                <>
+                  <p className="text-sm font-semibold text-slate-700 mb-2">Filter Berdasarkan TPS:</p>
+                  <SearchableComboBox
+                    options={tpsList}
+                    value={selectedTps}
+                    onChange={handleTpsChange}
+                    placeholder="Semua TPS"
+                  />
+                </>
+              ) : (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-lg font-bold text-blue-900">
+                    Anda bertugas di: TPS {currentUser?.tpsNumber} - {currentUser?.location || currentUser?.tpsCode}
+                  </p>
+                </div>
+              )}
             </div>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 flex-wrap items-center mt-4 md:mt-0">
+              {currentUser?.role === 'ADMIN' && (
+                <>
+                  <Dialog open={isTpsModalOpen} onOpenChange={setIsTpsModalOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="font-semibold text-blue-600 border-blue-200 hover:bg-blue-50">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Tambah TPS
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Tambah TPS Baru</DialogTitle>
+                    <DialogDescription>
+                      Kode TPS akan dibuat secara otomatis sesuai urutan. Maksimal 500 DPT.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleAddTps} className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="location">Lokasi Spesifik</Label>
+                      <Input
+                        id="location"
+                        placeholder="e.g., SD Krandon 1"
+                        value={newTpsLocation}
+                        onChange={(e) => setNewTpsLocation(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="dpt">Jumlah DPT</Label>
+                      <Input
+                        id="dpt"
+                        type="number"
+                        placeholder="Maksimal 500"
+                        value={newTpsDpt}
+                        onChange={(e) => setNewTpsDpt(e.target.value)}
+                      />
+                    </div>
+                    {tpsError && (
+                      <div className="p-3 bg-red-50 text-red-600 text-sm font-semibold rounded-md border border-red-200">
+                        {tpsError}
+                      </div>
+                    )}
+                    <Button type="submit" className="w-full" disabled={isSubmittingTps}>
+                      {isSubmittingTps ? "Menyimpan..." : "Simpan TPS"}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
+
               <Button size="sm" variant="outline" onClick={() => navigate('/admin/tambah-paslon')} className="font-semibold text-green-600 border-green-200 hover:bg-green-50">
                 <Plus className="mr-2 h-4 w-4" />
                 Tambah Paslon
               </Button>
+              </>
+              )}
+              
               <Button size="sm" variant="secondary" onClick={() => navigate('/admin/audit-logs')} className="font-semibold">
                 <Shield className="mr-2 h-4 w-4 text-amber-500" />
                 Log Aktivitas
@@ -216,6 +524,49 @@ const AdminDashboard = () => {
           </div>
         </div>
 
+        {/* KPPS Account Management Card */}
+        {currentUser?.role === 'ADMIN' && (
+          <Card className="bg-white border-gray-200 shadow-sm mb-8">
+            <CardHeader className="pb-3 border-b border-gray-100">
+              <CardTitle className="text-lg font-bold text-slate-800 flex items-center">
+                <Users className="w-5 h-5 mr-2 text-blue-600" /> Manajemen Akun KPPS
+              </CardTitle>
+              <CardDescription>
+                Kelola akun petugas KPPS secara massal via Excel atau Auto-Generate.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-4 flex flex-wrap gap-4">
+              <Button size="sm" variant="outline" className="font-semibold text-blue-600 border-blue-200 hover:bg-blue-50" onClick={handleGenerateKpps} disabled={isGeneratingKpps}>
+                {isGeneratingKpps ? <RotateCcw className="mr-2 h-4 w-4 animate-spin" /> : <Shield className="mr-2 h-4 w-4" />}
+                Auto-Generate Akun KPPS
+              </Button>
+              
+              <div className="relative">
+                <input 
+                  type="file" 
+                  accept=".xlsx, .xls" 
+                  className="hidden" 
+                  ref={fileInputRef}
+                  onChange={handleImportKpps}
+                />
+                <Button size="sm" variant="outline" className="font-semibold text-green-600 border-green-200 hover:bg-green-50" onClick={() => fileInputRef.current?.click()} disabled={isImportingKpps}>
+                  {isImportingKpps ? <RotateCcw className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                  Import via Excel
+                </Button>
+              </div>
+
+              <Button size="sm" variant="outline" className="font-semibold text-slate-600 border-slate-300 hover:bg-slate-100" onClick={handleExportKpps}>
+                <Download className="mr-2 h-4 w-4" />
+                Export Akun KPPS (Excel)
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {currentUser?.role === 'ADMIN' && (
+          <WitnessManagement />
+        )}
+
         {/* Statistics Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           {selectedTps && (
@@ -233,7 +584,7 @@ const AdminDashboard = () => {
               <Users className="h-4 w-4 text-slate-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900">100</div>
+              <div className="text-2xl font-bold text-slate-900">{stats.totalRegistered}</div>
               <p className="text-xs text-slate-500">Terdaftar dalam DPT</p>
             </CardContent>
           </Card>
@@ -246,7 +597,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold text-slate-900">{stats.totalVotes}</div>
               <p className="text-xs text-slate-500">
-                {Math.min(Math.round((stats.totalVotes / 100) * 100), 100)}% partisipasi
+                {stats.participation}% partisipasi
               </p>
             </CardContent>
           </Card>

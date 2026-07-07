@@ -12,6 +12,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   ResponsiveContainer,
   PieChart,
   Pie,
@@ -38,7 +46,13 @@ type Candidate = {
   ballotNumber: number;
   candidateName: string | null;
   viceCandidateName: string | null;
+  motto: string | null;
+  vision: string | null;
+  mission: string | null;
+  education: string | null;
+  careerPath: string | null;
   voteCount: number;
+  photoUrl?: string | null;
 };
 
 type TpsMetadata = {
@@ -53,6 +67,7 @@ type TpsMetadata = {
   status: string;
   documentHash: string | null;
   txHash: string | null;
+  registeredVotersTotal: number;
 };
 
 const CHART_COLORS = [
@@ -112,7 +127,26 @@ const Homepage = () => {
       : `${c.candidateName}`;
   };
 
+  const formatList = (text: string | null) => {
+    if (!text) return <p className="text-sm text-slate-500">-</p>;
+    let items: string[] = [];
+    try {
+      items = JSON.parse(text);
+      if (!Array.isArray(items)) items = text.split('\n');
+    } catch {
+      items = text.split('\n');
+    }
+    return (
+      <ul className="list-disc pl-5 text-sm text-slate-700 space-y-1">
+        {items.map((item, idx) => (
+          item.trim() ? <li key={idx}>{item.trim()}</li> : null
+        ))}
+      </ul>
+    );
+  };
+
   const totalVotes = candidates.reduce((sum, c) => sum + c.voteCount, 0);
+  const totalDPT = tpsList.reduce((sum, t) => sum + (t.registeredVotersTotal || 0), 0);
   
   const candidatesWithPercentage = candidates.map((c) => {
     const percentage = totalVotes > 0 ? (c.voteCount / totalVotes) * 100 : 0;
@@ -265,7 +299,7 @@ const Homepage = () => {
           </div>
 
           {/* Quick Metrics Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t border-gray-200">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-8 pt-8 border-t border-gray-200">
             <div className="bg-gray-50 p-4 rounded-xl border border-gray-200/60">
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Suara Masuk</p>
               <p className="text-2xl md:text-3xl font-extrabold text-slate-900 mt-1 flex items-baseline gap-1">
@@ -274,9 +308,16 @@ const Homepage = () => {
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-xl border border-gray-200/60">
-              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Jumlah Kandidat</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Pemilih (DPT)</p>
               <p className="text-2xl md:text-3xl font-extrabold text-slate-900 mt-1">
-                {candidates.length}
+                {totalDPT.toLocaleString("id-ID")}
+              </p>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-200/60">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Partisipasi</p>
+              <p className="text-2xl md:text-3xl font-extrabold text-slate-900 mt-1 flex items-baseline gap-1">
+                {totalDPT > 0 ? ((totalVotes / totalDPT) * 100).toFixed(1) : 0}
+                <span className="text-xs font-normal text-slate-500">%</span>
               </p>
             </div>
             <div className="bg-gray-50 p-4 rounded-xl border border-gray-200/60">
@@ -379,27 +420,95 @@ const Homepage = () => {
               </Card>
             ) : (
               candidatesWithPercentage.map((c, i) => (
-                <Card key={c.id} className="bg-white border-gray-200 hover:border-gray-300 transition-all shadow-md group relative overflow-hidden">
+                <Card key={c.id} className="bg-white border-gray-200 hover:border-gray-300 transition-all shadow-md group relative overflow-hidden flex flex-col">
                   <div 
                     className="absolute top-0 bottom-0 left-0 w-1 group-hover:w-1.5 transition-all" 
                     style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
                   />
-                  <CardContent className="p-5 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-4 min-w-0">
-                      <div 
-                        className="h-12 w-12 rounded-xl flex items-center justify-center text-white font-black text-lg shrink-0 shadow-inner"
-                        style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
-                      >
-                        {c.ballotNumber}
+                  <CardContent className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 min-w-0 w-full sm:w-auto">
+                      <div className="relative shrink-0">
+                        {c.photoUrl ? (
+                          <img 
+                            src={`${import.meta.env.VITE_API_BASE_URL}${c.photoUrl}`} 
+                            alt={getCandidateFullName(c)}
+                            className="w-20 h-20 object-cover rounded-xl border border-gray-200"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center border border-gray-200">
+                            <Users className="h-8 w-8 text-gray-400" />
+                          </div>
+                        )}
+                        <div 
+                          className="absolute -top-2 -left-2 h-7 w-7 rounded-full flex items-center justify-center text-white font-black text-sm shadow-md border-2 border-white"
+                          style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
+                        >
+                          {c.ballotNumber}
+                        </div>
                       </div>
                       <div className="min-w-0">
                         <p className="font-bold text-slate-900 text-sm sm:text-base leading-tight truncate">
                           {getCandidateFullName(c)}
                         </p>
                         <p className="text-xs text-slate-500 mt-1 font-medium">Nomor Urut {c.ballotNumber}</p>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="link" size="sm" className="p-0 h-auto mt-1 text-blue-600 font-semibold text-xs">
+                              Lihat Profil
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle className="text-xl font-bold">
+                                Profil Pasangan Calon {c.ballotNumber}
+                              </DialogTitle>
+                              <DialogDescription>
+                                {getCandidateFullName(c)}
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="mt-4 space-y-6">
+                              {c.photoUrl ? (
+                                <img
+                                  src={`${import.meta.env.VITE_API_BASE_URL}${c.photoUrl}`}
+                                  alt={getCandidateFullName(c)}
+                                  className="w-32 h-32 rounded-full object-cover mx-auto mb-4 border-4 border-gray-100 shadow-sm"
+                                />
+                              ) : (
+                                <div className="w-32 h-32 bg-gray-100 rounded-full mx-auto mb-4 border-4 border-gray-100 shadow-sm flex items-center justify-center">
+                                  <Users className="h-10 w-10 text-gray-400" />
+                                </div>
+                              )}
+                              {c.motto && (
+                                <div>
+                                  <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">Motto</h4>
+                                  <p className="text-sm text-slate-700 italic">"{c.motto}"</p>
+                                </div>
+                              )}
+                              <div>
+                                <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">Visi</h4>
+                                {formatList(c.vision)}
+                              </div>
+                              <div>
+                                <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">Misi</h4>
+                                {formatList(c.mission)}
+                              </div>
+                              <div>
+                                <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">Riwayat Pendidikan</h4>
+                                {formatList(c.education)}
+                              </div>
+                              <div>
+                                <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2">Riwayat Karier</h4>
+                                {formatList(c.careerPath)}
+                              </div>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                       </div>
                     </div>
-                    <div className="text-right shrink-0">
+                    <div className="text-left sm:text-right w-full sm:w-auto shrink-0 pl-16 sm:pl-0">
                       <p className="text-2xl font-black tracking-tight text-slate-900">
                         {c.voteCount.toLocaleString("id-ID")}
                       </p>

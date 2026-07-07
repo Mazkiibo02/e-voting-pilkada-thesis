@@ -5,6 +5,12 @@ export interface PublicCandidateResult {
   ballotNumber: number;
   candidateName: string | null;
   viceCandidateName: string | null;
+  motto: string | null;
+  vision: string | null;
+  mission: string | null;
+  education: string | null;
+  careerPath: string | null;
+  photoUrl: string | null;
   voteCount: number;
 }
 
@@ -20,21 +26,32 @@ export interface PublicTpsMetadata {
   status: string;
   documentHash: string | null;
   txHash: string | null;
+  registeredVotersTotal: number;
 }
 
 export const PublicService = {
   getAggregatedResults() {
-    // Query total votes for each candidate pair aggregated from all TPS recaps
+    // Query total votes for each candidate pair directly from votes table for real-time quick count
     const candidateResults = db.prepare(`
       SELECT 
         cp.id,
         cp.ballot_number as ballotNumber,
         cp.candidate_name as candidateName,
         cp.vice_candidate_name as viceCandidateName,
-        CAST(COALESCE(SUM(ct.vote_total), 0) AS INTEGER) as voteCount
+        cp.motto,
+        cp.vision,
+        cp.mission,
+        cp.education,
+        cp.career_path as careerPath,
+        cp.photo_url as photoUrl,
+        (
+          SELECT COUNT(*) 
+          FROM votes v 
+          JOIN voting_sessions s ON v.session_id = s.id
+          JOIN tps t ON s.tps_id = t.id
+          WHERE v.candidate_pair_id = cp.id
+        ) as voteCount
       FROM candidate_pairs cp
-      LEFT JOIN tps_recap_candidate_totals ct ON cp.id = ct.candidate_pair_id
-      GROUP BY cp.id, cp.ballot_number, cp.candidate_name, cp.vice_candidate_name
       ORDER BY cp.ballot_number ASC
     `).all() as unknown as PublicCandidateResult[];
 
@@ -50,6 +67,7 @@ export const PublicService = {
         t.village,
         t.address,
         t.status,
+        t.registered_voters_total as registeredVotersTotal,
         COALESCE(d.signed_file_hash_sha256, br.document_hash) as documentHash,
         br.transaction_hash as txHash
       FROM tps t

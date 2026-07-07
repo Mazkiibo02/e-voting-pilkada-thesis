@@ -192,6 +192,8 @@ Target public users can:
 2. View TPS recap.
 3. View finalization status.
 4. View document hash and blockchain transaction hash after finalization.
+5. Track validated votes dynamically in Real-Time "Quick Count" mode.
+6. View interactive Candidate Profiles and realistic location data.
 
 Public users cannot modify data or view DPT/personal voter data.
 
@@ -205,8 +207,8 @@ The implemented core flow is now:
 ADMIN/KPPS login
 -> Admin manages election/TPS/candidate data (Manajemen Paslon)
 -> KPPS handles manual ID verification (KTP/Model C7)
--> Admin/KPPS generates One-Time Alphanumeric Token
--> Voter enters One-Time Token at digital booth
+-> Admin/KPPS clicks "Buka Bilik Suara" to trigger Remote Unlock
+-> Booth (sitting in Kiosk Mode / Standby Screen) is unlocked remotely
 -> Booth displays candidate pairs
 -> Voter selects candidate pair
 -> Voter confirms vote
@@ -288,6 +290,11 @@ Implemented resource groups:
 /tps
 /candidate-pairs
 ```
+
+**Feature Requirement: Manajemen TPS (TPS Management)**
+- Admin can dynamically add TPS.
+- The system auto-generates the TPS code.
+- Strict KPU guardrail: Maximum 500 DPT (Registered Voters) per TPS.
 
 **Feature Requirement: Manajemen Paslon (Candidate Management)**
 - Support for candidate photo uploads.

@@ -33,17 +33,18 @@ The following major foundations are now implemented:
 18. API URL refactoring completed (Zero hardcoded URLs).
 19. Vite Proxy integration and Cloudflare Tunnel CLI setup implemented for secure public exposure.
 20. DPT/Voter dependency fully decoupled from the voting flow.
-21. One-Time Token authentication flow implemented for digital booth access.
-22. Full-stack "Tambah Paslon" (Candidate Management) implementation completed.
+21. Kiosk Mode (Remote Unlock) Booth UI completed.
+22. Dynamic TPS Management with 500 DPT KPU Guardrail completed.
+23. Full-stack "Tambah Paslon" (Candidate Management) implementation completed.
+24. Public result dashboard completed, including Real-Time Quick Count and Dynamic DPT synchronization.
 
 **Environment Status**: Database has been fully sterilized and UI hardcoded fallback data has been removed.
 
 The project is now aligned with the main local-first TPS voting architecture, but the following important modules remain incomplete:
 
-1. Public result dashboard backed by finalized data and hashes.
-2. Full frontend admin/KPPS/witness management interfaces.
-3. Legacy frontend voter/localStorage cleanup.
-4. Automated tests and remaining README documentation updates.
+1. Full frontend admin/KPPS/witness management interfaces.
+2. Legacy frontend voter/localStorage cleanup.
+3. Automated tests and remaining README documentation updates.
 
 ---
 
@@ -103,9 +104,10 @@ One feature or fix must stay in one branch only.
 | `feat/witness-verification` | Done | Implemented complete Witness Verification flow including database schema migration, backend endpoints, and WitnessDashboard frontend UI. |
 | `feat/blockchain-finalization` | Done | Refactored EVoting.sol smart contract, created finalization route and blockchain service using ethers.js to anchor results, and integrated anchoring UI in ChasilPreview.tsx. |
 | `refactor/api-proxy-tunnel` | Done | API URL refactoring (Zero hardcoded URLs), Vite Proxy integration, and Cloudflare Tunnel CLI setup. |
-| `refactor/voting-flow-pivot` | Done | DPT/Voter dependency decoupling and One-Time Token auth flow implementation. |
-| `feat/tambah-paslon` | Done | Full-stack "Tambah Paslon" (Candidate Management) implementation. |
+| `refactor/voting-flow-pivot` | Done | DPT/Voter dependency decoupling and Kiosk Mode (Remote Unlock) Booth UI implemented. |
+| `feat/tambah-paslon` | Done | Full-stack "Tambah Paslon" (Candidate Management) implementation and Dynamic TPS Management with 500 DPT KPU Guardrail. |
 | `chore/sterilize-env` | Done | Database fully sterilized and UI hardcoded fallback data removed. |
+| `feat/public-result-dashboard` | Done | Public result dashboard completed, including Real-Time Quick Count and Dynamic DPT synchronization. |
 
 ---
 
@@ -307,6 +309,8 @@ kpps@example.local / Kpps123! / KPPS
 witness@example.local / Witness123! / WITNESS
 ```
 
+Note: The database initializer/seeder now creates default Elections as `ACTIVE` and TPS as `OPEN` to prevent relational binding errors when adding manual candidate data.
+
 Passwords are hashed using `bcryptjs`. Demo NIK-like values are hashed before storage. No real citizen data should be used.
 
 ---
@@ -470,7 +474,7 @@ Implemented behavior:
 1. ADMIN can manage any session.
 2. KPPS can manage only assigned TPS sessions.
 3. Session creation verifies election/TPS/voter consistency.
-4. Session creation marks voter verification status as `VERIFIED` if needed.
+4. Session creation triggers the remote unlock for the physical booth (Kiosk Mode).
 5. Session creation does not set `has_voted = true`.
 6. Booth polling returns election/TPS/candidate pair data but no personal voter data.
 7. Duplicate active session for the same voter or booth returns conflict.

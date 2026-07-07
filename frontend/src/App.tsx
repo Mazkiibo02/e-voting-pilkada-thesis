@@ -13,6 +13,7 @@ import PublicResults from "./pages/PublicResults";
 import BoothVoting from "./pages/BoothVoting";
 import StandbyBooth from "./pages/StandbyBooth";
 import WitnessDashboard from "./pages/WitnessDashboard";
+import PengawasDashboard from "./pages/PengawasDashboard";
 import TambahPaslon from "./pages/TambahPaslon";
 import NotFound from "./pages/NotFound";
 
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/booth/:boothId" element={<StandbyBooth />} />
           <Route path="/booth/:boothId/vote" element={<BoothVoting />} />
           <Route path="/witness" element={<WitnessDashboard />} />
+          <Route path="/pengawas" element={<PengawasDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

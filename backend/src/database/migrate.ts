@@ -45,10 +45,33 @@ function migrate() {
       }
     }
 
+    // Run additive schema updates for users table
+    const usersColumns = [
+      { name: "full_name", type: "TEXT" },
+      { name: "affiliation", type: "TEXT" }
+    ];
+    for (const col of usersColumns) {
+      try {
+        db.exec(`ALTER TABLE users ADD COLUMN ${col.name} ${col.type};`);
+        console.log(`Added column ${col.name} to users table.`);
+      } catch (colErr: any) {
+        const errStr = String(colErr);
+        if (!errStr.includes("duplicate column name") && !errStr.includes("already exists")) {
+          console.warn(`Could not add column ${col.name} to users:`, colErr);
+        }
+      }
+    }
+    
+    try {
+      db.exec("UPDATE users SET full_name = name WHERE full_name IS NULL;");
+    } catch (e) {}
+
+
     // Run additive schema updates for audit_logs table
     const auditLogsColumns = [
       { name: "actor_email", type: "TEXT" },
       { name: "description", type: "TEXT" },
+      { name: "actor_display", type: "TEXT" },
     ];
     for (const col of auditLogsColumns) {
       try {

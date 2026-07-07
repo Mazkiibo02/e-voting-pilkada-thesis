@@ -28,10 +28,11 @@ export interface AuditLogRecord {
   metadata_json: string | null;
   created_at: string;
   actor_name?: string | null;
+  actor_display?: string | null;
 }
 
 export const AuditLogsService = {
-  log(input: AuditLogInput): void {
+  log(input: AuditLogInput, req?: any): void {
     try {
       let finalEmail = input.actorEmail || null;
       
@@ -49,17 +50,26 @@ export const AuditLogsService = {
 
       const metadata = input.metadataJson ? JSON.stringify(input.metadataJson) : null;
       
+      let actorDisplay = null;
+      if (req && req.user) {
+        const name = req.user.full_name || input.actorEmail || "Unknown";
+        const role = req.user.role || input.actorRole || "Unknown";
+        const tps = req.user.tps_code || "No TPS";
+        actorDisplay = `${name} (${role} - ${tps})`;
+      }
+
       db.prepare(`
         INSERT INTO audit_logs (
-          election_id, tps_id, actor_user_id, actor_email, actor_role, 
+          election_id, tps_id, actor_user_id, actor_email, actor_role, actor_display,
           action, entity_type, entity_id, description, metadata_json
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
         input.electionId ?? null,
         input.tpsId ?? null,
         input.actorUserId ?? null,
         finalEmail,
         input.actorRole ?? null,
+        actorDisplay,
         input.action,
         input.entityType ?? null,
         input.entityId ?? null,
@@ -71,7 +81,7 @@ export const AuditLogsService = {
     }
   },
 
-  getAll(filters: { action?: string; entityType?: string; actorRole?: string; limit?: number; offset?: number } = {}): AuditLogRecord[] {
+  getAll(filters: { action?: string; entityType?: string; actorRole?: string; tpsId?: number; limit?: number; offset?: number } = {}): AuditLogRecord[] {
     let query = `SELECT audit_logs.*, users.name AS actor_name FROM audit_logs LEFT JOIN users ON audit_logs.actor_user_id = users.id`;
     const conditions: string[] = [];
     const params: any[] = [];
@@ -87,6 +97,10 @@ export const AuditLogsService = {
     if (filters.actorRole) {
       conditions.push(`audit_logs.actor_role = ?`);
       params.push(filters.actorRole);
+    }
+    if (filters.tpsId) {
+      conditions.push(`audit_logs.tps_id = ?`);
+      params.push(filters.tpsId);
     }
 
     if (conditions.length > 0) {
@@ -116,6 +130,7 @@ export const AuditLogsService = {
         actor_user_id: log.actor_user_id,
         actor_email: log.actor_email,
         actor_role: log.actor_role,
+        actor_display: log.actor_display,
         action: log.action,
         entity_type: log.entity_type,
         entity_id: log.entity_id,

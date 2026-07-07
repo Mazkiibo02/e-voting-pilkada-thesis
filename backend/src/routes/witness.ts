@@ -18,9 +18,9 @@ const upload = multer({
 /**
  * 1. GET /witness/recap
  * Purpose: Fetch assigned TPS recap and document metadata for logged-in witness.
- * Allowed roles: WITNESS
+ * Allowed roles: WITNESS, PENGAWAS
  */
-router.get("/recap", authenticateToken, requireRole(["WITNESS"]), async (req: AuthRequest, res: Response) => {
+router.get("/recap", authenticateToken, requireRole(["WITNESS", "PENGAWAS"]), async (req: AuthRequest, res: Response) => {
   try {
     const assignedTpsId = req.user?.assignedTpsId;
     const witnessUserId = req.user?.sub ? Number(req.user.sub) : null;
@@ -47,9 +47,9 @@ router.get("/recap", authenticateToken, requireRole(["WITNESS"]), async (req: Au
 /**
  * 2. POST /witness/verify
  * Purpose: Approve or object to the assigned TPS recap with optional evidence upload.
- * Allowed roles: WITNESS
+ * Allowed roles: WITNESS, PENGAWAS
  */
-router.post("/verify", authenticateToken, requireRole(["WITNESS"]), async (req: AuthRequest, res: Response) => {
+router.post("/verify", authenticateToken, requireRole(["WITNESS", "PENGAWAS"]), async (req: AuthRequest, res: Response) => {
   try {
     const assignedTpsId = req.user?.assignedTpsId;
     const witnessUserId = req.user?.sub ? Number(req.user.sub) : null;

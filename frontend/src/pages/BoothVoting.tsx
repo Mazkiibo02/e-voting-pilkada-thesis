@@ -24,6 +24,8 @@ const BoothVoting = () => {
 
   const [uiState, setUiState] = useState<UIState>("waiting");
   const [sessionData, setSessionData] = useState<ActiveSession | null>(null);
+  const [candidates, setCandidates] = useState<CandidatePair[]>([]);
+  const [isLoadingCandidates, setIsLoadingCandidates] = useState(false);
   const [selectedPair, setSelectedPair] = useState<CandidatePair | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -65,6 +67,19 @@ const BoothVoting = () => {
   useEffect(() => {
     loadSession();
   }, [currentBoothId, token]);
+
+  // Handle loading candidates state as requested
+  useEffect(() => {
+    if (sessionData?.candidatePairs) {
+      setIsLoadingCandidates(true);
+      // Use existing session candidate data fetched from API
+      const timer = setTimeout(() => {
+        setCandidates(sessionData.candidatePairs);
+        setIsLoadingCandidates(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [sessionData]);
 
   // Handle countdown on session expiry
   useEffect(() => {
@@ -246,75 +261,97 @@ const BoothVoting = () => {
             </div>
 
             {/* Candidates Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sessionData.candidatePairs.map((pair) => {
-                const isSelected = selectedPair?.id === pair.id;
-                return (
-                  <div
-                    key={pair.id}
-                    onClick={() => setSelectedPair(pair)}
-                    className={`relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 transform active:scale-[0.98] ${
-                      isSelected
-                        ? "ring-4 ring-blue-500 bg-white border-transparent shadow-xl scale-[1.02]"
-                        : "bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 shadow-sm"
-                    }`}
-                  >
-                    {/* Ballot Number badge */}
-                    <div className={`absolute top-4 left-4 h-12 w-12 rounded-xl flex items-center justify-center text-xl font-black ${
-                      isSelected
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-500"
-                    }`}>
-                      {pair.ballotNumber.toString().padStart(2, "0")}
-                    </div>
-
-                    {/* Selected Indicator */}
-                    {isSelected && (
-                      <div className="absolute top-4 right-4 bg-blue-500 text-white p-1 rounded-full shadow-lg">
-                        <Check className="h-4 w-4" />
-                      </div>
-                    )}
-
-                    <div className="pt-20 px-6 pb-6 space-y-4">
-                      <div className="space-y-1">
-                        <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Walikota</span>
-                        <h3 className="text-xl font-bold text-slate-900 tracking-tight">{pair.candidateName}</h3>
+            {isLoadingCandidates ? (
+              <div className="flex justify-center items-center py-20">
+                <Loader2 className="h-10 w-10 text-blue-500 animate-spin mr-3" />
+                <span className="text-xl font-medium text-slate-600">Memuat data paslon...</span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {candidates.map((pair) => {
+                  const isSelected = selectedPair?.id === pair.id;
+                  return (
+                    <div
+                      key={pair.id}
+                      onClick={() => setSelectedPair(pair)}
+                      className={`relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 transform active:scale-[0.98] ${
+                        isSelected
+                          ? "ring-4 ring-blue-500 bg-white border-transparent shadow-xl scale-[1.02]"
+                          : "bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 shadow-sm"
+                      }`}
+                    >
+                      {/* Ballot Number badge */}
+                      <div className={`absolute top-4 left-4 h-12 w-12 rounded-xl flex items-center justify-center text-xl font-black z-10 ${
+                        isSelected
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 text-gray-500"
+                      }`}>
+                        {pair.ballotNumber.toString().padStart(2, "0")}
                       </div>
 
-                      <div className="border-t border-gray-100 my-3" />
-
-                      <div className="space-y-1">
-                        <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Wakil Walikota</span>
-                        <h3 className="text-xl font-bold text-slate-700 tracking-tight">{pair.viceCandidateName}</h3>
-                      </div>
-
-                      {pair.coalitionName && (
-                        <div className="pt-2 space-y-1">
-                          <span className="text-[10px] text-slate-500 uppercase font-semibold">Partai / Coalition Pengusung</span>
-                          <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{pair.coalitionName}</p>
+                      {/* Selected Indicator */}
+                      {isSelected && (
+                        <div className="absolute top-4 right-4 bg-blue-500 text-white p-1 rounded-full shadow-lg z-10">
+                          <Check className="h-4 w-4" />
                         </div>
                       )}
-                      
-                      <div className="pt-2">
-                        <Button 
-                          type="button" 
-                          variant="outline" 
-                          size="sm" 
-                          className="w-full text-xs font-semibold"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setModalPair(pair);
-                            setProfileModalOpen(true);
-                          }}
-                        >
-                          Lihat Profil Detail
-                        </Button>
+
+                      {/* Candidate Photo */}
+                      {pair.photoUrl ? (
+                        <div className="h-56 w-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                          <img 
+                            src={pair.photoUrl.startsWith('http') ? pair.photoUrl : `/api${pair.photoUrl}`} 
+                            alt={`Paslon ${pair.candidateName}`} 
+                            className="h-full w-full object-cover" 
+                          />
+                        </div>
+                      ) : (
+                        <div className="h-56 w-full bg-gray-100 flex items-center justify-center">
+                          <span className="text-gray-400 font-medium">Foto Tidak Tersedia</span>
+                        </div>
+                      )}
+
+                      <div className="pt-4 px-6 pb-6 space-y-4">
+                        <div className="space-y-1">
+                          <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Walikota</span>
+                          <h3 className="text-xl font-bold text-slate-900 tracking-tight">{pair.candidateName}</h3>
+                        </div>
+
+                        <div className="border-t border-gray-100 my-3" />
+
+                        <div className="space-y-1">
+                          <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Wakil Walikota</span>
+                          <h3 className="text-xl font-bold text-slate-700 tracking-tight">{pair.viceCandidateName}</h3>
+                        </div>
+
+                        {pair.coalitionName && (
+                          <div className="pt-2 space-y-1">
+                            <span className="text-[10px] text-slate-500 uppercase font-semibold">Partai / Coalition Pengusung</span>
+                            <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{pair.coalitionName}</p>
+                          </div>
+                        )}
+                        
+                        <div className="pt-2">
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full text-xs font-semibold"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setModalPair(pair);
+                              setProfileModalOpen(true);
+                            }}
+                          >
+                            Lihat Profil Detail
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Bottom Floating bar for Actions */}
             <div className="border-t border-gray-200 pt-6 flex justify-end">
@@ -494,7 +531,7 @@ const BoothVoting = () => {
             <div className="p-6 overflow-y-auto space-y-6">
               {modalPair.photoUrl && (
                 <div className="flex justify-center mb-6">
-                  <img src={`http://localhost:5000${modalPair.photoUrl}`} alt="Paslon" className="h-48 rounded-xl object-contain shadow-md" />
+                  <img src={modalPair.photoUrl.startsWith('http') ? modalPair.photoUrl : `/api${modalPair.photoUrl}`} alt="Paslon" className="h-48 rounded-xl object-contain shadow-md" />
                 </div>
               )}
               

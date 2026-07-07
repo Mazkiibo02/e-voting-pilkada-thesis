@@ -19,6 +19,8 @@ import witnessRoutes from "./routes/witness";
 import finalizationRoutes from "./routes/finalization";
 import publicRoutes from "./routes/public";
 import statsRoutes from "./routes/stats";
+import kppsRoutes from "./routes/kpps";
+import witnessesRoutes from "./routes/witnesses";
 import db from "./database/connection";
 
 const app = express();
@@ -40,7 +42,8 @@ app.use("/witness", witnessRoutes);
 app.use("/finalization", finalizationRoutes);
 app.use("/public", publicRoutes);
 app.use("/stats", statsRoutes);
-
+app.use("/kpps", kppsRoutes);
+app.use("/witnesses", witnessesRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "E-Voting Backend Running" });
@@ -54,7 +57,7 @@ app.get("/candidates/:id", async (req, res) => {
     }
 
     const cp = db.prepare(`
-      SELECT cp.id, cp.candidate_name, cp.vice_candidate_name,
+      SELECT cp.id, cp.candidate_name, cp.vice_candidate_name, cp.photo_url,
              (SELECT COUNT(*) FROM votes v WHERE v.candidate_pair_id = cp.id) as voteCount
       FROM candidate_pairs cp
       WHERE cp.id = ?
@@ -69,7 +72,8 @@ app.get("/candidates/:id", async (req, res) => {
       name: cp.vice_candidate_name 
         ? `${cp.candidate_name} & ${cp.vice_candidate_name}`
         : `${cp.candidate_name}`,
-      voteCount: cp.voteCount
+      voteCount: cp.voteCount,
+      photoUrl: cp.photo_url
     });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch candidate" });
@@ -86,7 +90,7 @@ app.get("/candidates", async (req, res) => {
   try {
     // Query all candidate pairs and calculate their dynamic vote counts from SQLite
     const candidatePairs = db.prepare(`
-      SELECT cp.id, cp.candidate_name, cp.vice_candidate_name,
+      SELECT cp.id, cp.candidate_name, cp.vice_candidate_name, cp.photo_url,
              (SELECT COUNT(*) FROM votes v WHERE v.candidate_pair_id = cp.id) as voteCount
       FROM candidate_pairs cp
       ORDER BY cp.ballot_number ASC
@@ -97,7 +101,8 @@ app.get("/candidates", async (req, res) => {
       name: cp.vice_candidate_name 
         ? `${cp.candidate_name} & ${cp.vice_candidate_name}`
         : `${cp.candidate_name}`,
-      voteCount: cp.voteCount
+      voteCount: cp.voteCount,
+      photoUrl: cp.photo_url
     }));
 
     res.json(candidates);

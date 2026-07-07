@@ -13,6 +13,8 @@ export interface AuthUserPayload {
   sub: string;
   role: string;
   assignedTpsId: number | null;
+  full_name?: string;
+  tps_code?: string | null;
   nik?: string;
   iat?: number;
   exp?: number;
@@ -46,6 +48,8 @@ export const authenticateToken = (
       role: decoded.role,
       assignedTpsId:
         decoded.assignedTpsId === undefined ? null : decoded.assignedTpsId,
+      full_name: decoded.full_name,
+      tps_code: decoded.tps_code,
     };
     next();
   } catch (err) {

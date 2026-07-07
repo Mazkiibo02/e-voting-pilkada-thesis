@@ -20,6 +20,7 @@ interface AuditLog {
   description: string | null;
   created_at: string;
   actor_name?: string | null;
+  actor_display?: string | null;
 }
 
 const formatTimestamp = (dateStr: string) => {
@@ -210,7 +211,7 @@ const AuditLogs = () => {
                         <TableCell className="text-sm font-medium text-slate-900">
                           {log.actor_role === 'VOTER'
                             ? 'Bilik Suara (Voter)'
-                            : (log.actor_name || log.actor_email || `ID: ${log.actor_user_id || 'System'}`)}
+                            : (log.actor_display || log.actor_name || log.actor_email || `ID: ${log.actor_user_id || 'System'}`)}
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className="text-xs uppercase">

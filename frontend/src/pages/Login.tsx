@@ -42,16 +42,23 @@ const Login = () => {
         const data = await response.json();
         localStorage.setItem('token', data.token);
         
-        if (data.user && data.user.role === 'ADMIN') {
-          localStorage.setItem('isAdmin', 'true');
-          toast.success('Login Admin berhasil');
-          navigate('/admin');
-        } else if (data.user && data.user.role === 'WITNESS') {
-          toast.success('Login Saksi berhasil');
-          navigate('/witness');
-        } else {
-          toast.success(`Login berhasil: ${data.user?.role}`);
-          navigate('/');
+        if (data.user) {
+          localStorage.setItem('isAdmin', data.user.role === 'ADMIN' ? 'true' : 'false');
+          localStorage.setItem('userRole', data.user.role);
+          
+          if (data.user.role === 'ADMIN' || data.user.role === 'KPPS') {
+            toast.success(`Login ${data.user.role} berhasil`);
+            navigate('/admin');
+          } else if (data.user.role === 'WITNESS') {
+            toast.success('Login Saksi berhasil');
+            navigate('/witness');
+          } else if (data.user.role === 'PENGAWAS') {
+            toast.success('Login Pengawas berhasil');
+            navigate('/pengawas');
+          } else {
+            toast.success(`Login berhasil: ${data.user?.role}`);
+            navigate('/');
+          }
         }
       } else {
         const errorData = await response.json().catch(() => ({}));

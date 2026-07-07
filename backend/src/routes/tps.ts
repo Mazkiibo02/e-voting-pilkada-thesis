@@ -41,6 +41,32 @@ router.get("/", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: A
       tpsList = TpsService.getAll();
     }
 
+    // Auto-Initialize Default TPS if exactly 0 records
+    if (tpsList.length === 0) {
+      let electionId = 1;
+      const elections = ElectionsService.getAll();
+      if (elections.length === 0) {
+        const newElection = ElectionsService.create({
+          name: "Pilkada Kota Tegal 2026 (Demo)",
+          election_type: "PILKADA",
+          region_name: "Kota Tegal",
+          status: "ACTIVE"
+        });
+        electionId = newElection.id;
+      } else {
+        electionId = elections[0].id;
+      }
+      
+      const newTps = TpsService.create({
+        election_id: electionId,
+        tps_code: 'TPS-001',
+        tps_number: '01',
+        address: 'TPS 01 Pusat',
+        status: 'OPEN',
+      });
+      tpsList.push(newTps);
+    }
+
     return res.json({
       items: tpsList,
       total: tpsList.length,
@@ -108,61 +134,67 @@ router.post("/", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequ
   try {
     const {
       election_id,
-      tps_number,
-      tps_code,
-      province,
-      city_regency,
-      district,
-      village,
-      address,
-      status,
+      location,
       registered_voters_total,
     } = req.body;
 
-    if (!election_id || isNaN(Number(election_id))) {
-      return res.status(400).json({ message: "Valid election_id is required" });
-    }
-
-    const election = ElectionsService.getById(Number(election_id));
-    if (!election) {
-      return res.status(400).json({ message: "Election does not exist" });
-    }
-
-    if (
-      (!tps_number || typeof tps_number !== "string" || tps_number.trim() === "") &&
-      (!tps_code || typeof tps_code !== "string" || tps_code.trim() === "")
-    ) {
-      return res.status(400).json({ message: "Either tps_number or tps_code is required" });
-    }
-
-    if (registered_voters_total !== undefined) {
-      const regTotal = Number(registered_voters_total);
-      if (isNaN(regTotal) || regTotal < 0) {
-        return res.status(400).json({ message: "registered_voters_total must be non-negative" });
+    // Default to the first active election if not provided
+    let finalElectionId = Number(election_id);
+    if (!finalElectionId || isNaN(finalElectionId)) {
+      const elections = ElectionsService.getAll();
+      if (elections.length > 0) {
+        finalElectionId = elections[0].id;
+      } else {
+        return res.status(400).json({ message: "No active election found" });
       }
     }
 
-    if (status && !VALID_TPS_STATUSES.includes(status.toUpperCase())) {
-      return res.status(400).json({
-        message: `TPS status must be one of: ${VALID_TPS_STATUSES.join(", ")}`,
-      });
+    const regTotal = Number(registered_voters_total);
+    if (isNaN(regTotal) || regTotal < 0) {
+      return res.status(400).json({ message: "registered_voters_total must be non-negative" });
+    }
+    
+    // Strict KPU Guardrail
+    if (regTotal > 500) {
+      return res.status(400).json({ message: "Maksimal 500 DPT sesuai regulasi KPU." });
     }
 
+    if (!location || typeof location !== "string" || location.trim() === "") {
+      return res.status(400).json({ message: "Lokasi Spesifik (location) is required" });
+    }
+
+    // Auto-generate tps_code and tps_number
+    const allTps = TpsService.getAll(finalElectionId);
+    let maxSuffix = 0;
+    
+    allTps.forEach(tps => {
+      if (tps.tps_code && tps.tps_code.startsWith("TPS-")) {
+        const parts = tps.tps_code.split("-");
+        if (parts.length === 2) {
+          const num = parseInt(parts[1], 10);
+          if (!isNaN(num) && num > maxSuffix) {
+            maxSuffix = num;
+          }
+        }
+      }
+    });
+    
+    const nextSuffix = maxSuffix + 1;
+    const tps_number = nextSuffix.toString().padStart(2, '0'); // Usually 01, 02...
+    const tps_code = `TPS-${nextSuffix.toString().padStart(3, '0')}`;
+
     const newTps = TpsService.create({
-      election_id: Number(election_id),
-      tps_number: tps_number ? tps_number.trim() : undefined,
-      tps_code: tps_code ? tps_code.trim() : undefined,
-      province: province ? province.trim() : undefined,
-      city_regency: city_regency ? city_regency.trim() : undefined,
-      district: district ? district.trim() : undefined,
-      village: village ? village.trim() : undefined,
-      address: address ? address.trim() : undefined,
-      status: status ? status.toUpperCase() : "DRAFT",
-      registered_voters_total: registered_voters_total !== undefined ? Number(registered_voters_total) : 0,
+      election_id: finalElectionId,
+      tps_number: tps_number,
+      tps_code: tps_code,
+      address: location.trim(),
+      status: "OPEN",
+      registered_voters_total: regTotal,
     });
 
     return res.status(201).json({ data: newTps });
   } catch (error: any) {
+    console.error(error);
     return res.status(500).json({ message: "Failed to create TPS" });
   }
 });
@@ -262,7 +294,7 @@ router.patch("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: Auth
 });
 
 // PATCH /tps/:id/status
-router.patch("/:id/status", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequest, res: Response) => {
+router.patch("/:id/status", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
     if (isNaN(id)) {

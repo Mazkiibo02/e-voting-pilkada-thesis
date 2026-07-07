@@ -141,8 +141,8 @@ const PublicResults = () => {
             {/* Stats Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
               <StatCard icon={<Vote className="h-5 w-5" />} label="Suara Masuk" value={stats.totalVotes} />
-              <StatCard icon={<Users className="h-5 w-5" />} label="Pemilih Terdaftar" value={100} />
-              <StatCard icon={<BarChart3 className="h-5 w-5" />} label="Partisipasi" value={`${Math.min(Math.round((stats.totalVotes / 100) * 100), 100)}%`} />
+              <StatCard icon={<Users className="h-5 w-5" />} label="Pemilih Terdaftar" value={stats.totalRegistered} />
+              <StatCard icon={<BarChart3 className="h-5 w-5" />} label="Partisipasi" value={`${stats.participation}%`} />
               <StatCard
                 icon={<RefreshCw className="h-5 w-5" />}
                 label="Terakhir Diperbarui"

@@ -33,7 +33,7 @@ The project must remain aligned with these architecture decisions:
 ```txt
 Frontend React/Vite (Fully converted to Light Mode)
   ├─ Admin dashboard / C.Hasil preview & multi-booth dropdown selector
-  ├─ Booth voting UI (/booth/:boothId)
+  ├─ Booth voting UI (/booth/:boothId) - Kiosk / Standby Mode (Polling to unlock remotely)
   └─ Public Transparency Dashboard landing page (/)
 
 Express Backend TypeScript
@@ -121,7 +121,7 @@ Important routes:
 ```txt
 /admin/chasil-preview
 /admin/audit-logs
-/booth/:boothId
+/booth/:boothId (operates in a "Kiosk / Standby Mode" relying on polling/SSE to unlock remotely, rather than manual authentication forms)
 ```
 
 Legacy routes still exist and should be treated carefully:
@@ -196,6 +196,7 @@ audit_logs
 4. Vote records are linked to a temporary session.
 5. Public APIs must never expose DPT or voter personal data.
 6. Blockchain must never store voter identity.
+7. `voting_sessions` table officially includes the `token` column to support the remote unlock payload.
 
 ### 5.4 File Storage
 
