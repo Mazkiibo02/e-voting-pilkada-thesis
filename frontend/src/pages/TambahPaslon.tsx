@@ -62,7 +62,7 @@ const TambahPaslon = () => {
         submitData.append('photo', photo);
       }
 
-      const response = await fetch('http://localhost:5000/candidate-pairs', {
+      const response = await fetch('/api/candidate-pairs', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
