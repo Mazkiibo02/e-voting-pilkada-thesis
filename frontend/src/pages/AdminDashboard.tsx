@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import { toast } from 'sonner';
-import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download, Upload } from 'lucide-react';
+import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download, Upload, Trash2, Edit, Building } from 'lucide-react';
 import { WitnessManagement } from '@/components/WitnessManagement';
 import {
   AlertDialog,
@@ -337,8 +337,100 @@ const AdminDashboard = () => {
     }
   };
 
+  const [fullTpsList, setFullTpsList] = useState<any[]>([]);
+  const [editingTps, setEditingTps] = useState<any>(null);
+  const [editTpsLocation, setEditTpsLocation] = useState("");
+  const [editTpsDpt, setEditTpsDpt] = useState("");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
+
+  const fetchFullTps = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/tps', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setFullTpsList(data.items || []);
+      }
+    } catch (e) {
+      console.error("Failed to fetch full TPS list", e);
+    }
+  };
+
+  const handleDeleteTps = async (tpsId: number, tpsCode: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/tps/${tpsId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`TPS ${tpsCode} berhasil dihapus.`);
+        loadData(selectedTps ?? undefined);
+      } else {
+        toast.error(data.message || "Gagal menghapus TPS");
+      }
+    } catch (e) {
+      toast.error("Koneksi server gagal");
+    }
+  };
+
+  const handleOpenEditModal = (tps: any) => {
+    setEditingTps(tps);
+    setEditTpsLocation(tps.address || "");
+    setEditTpsDpt((tps.registered_voters_total ?? 100).toString());
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateTps = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTps) return;
+    const dptVal = parseInt(editTpsDpt, 10);
+    if (isNaN(dptVal) || dptVal < 0) {
+      toast.error("Jumlah DPT tidak valid.");
+      return;
+    }
+    if (dptVal > 500) {
+      toast.error("Maksimal 500 DPT sesuai regulasi KPU.");
+      return;
+    }
+
+    setIsSubmittingEdit(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/tps/${editingTps.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          address: editTpsLocation,
+          registered_voters_total: dptVal
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`TPS ${editingTps.tps_code} berhasil diperbarui.`);
+        setIsEditModalOpen(false);
+        setEditingTps(null);
+        loadData(selectedTps ?? undefined);
+      } else {
+        toast.error(data.message || "Gagal memperbarui TPS");
+      }
+    } catch (e) {
+      toast.error("Koneksi server gagal");
+    } finally {
+      setIsSubmittingEdit(false);
+    }
+  };
+
   const loadData = (tps?: string) => {
     fetchDashboardData(tps);
+    fetchFullTps();
   };
 
   useEffect(() => {
@@ -566,6 +658,117 @@ const AdminDashboard = () => {
         {currentUser?.role === 'ADMIN' && (
           <WitnessManagement />
         )}
+
+        {/* Manajemen TPS & Data DPT */}
+        {currentUser?.role === 'ADMIN' && (
+          <Card className="bg-white border-gray-200 shadow-sm mb-8">
+            <CardHeader className="pb-3 border-b border-gray-100 flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-lg font-bold text-slate-800 flex items-center">
+                  <Building className="w-5 h-5 mr-2 text-blue-600" /> Manajemen TPS & Data DPT
+                </CardTitle>
+                <CardDescription>
+                  Daftar TPS terdaftar, lokasi spesifik, jumlah DPT pemilih, serta fitur edit dan hapus TPS.
+                </CardDescription>
+              </div>
+              <Button size="sm" variant="outline" className="font-semibold text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => setIsTpsModalOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" /> Tambah TPS
+              </Button>
+            </CardHeader>
+            <CardContent className="pt-4">
+              {fullTpsList.length === 0 ? (
+                <p className="text-sm text-gray-500 py-4 text-center">Belum ada TPS terdaftar.</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Kode TPS</TableHead>
+                      <TableHead>Lokasi Spesifik / Alamat</TableHead>
+                      <TableHead>Jumlah DPT</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Aksi</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {fullTpsList.map((tps) => (
+                      <TableRow key={tps.id}>
+                        <TableCell className="font-bold text-blue-600">{tps.tps_code}</TableCell>
+                        <TableCell>{tps.address || '-'}</TableCell>
+                        <TableCell className="font-semibold">{tps.registered_voters_total ?? 100} Pemilih</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={tps.status === 'OPEN' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-50 text-gray-700'}>
+                            {tps.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right flex items-center justify-end gap-2">
+                          <Button size="sm" variant="outline" className="h-8 text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => handleOpenEditModal(tps)}>
+                            <Edit className="h-3.5 w-3.5 mr-1" /> Edit
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button size="sm" variant="outline" className="h-8 text-red-600 border-red-200 hover:bg-red-50">
+                                <Trash2 className="h-3.5 w-3.5 mr-1" /> Hapus
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Hapus TPS {tps.tps_code}?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Apakah Anda yakin ingin menghapus <strong>{tps.tps_code} ({tps.address})</strong>? Data TPS ini akan dihapus dari sistem.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Batal</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteTps(tps.id, tps.tps_code)} className="bg-red-600 hover:bg-red-700 text-white">
+                                  Ya, Hapus TPS
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Edit TPS Modal Dialog */}
+        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Data TPS ({editingTps?.tps_code})</DialogTitle>
+              <DialogDescription>
+                Ubah lokasi spesifik atau jumlah DPT terdaftar untuk TPS ini.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleUpdateTps} className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-location">Lokasi Spesifik / Alamat</Label>
+                <Input
+                  id="edit-location"
+                  value={editTpsLocation}
+                  onChange={(e) => setEditTpsLocation(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-dpt">Jumlah DPT</Label>
+                <Input
+                  id="edit-dpt"
+                  type="number"
+                  placeholder="Maksimal 500"
+                  value={editTpsDpt}
+                  onChange={(e) => setEditTpsDpt(e.target.value)}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isSubmittingEdit}>
+                {isSubmittingEdit ? "Simpan Perubahan..." : "Simpan Perubahan"}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
 
         {/* Statistics Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
