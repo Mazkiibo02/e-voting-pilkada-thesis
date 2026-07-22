@@ -427,26 +427,23 @@ const Homepage = () => {
                   />
                   <CardContent className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4 min-w-0 w-full sm:w-auto">
-                      <div className="relative shrink-0">
-                        {c.photoUrl ? (
-                          <img 
-                            src={`${import.meta.env.VITE_API_BASE_URL}${c.photoUrl}`} 
-                            alt={getCandidateFullName(c)}
-                            className="w-20 h-20 object-cover rounded-xl border border-gray-200"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                        ) : (
-                          <div className="w-20 h-20 bg-gray-100 rounded-xl flex items-center justify-center border border-gray-200">
-                            <Users className="h-8 w-8 text-gray-400" />
-                          </div>
-                        )}
-                        <div 
-                          className="absolute -top-2 -left-2 h-7 w-7 rounded-full flex items-center justify-center text-white font-black text-sm shadow-md border-2 border-white"
-                          style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
-                        >
-                          {c.ballotNumber}
+                      <div className="relative shrink-0 w-20 h-28 rounded-lg overflow-hidden border-2 border-red-600 shadow-sm bg-white flex flex-col">
+                        <div className="bg-red-600 text-white font-black text-xs text-center py-0.5 tracking-wider border-b border-red-700">
+                          {c.ballotNumber.toString().padStart(2, '0')}
+                        </div>
+                        <div className="flex-1 w-full bg-slate-100 relative flex items-center justify-center overflow-hidden">
+                          {c.photoUrl ? (
+                            <img 
+                              src={`${import.meta.env.VITE_API_BASE_URL}${c.photoUrl}`} 
+                              alt={getCandidateFullName(c)}
+                              className="w-full h-full object-cover object-top"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <Users className="h-6 w-6 text-gray-400" />
+                          )}
                         </div>
                       </div>
                       <div className="min-w-0">
@@ -471,14 +468,25 @@ const Homepage = () => {
                             </DialogHeader>
                             <div className="mt-4 space-y-6">
                               {c.photoUrl ? (
-                                <img
-                                  src={`${import.meta.env.VITE_API_BASE_URL}${c.photoUrl}`}
-                                  alt={getCandidateFullName(c)}
-                                  className="w-32 h-32 rounded-full object-cover mx-auto mb-4 border-4 border-gray-100 shadow-sm"
-                                />
+                                <div className="w-48 h-64 mx-auto mb-4 rounded-xl border-4 border-red-600 overflow-hidden shadow-md bg-white flex flex-col relative">
+                                  <div className="bg-red-600 text-white font-extrabold text-sm text-center py-1 tracking-wider border-b border-red-700">
+                                    PASANGAN CALON {c.ballotNumber.toString().padStart(2, '0')}
+                                  </div>
+                                  <div className="flex-1 w-full bg-slate-100 relative flex items-center justify-center overflow-hidden">
+                                    <img
+                                      src={`${import.meta.env.VITE_API_BASE_URL}${c.photoUrl}`}
+                                      alt={getCandidateFullName(c)}
+                                      className="w-full h-full object-cover object-top"
+                                    />
+                                  </div>
+                                  <div className="bg-slate-900 text-white text-[10px] font-bold text-center py-1 truncate px-2">
+                                    SURAT SUARA PILKADA KOTA TEGAL
+                                  </div>
+                                </div>
                               ) : (
-                                <div className="w-32 h-32 bg-gray-100 rounded-full mx-auto mb-4 border-4 border-gray-100 shadow-sm flex items-center justify-center">
-                                  <Users className="h-10 w-10 text-gray-400" />
+                                <div className="w-48 h-64 border-4 border-dashed border-gray-300 rounded-xl mx-auto mb-4 flex flex-col items-center justify-center bg-gray-50">
+                                  <Users className="h-12 w-12 text-gray-400 mb-2" />
+                                  <span className="text-xs font-semibold text-gray-400">Foto Paslon</span>
                                 </div>
                               )}
                               {c.motto && (
