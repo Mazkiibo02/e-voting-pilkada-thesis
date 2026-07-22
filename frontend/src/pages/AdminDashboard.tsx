@@ -343,6 +343,64 @@ const AdminDashboard = () => {
   const [editTpsDpt, setEditTpsDpt] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
+  const tpsFileInputRef = useRef<HTMLInputElement>(null);
+  const [isImportingTps, setIsImportingTps] = useState(false);
+
+  const handleImportTps = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("excelFile", file);
+
+    setIsImportingTps(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/tps/import', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message);
+        loadData(selectedTps ?? undefined);
+      } else {
+        toast.error(data.message || "Gagal import data TPS");
+      }
+    } catch (err) {
+      toast.error("Koneksi server gagal");
+    } finally {
+      setIsImportingTps(false);
+      if (tpsFileInputRef.current) tpsFileInputRef.current.value = "";
+    }
+  };
+
+  const handleDownloadTpsTemplate = () => {
+    window.open('/api/tps/template', '_blank');
+  };
+
+  const handleExportTps = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch('/api/tps/export', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error('Gagal mengunduh data TPS');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Data_TPS_Kota_Tegal.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('Data TPS berhasil diexport.');
+    } catch (err) {
+      toast.error('Gagal meng-export data TPS.');
+    }
+  };
 
   const fetchFullTps = async () => {
     try {
@@ -662,18 +720,37 @@ const AdminDashboard = () => {
         {/* Manajemen TPS & Data DPT */}
         {currentUser?.role === 'ADMIN' && (
           <Card className="bg-white border-gray-200 shadow-sm mb-8">
-            <CardHeader className="pb-3 border-b border-gray-100 flex flex-row items-center justify-between">
+            <CardHeader className="pb-3 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <CardTitle className="text-lg font-bold text-slate-800 flex items-center">
                   <Building className="w-5 h-5 mr-2 text-blue-600" /> Manajemen TPS & Data DPT
                 </CardTitle>
                 <CardDescription>
-                  Daftar TPS terdaftar, lokasi spesifik, jumlah DPT pemilih, serta fitur edit dan hapus TPS.
+                  Kelola data 377 TPS Kota Tegal secara massal via Excel atau manual.
                 </CardDescription>
               </div>
-              <Button size="sm" variant="outline" className="font-semibold text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => setIsTpsModalOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" /> Tambah TPS
-              </Button>
+              <div className="flex flex-wrap items-center gap-2">
+                <input 
+                  type="file" 
+                  accept=".xlsx, .xls" 
+                  className="hidden" 
+                  ref={tpsFileInputRef}
+                  onChange={handleImportTps}
+                />
+                <Button size="sm" variant="outline" className="font-semibold text-green-600 border-green-200 hover:bg-green-50" onClick={() => tpsFileInputRef.current?.click()} disabled={isImportingTps}>
+                  {isImportingTps ? <RotateCcw className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                  Import via Excel
+                </Button>
+                <Button size="sm" variant="outline" className="font-semibold text-blue-600 border-blue-200 hover:bg-blue-50" onClick={handleDownloadTpsTemplate}>
+                  <FileSpreadsheet className="mr-2 h-4 w-4" /> Template Excel
+                </Button>
+                <Button size="sm" variant="outline" className="font-semibold text-slate-600 border-slate-300 hover:bg-slate-100" onClick={handleExportTps}>
+                  <Download className="mr-2 h-4 w-4" /> Export Excel
+                </Button>
+                <Button size="sm" variant="default" className="font-semibold bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setIsTpsModalOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" /> Tambah TPS Manual
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="pt-4">
               {fullTpsList.length === 0 ? (
