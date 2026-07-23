@@ -273,7 +273,7 @@ router.get("/", authenticateToken, requireRole(["ADMIN"]), async (req: AuthReque
  */
 router.put("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequest, res: Response) => {
   try {
-    const id = req.params.id;
+    const id = req.params.id as string;
     const { full_name, email, nik } = req.body;
     db.prepare(`
       UPDATE users SET full_name = ?, email = ?, nik = ? WHERE id = ? AND role = 'KPPS'
@@ -291,7 +291,7 @@ router.put("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRe
  */
 router.delete("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequest, res: Response) => {
   try {
-    const id = req.params.id;
+    const id = req.params.id as string;
     db.prepare(`DELETE FROM users WHERE id = ? AND role = 'KPPS'`).run(id);
     res.json({ message: "Berhasil menghapus akun KPPS." });
   } catch (err) {
