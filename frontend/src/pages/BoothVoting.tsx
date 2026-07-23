@@ -278,18 +278,19 @@ const BoothVoting = () => {
                     <div
                       key={pair.id}
                       onClick={() => handleDirectCastVote(pair)}
-                      className={`relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 transform active:scale-[0.98] ${
+                      className={`relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 transform active:scale-[0.98] flex flex-col h-full ${
                         isSelected
                           ? "ring-4 ring-emerald-500 bg-white border-transparent shadow-xl scale-[1.02]"
                           : "bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 shadow-sm"
                       }`}
                     >
                       {/* Ballot Number badge */}
-                      <div className={`absolute top-4 left-4 h-12 w-12 rounded-xl flex items-center justify-center text-xl font-black z-10 ${
-                        isSelected
-                          ? "bg-emerald-600 text-white"
-                          : "bg-blue-600 text-white shadow-md"
-                      }`}>
+                      <div 
+                        className={`absolute top-4 left-4 h-12 w-12 rounded-xl flex items-center justify-center text-xl font-black z-10 text-white shadow-md ${
+                          isSelected ? "ring-2 ring-white scale-110" : ""
+                        }`}
+                        style={{ backgroundColor: ['#2563eb', '#16a34a', '#ea580c', '#9333ea', '#db2777'][candidates.findIndex(c => c.id === pair.id) % 5] }}
+                      >
                         {pair.ballotNumber.toString().padStart(2, "0")}
                       </div>
 
@@ -315,7 +316,8 @@ const BoothVoting = () => {
                         </div>
                       )}
 
-                      <div className="pt-4 px-6 pb-6 space-y-4">
+                      <div className="pt-4 px-6 pb-6 flex-1 flex flex-col">
+                        <div className="space-y-4">
                         <div className="space-y-1">
                           <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Calon Walikota</span>
                           <h3 className="text-xl font-bold text-slate-900 tracking-tight">{pair.candidateName}</h3>
@@ -334,8 +336,9 @@ const BoothVoting = () => {
                             <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{pair.coalitionName}</p>
                           </div>
                         )}
+                        </div>
                         
-                        <div className="pt-2 space-y-2">
+                        <div className="pt-6 space-y-2 mt-auto">
                           <Button
                             type="button"
                             size="lg"

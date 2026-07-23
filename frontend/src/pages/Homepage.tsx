@@ -427,8 +427,14 @@ const Homepage = () => {
                   />
                   <CardContent className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4 min-w-0 w-full sm:w-auto">
-                      <div className="relative shrink-0 w-24 sm:w-28 h-32 sm:h-36 rounded-xl overflow-hidden border-2 border-red-600 shadow-md bg-white flex flex-col">
-                        <div className="bg-red-600 text-white font-black text-xs sm:text-sm text-center py-0.5 tracking-wider border-b border-red-700">
+                      <div 
+                        className="relative shrink-0 w-24 sm:w-28 h-32 sm:h-36 rounded-xl overflow-hidden border-2 shadow-md bg-white flex flex-col"
+                        style={{ borderColor: CHART_COLORS[i % CHART_COLORS.length] }}
+                      >
+                        <div 
+                          className="text-white font-black text-xs sm:text-sm text-center py-0.5 tracking-wider border-b"
+                          style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length], borderColor: CHART_COLORS[i % CHART_COLORS.length] }}
+                        >
                           {c.ballotNumber.toString().padStart(2, '0')}
                         </div>
                         <div className="flex-1 w-full bg-slate-100 relative flex items-center justify-center overflow-hidden">
