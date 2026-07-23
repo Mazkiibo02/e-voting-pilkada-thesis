@@ -43,6 +43,8 @@ CREATE TABLE IF NOT EXISTS candidate_pairs (
   education TEXT,
   career_path TEXT,
   photo_url TEXT,
+  status TEXT DEFAULT 'ACTIVE',
+  is_deleted INTEGER DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (election_id) REFERENCES elections(id) ON DELETE CASCADE
