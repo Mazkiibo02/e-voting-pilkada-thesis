@@ -107,3 +107,16 @@ export async function castVote(sessionId: number, candidatePairId: number): Prom
 
   return res.json();
 }
+
+/**
+ * Marks the vote session as expired when timer runs out at the booth.
+ */
+export async function expireVoteSession(sessionId: number): Promise<void> {
+  await fetch(`${API_BASE}/votes/expire`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ sessionId }),
+  }).catch(() => {});
+}

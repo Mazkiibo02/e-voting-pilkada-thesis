@@ -85,6 +85,13 @@ router.post("/generate", authenticateToken, requireRole(["ADMIN"]), async (req: 
       metadataJson: { generatedCount: generatedAccounts.length }
     }, req);
 
+    if (generatedAccounts.length === 0) {
+      return res.status(200).json({
+        message: "Seluruh TPS sudah memiliki akun Ketua KPPS. Tidak ada akun baru yang digenerate.",
+        data: generatedAccounts
+      });
+    }
+
     return res.status(200).json({
       message: `Berhasil generate ${generatedAccounts.length} akun KPPS.`,
       data: generatedAccounts
@@ -237,6 +244,59 @@ router.get("/export", authenticateToken, requireRole(["ADMIN"]), async (req: Aut
   } catch (error: any) {
     console.error("Error exporting KPPS accounts:", error);
     return res.status(500).json({ message: "Gagal mengekspor akun KPPS." });
+  }
+});
+
+/**
+ * 4. GET /kpps
+ * Purpose: Fetch all KPPS accounts
+ */
+router.get("/", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequest, res: Response) => {
+  try {
+    const kppsUsers = db.prepare(`
+      SELECT u.id, u.name, u.full_name, u.email, u.role, u.assigned_tps_id, u.nik, u.status, t.tps_code, t.address
+      FROM users u
+      LEFT JOIN tps t ON u.assigned_tps_id = t.id
+      WHERE u.role = 'KPPS'
+      ORDER BY t.tps_code ASC
+    `).all();
+    res.json({ data: kppsUsers });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Gagal memuat data KPPS." });
+  }
+});
+
+/**
+ * 5. PUT /kpps/:id
+ * Purpose: Update a KPPS account
+ */
+router.put("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequest, res: Response) => {
+  try {
+    const id = req.params.id;
+    const { full_name, email, nik } = req.body;
+    db.prepare(`
+      UPDATE users SET full_name = ?, email = ?, nik = ? WHERE id = ? AND role = 'KPPS'
+    `).run(full_name, email, nik || null, id);
+    res.json({ message: "Berhasil update akun KPPS." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Gagal update akun KPPS." });
+  }
+});
+
+/**
+ * 6. DELETE /kpps/:id
+ * Purpose: Delete a KPPS account
+ */
+router.delete("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequest, res: Response) => {
+  try {
+    const id = req.params.id;
+    db.prepare(`DELETE FROM users WHERE id = ? AND role = 'KPPS'`).run(id);
+    res.json({ message: "Berhasil menghapus akun KPPS." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Gagal menghapus akun KPPS." });
   }
 });
 

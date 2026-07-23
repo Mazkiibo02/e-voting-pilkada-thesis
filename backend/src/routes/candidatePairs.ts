@@ -229,7 +229,9 @@ router.delete("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: Aut
       return res.status(400).json({ message: "Invalid candidate pair ID" });
     }
 
-    const success = CandidatePairsService.delete(id);
+    const isHard = req.query.mode === "hard";
+    const success = isHard ? CandidatePairsService.delete(id) : CandidatePairsService.softDelete(id);
+
     if (!success) {
       return res.status(404).json({ message: "Candidate pair not found" });
     }
@@ -237,7 +239,8 @@ router.delete("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: Aut
     return res.json({
       data: {
         id,
-        message: "Candidate pair deleted successfully",
+        mode: isHard ? "hard" : "soft",
+        message: isHard ? "Pasangan calon berhasil dihapus secara permanen." : "Pasangan calon berhasil dinonaktifkan (soft delete).",
       },
     });
   } catch (error: any) {

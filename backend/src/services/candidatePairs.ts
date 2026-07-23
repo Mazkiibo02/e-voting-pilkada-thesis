@@ -14,17 +14,21 @@ export interface CandidatePair {
   education: string | null;
   career_path: string | null;
   photo_url: string | null;
+  status: string | null;
+  is_deleted: number | null;
   created_at: string;
   updated_at: string;
 }
 
 export const CandidatePairsService = {
-  getAll(electionId?: number): CandidatePair[] {
+  getAll(electionId?: number, includeDeleted = false): CandidatePair[] {
+    const filter = includeDeleted ? "" : " AND (is_deleted = 0 OR is_deleted IS NULL) AND (status != 'DELETED' OR status IS NULL)";
     if (electionId) {
-      const stmt = db.prepare("SELECT * FROM candidate_pairs WHERE election_id = ? ORDER BY ballot_number ASC");
+      const stmt = db.prepare(`SELECT * FROM candidate_pairs WHERE election_id = ? ${filter} ORDER BY ballot_number ASC`);
       return stmt.all(electionId) as unknown as CandidatePair[];
     } else {
-      const stmt = db.prepare("SELECT * FROM candidate_pairs ORDER BY id DESC");
+      const whereClause = includeDeleted ? "" : " WHERE (is_deleted = 0 OR is_deleted IS NULL) AND (status != 'DELETED' OR status IS NULL)";
+      const stmt = db.prepare(`SELECT * FROM candidate_pairs ${whereClause} ORDER BY ballot_number ASC`);
       return stmt.all() as unknown as CandidatePair[];
     }
   },
@@ -36,7 +40,7 @@ export const CandidatePairsService = {
   },
 
   getByBallotNumber(electionId: number, ballotNumber: number): CandidatePair | null {
-    const stmt = db.prepare("SELECT * FROM candidate_pairs WHERE election_id = ? AND ballot_number = ?");
+    const stmt = db.prepare("SELECT * FROM candidate_pairs WHERE election_id = ? AND ballot_number = ? AND (is_deleted = 0 OR is_deleted IS NULL)");
     const cp = stmt.get(electionId, ballotNumber);
     return cp ? (cp as unknown as CandidatePair) : null;
   },
@@ -54,13 +58,14 @@ export const CandidatePairsService = {
     education?: string;
     career_path?: string;
     photo_url?: string;
+    status?: string;
   }): CandidatePair {
     const stmt = db.prepare(`
       INSERT INTO candidate_pairs (
         election_id, ballot_number, candidate_name, vice_candidate_name, 
-        coalition_name, vision_summary, motto, vision, mission, education, career_path, photo_url
+        coalition_name, vision_summary, motto, vision, mission, education, career_path, photo_url, status, is_deleted
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
     `);
     
     const result = stmt.run(
@@ -75,7 +80,8 @@ export const CandidatePairsService = {
       data.mission || null,
       data.education || null,
       data.career_path || null,
-      data.photo_url || null
+      data.photo_url || null,
+      data.status || "ACTIVE"
     );
     
     return this.getById(Number(result.lastInsertRowid))!;
@@ -96,6 +102,8 @@ export const CandidatePairsService = {
       education?: string;
       career_path?: string;
       photo_url?: string;
+      status?: string;
+      is_deleted?: number;
     }
   ): CandidatePair | null {
     const existing = this.getById(id);
@@ -113,11 +121,13 @@ export const CandidatePairsService = {
     const education = data.education !== undefined ? data.education : existing.education;
     const careerPath = data.career_path !== undefined ? data.career_path : existing.career_path;
     const photoUrl = data.photo_url !== undefined ? data.photo_url : existing.photo_url;
+    const status = data.status !== undefined ? data.status : existing.status;
+    const isDeleted = data.is_deleted !== undefined ? data.is_deleted : existing.is_deleted;
 
     const stmt = db.prepare(`
       UPDATE candidate_pairs
       SET election_id = ?, ballot_number = ?, candidate_name = ?, vice_candidate_name = ?, 
-          coalition_name = ?, vision_summary = ?, motto = ?, vision = ?, mission = ?, education = ?, career_path = ?, photo_url = ?, updated_at = CURRENT_TIMESTAMP
+          coalition_name = ?, vision_summary = ?, motto = ?, vision = ?, mission = ?, education = ?, career_path = ?, photo_url = ?, status = ?, is_deleted = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `);
     stmt.run(
@@ -133,10 +143,21 @@ export const CandidatePairsService = {
       education,
       careerPath,
       photoUrl,
+      status,
+      isDeleted,
       id
     );
 
     return this.getById(id);
+  },
+
+  softDelete(id: number): boolean {
+    const existing = this.getById(id);
+    if (!existing) return false;
+
+    const stmt = db.prepare("UPDATE candidate_pairs SET is_deleted = 1, status = 'DELETED', updated_at = CURRENT_TIMESTAMP WHERE id = ?");
+    stmt.run(id);
+    return true;
   },
 
   delete(id: number): boolean {

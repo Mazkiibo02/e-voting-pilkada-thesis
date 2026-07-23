@@ -179,6 +179,8 @@ export const VotingSessionsService = {
     boothId: string;
     expiresMinutes: number;
     createdByUserId: number | null;
+    voterGender?: string;
+    isDisability?: number | boolean;
   }): VotingSession {
     const expiresAt = new Date(Date.now() + data.expiresMinutes * 60000).toISOString();
     
@@ -188,6 +190,9 @@ export const VotingSessionsService = {
       token += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     
+    const voterGender = (data.voterGender || 'L').toUpperCase() === 'P' || (data.voterGender || '').toUpperCase() === 'FEMALE' ? 'P' : 'L';
+    const isDisability = data.isDisability ? 1 : 0;
+
     try {
       db.exec("BEGIN TRANSACTION;");
 
@@ -201,9 +206,9 @@ export const VotingSessionsService = {
 
       const stmt = db.prepare(`
         INSERT INTO voting_sessions (
-          election_id, tps_id, token, booth_id, status, expires_at, created_by_user_id
+          election_id, tps_id, token, booth_id, status, expires_at, created_by_user_id, voter_gender, is_disability
         )
-        VALUES (?, ?, ?, ?, 'ACTIVE', ?, ?)
+        VALUES (?, ?, ?, ?, 'ACTIVE', ?, ?, ?, ?)
       `);
       const result = stmt.run(
         data.electionId,
@@ -211,7 +216,9 @@ export const VotingSessionsService = {
         token,
         data.boothId,
         expiresAt,
-        data.createdByUserId
+        data.createdByUserId,
+        voterGender,
+        isDisability
       );
 
       db.exec("COMMIT;");

@@ -33,4 +33,8 @@ backend/uploads/
 backend/.env
 backend/generated-documents/
 backend/data/generated-documents/
-
+backend/src/database/*.sqlite
+backend/src/database/*.sqlite-journal
+backend/src/database/*.sqlite-shm
+backend/src/database/*.sqlite-wal
+dokumenskripsi/*.pdf

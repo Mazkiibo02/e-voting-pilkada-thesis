@@ -45,7 +45,7 @@ export const DocumentsService = {
     return doc ?? null;
   },
 
-  generateForm(tpsId: number): DocumentRecord {
+  generateForm(tpsId: number, requestingUserId?: number): DocumentRecord {
     // 1. Fetch TPS
     const tps = db.prepare("SELECT * FROM tps WHERE id = ?").get(tpsId) as any;
     if (!tps) {
@@ -116,6 +116,29 @@ export const DocumentsService = {
         documentId = Number(result.lastInsertRowid);
       }
 
+      // Fetch active KPPS officer or requesting user for this TPS
+      let activeUser: any = null;
+      if (requestingUserId) {
+        activeUser = db.prepare("SELECT full_name, name, nik FROM users WHERE id = ?").get(requestingUserId) as any;
+      }
+      if (!activeUser) {
+        activeUser = db.prepare("SELECT full_name, name, nik FROM users WHERE role = 'KPPS' AND assigned_tps_id = ?").get(tpsId) as any;
+      }
+      if (!activeUser) {
+        activeUser = db.prepare("SELECT full_name, name, nik FROM users WHERE role = 'ADMIN' ORDER BY id ASC LIMIT 1").get() as any;
+      }
+
+      // Fetch gender & disability breakdown from voting sessions
+      const genderCounts = db.prepare(`
+        SELECT 
+          SUM(CASE WHEN voter_gender = 'L' OR voter_gender = 'MALE' OR voter_gender IS NULL THEN 1 ELSE 0 END) as male_count,
+          SUM(CASE WHEN voter_gender = 'P' OR voter_gender = 'FEMALE' THEN 1 ELSE 0 END) as female_count,
+          SUM(CASE WHEN is_disability = 1 AND (voter_gender = 'L' OR voter_gender = 'MALE' OR voter_gender IS NULL) THEN 1 ELSE 0 END) as dis_male,
+          SUM(CASE WHEN is_disability = 1 AND (voter_gender = 'P' OR voter_gender = 'FEMALE') THEN 1 ELSE 0 END) as dis_female
+        FROM voting_sessions 
+        WHERE tps_id = ? AND status = 'USED'
+      `).get(tpsId) as any;
+
       // Generate HTML string
       const templateData: ChasilTemplateData = {
         election: {
@@ -149,6 +172,16 @@ export const DocumentsService = {
           voteTotal: ct.voteTotal,
           voteTotalInWords: ct.voteTotalInWords,
         })),
+        kppsOfficer: {
+          name: activeUser?.full_name || activeUser?.name || "Petugas KPPS Aktif",
+          nik: activeUser?.nik || "3328185310960003"
+        },
+        voterGenderBreakdown: {
+          maleCount: Number(genderCounts?.male_count || 0),
+          femaleCount: Number(genderCounts?.female_count || 0),
+          disabilityMale: Number(genderCounts?.dis_male || 0),
+          disabilityFemale: Number(genderCounts?.dis_female || 0)
+        },
         documentId,
         status: "GENERATED",
         generatedAt: now,

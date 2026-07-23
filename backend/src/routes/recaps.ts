@@ -58,6 +58,7 @@ router.get("/tps/:tpsId", authenticateToken, requireRole(["ADMIN", "KPPS", "WITN
           ballotNumber: ct.ballotNumber,
           candidateName: ct.candidateName,
           viceCandidateName: ct.viceCandidateName,
+          coalitionName: ct.coalitionName,
           voteTotal: ct.voteTotal,
           voteTotalInWords: ct.voteTotalInWords,
         })),

@@ -20,6 +20,7 @@ export interface RecapCandidateTotal {
   ballotNumber: number;
   candidateName: string;
   viceCandidateName: string;
+  coalitionName?: string | null;
   voteTotal: number;
   voteTotalInWords: string;
 }
@@ -77,6 +78,7 @@ export const RecapsService = {
         cp.ballot_number as ballotNumber,
         cp.candidate_name as candidateName,
         cp.vice_candidate_name as viceCandidateName,
+        cp.coalition_name as coalitionName,
         ct.vote_total as voteTotal,
         ct.vote_total_in_words as voteTotalInWords
       FROM tps_recap_candidate_totals ct
@@ -96,7 +98,7 @@ export const RecapsService = {
     const totalRegistered = (db.prepare("SELECT registered_voters_total FROM tps WHERE id = ?").get(tpsId) as any)?.registered_voters_total || 0;
     const totalVerified = (db.prepare("SELECT COUNT(*) as c FROM voting_sessions WHERE tps_id = ?").get(tpsId) as any).c || 0;
     const totalValid = (db.prepare("SELECT COUNT(*) as c FROM votes WHERE tps_id = ? AND election_id = ?").get(tpsId, electionId) as any).c || 0;
-    const totalInvalid = 0; // Invalid vote support not yet implemented
+    const totalInvalid = Math.max(0, totalVerified - totalValid);
 
     const candidateVotes = db.prepare(`
       SELECT cp.id, COUNT(v.id) as vote_total
@@ -236,8 +238,10 @@ export const RecapsService = {
     // 3. Compute source data
     const totalRegistered = tps.registered_voters_total || 0;
     const totalVerified = (db.prepare("SELECT COUNT(*) as c FROM voting_sessions WHERE tps_id = ?").get(tpsId) as any).c || 0;
+    const totalMaleVoted = (db.prepare("SELECT COUNT(*) as c FROM voting_sessions WHERE tps_id = ? AND status = 'USED' AND (voter_gender = 'L' OR voter_gender = 'MALE' OR voter_gender IS NULL)").get(tpsId) as any).c || 0;
+    const totalFemaleVoted = (db.prepare("SELECT COUNT(*) as c FROM voting_sessions WHERE tps_id = ? AND status = 'USED' AND (voter_gender = 'P' OR voter_gender = 'FEMALE')").get(tpsId) as any).c || 0;
     const totalValid = (db.prepare("SELECT COUNT(*) as c FROM votes WHERE tps_id = ? AND election_id = ?").get(tpsId, electionId) as any).c || 0;
-    const totalInvalid = 0;
+    const totalInvalid = Math.max(0, totalVerified - totalValid);
 
     const candidateVotes = db.prepare(`
       SELECT 
@@ -245,10 +249,11 @@ export const RecapsService = {
         cp.ballot_number as ballotNumber,
         cp.candidate_name as candidateName,
         cp.vice_candidate_name as viceCandidateName,
+        cp.coalition_name as coalitionName,
         COUNT(v.id) as voteTotal
       FROM candidate_pairs cp
       LEFT JOIN votes v ON cp.id = v.candidate_pair_id AND v.tps_id = ?
-      WHERE cp.election_id = ?
+      WHERE cp.election_id = ? AND (cp.is_deleted = 0 OR cp.is_deleted IS NULL)
       GROUP BY cp.id
       ORDER BY cp.ballot_number ASC
     `).all(tpsId, electionId) as any[];
@@ -273,6 +278,8 @@ export const RecapsService = {
           SET 
             total_registered_voters = ?,
             total_verified_voters = ?,
+            voters_male_voted = ?,
+            voters_female_voted = ?,
             total_valid_votes = ?,
             total_invalid_votes = ?,
             validation_status = ?,
@@ -283,6 +290,8 @@ export const RecapsService = {
         `).run(
           totalRegistered,
           totalVerified,
+          totalMaleVoted,
+          totalFemaleVoted,
           totalValid,
           totalInvalid,
           validationStatus,
@@ -295,14 +304,17 @@ export const RecapsService = {
         const insertRecap = db.prepare(`
           INSERT INTO tps_recaps (
             election_id, tps_id, total_registered_voters, total_verified_voters,
+            voters_male_voted, voters_female_voted,
             total_valid_votes, total_invalid_votes, validation_status,
             generated_at, generated_by_user_id
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `).run(
           electionId,
           tpsId,
           totalRegistered,
           totalVerified,
+          totalMaleVoted,
+          totalFemaleVoted,
           totalValid,
           totalInvalid,
           validationStatus,
@@ -330,6 +342,7 @@ export const RecapsService = {
           ballotNumber: cv.ballotNumber,
           candidateName: cv.candidateName,
           viceCandidateName: cv.viceCandidateName,
+          coalitionName: cv.coalitionName,
           voteTotal: cv.voteTotal,
           voteTotalInWords: words,
         });

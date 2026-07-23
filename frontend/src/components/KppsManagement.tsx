@@ -7,14 +7,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
-import { Users, RotateCcw, Shield, Upload, Download, Trash, Edit } from 'lucide-react';
+import { Users, RotateCcw, Shield, Download, Upload, Trash, Edit, FileSpreadsheet } from 'lucide-react';
 
-interface WitnessManagementProps {
+interface KppsManagementProps {
   selectedTpsCode?: string;
 }
 
-export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) => {
-  const [witnesses, setWitnesses] = useState<any[]>([]);
+export const KppsManagement = ({ selectedTpsCode }: KppsManagementProps) => {
+  const [kppsUsers, setKppsUsers] = useState<any[]>([]);
   const [tpsList, setTpsList] = useState<any[]>([]);
   const [selectedTpsId, setSelectedTpsId] = useState<string>("ALL");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -27,7 +27,7 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
 
   useEffect(() => {
     fetchTps();
-    fetchWitnesses();
+    fetchKppsUsers();
   }, []);
 
   // Sync local TPS selection with parent filter if provided
@@ -55,32 +55,25 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
     }
   };
 
-  const fetchWitnesses = async () => {
+  const fetchKppsUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('/api/witnesses', { headers: { 'Authorization': `Bearer ${token}` } });
+      const res = await fetch('/api/kpps', { headers: { 'Authorization': `Bearer ${token}` } });
       const data = await res.json();
-      if (res.ok) setWitnesses(data.data || []);
+      if (res.ok) setKppsUsers(data.data || []);
     } catch (e) {
       console.error(e);
     }
   };
 
   const handleGenerate = async () => {
-    if (!selectedTpsId || selectedTpsId === "ALL") {
-      toast.error("Silakan pilih TPS terlebih dahulu");
-      return;
-    }
-    
-    if (!confirm("Apakah Anda yakin ingin generate otomatis 4 akun Saksi & Pengawas untuk TPS ini?")) return;
-    
+    if (!confirm("Apakah Anda yakin ingin generate otomatis akun KPPS untuk TPS yang belum memiliki akun?")) return;
     setIsGenerating(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('/api/witnesses/generate', {
+      const res = await fetch('/api/kpps/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ tps_id: selectedTpsId })
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
       if (res.ok) {
@@ -88,14 +81,54 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
         if (data.data && data.data.length > 0) {
           setGeneratedAccounts(data.data);
         }
-        fetchWitnesses();
+        fetchKppsUsers();
       } else {
-        toast.error(data.message || "Gagal generate akun");
+        toast.error(data.message || "Gagal generate akun KPPS");
       }
     } catch (e) {
       toast.error("Koneksi server gagal");
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleDownloadTemplate = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/kpps/template', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Gagal mengunduh template");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "Template_Import_Akun_KPPS.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      toast.error("Gagal mendownload template Excel KPPS");
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/kpps/export', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Gagal export akun KPPS");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "Data_Akun_KPPS.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      toast.error("Gagal mendownload data akun KPPS");
     }
   };
 
@@ -109,7 +142,7 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
     
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('/api/witnesses/import', {
+      const res = await fetch('/api/kpps/import', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
@@ -117,9 +150,9 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
       const data = await res.json();
       if (res.ok) {
         toast.success(data.message);
-        fetchWitnesses();
+        fetchKppsUsers();
       } else {
-        toast.error(data.message || "Gagal import akun");
+        toast.error(data.message || "Gagal import akun KPPS");
       }
     } catch (err) {
       toast.error("Koneksi server gagal");
@@ -130,18 +163,18 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Hapus akun ini?")) return;
+    if (!confirm("Apakah Anda yakin ingin menghapus akun KPPS ini?")) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`/api/witnesses/${id}`, {
+      const res = await fetch(`/api/kpps/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
-        toast.success("Akun dihapus");
-        fetchWitnesses();
+        toast.success("Akun KPPS berhasil dihapus");
+        fetchKppsUsers();
       } else {
-        toast.error("Gagal menghapus akun");
+        toast.error("Gagal menghapus akun KPPS");
       }
     } catch (e) {
       toast.error("Koneksi server gagal");
@@ -152,45 +185,45 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`/api/witnesses/${editUser.id}`, {
+      const res = await fetch(`/api/kpps/${editUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(editUser)
       });
       if (res.ok) {
-        toast.success("Akun diperbarui");
+        toast.success("Akun KPPS berhasil diperbarui");
         setIsEditModalOpen(false);
-        fetchWitnesses();
+        fetchKppsUsers();
       } else {
         const data = await res.json();
-        toast.error(data.message || "Gagal memperbarui akun");
+        toast.error(data.message || "Gagal memperbarui akun KPPS");
       }
     } catch (e) {
       toast.error("Koneksi server gagal");
     }
   };
 
-  const filteredWitnesses = witnesses.filter(w => {
+  const filteredKpps = kppsUsers.filter(user => {
     if (!selectedTpsId || selectedTpsId === "ALL") return true;
     const selectedTpsObj = tpsList.find(t => t.id.toString() === selectedTpsId || t.tps_code === selectedTpsId);
     if (!selectedTpsObj) {
-      return w.assigned_tps_id?.toString() === selectedTpsId || w.tps_code === selectedTpsId;
+      return user.assigned_tps_id?.toString() === selectedTpsId || user.tps_code === selectedTpsId;
     }
-    return w.assigned_tps_id === selectedTpsObj.id || w.tps_code === selectedTpsObj.tps_code;
+    return user.assigned_tps_id === selectedTpsObj.id || user.tps_code === selectedTpsObj.tps_code;
   });
 
   return (
     <Card className="bg-white border-gray-200 shadow-sm mb-8">
       <CardHeader className="pb-3 border-b border-gray-100">
         <CardTitle className="text-lg font-bold text-slate-800 flex items-center">
-          <Users className="w-5 h-5 mr-2 text-indigo-600" /> Manajemen Akun Saksi & Pengawas
+          <Users className="w-5 h-5 mr-2 text-blue-600" /> Manajemen Akun KPPS
         </CardTitle>
         <CardDescription>
-          Kelola akun Saksi dan Pengawas (Bawaslu) per TPS.
+          Kelola akun petugas KPPS secara massal via Excel atau Auto-Generate.
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-4 space-y-4">
-        <div className="flex flex-wrap gap-4 items-center">
+        <div className="flex flex-wrap gap-3 items-center">
           <div className="w-64">
             <Select value={selectedTpsId} onValueChange={setSelectedTpsId}>
               <SelectTrigger>
@@ -204,9 +237,10 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
               </SelectContent>
             </Select>
           </div>
-          <Button size="sm" variant="outline" className="font-semibold text-indigo-600 border-indigo-200 hover:bg-indigo-50" onClick={handleGenerate} disabled={isGenerating}>
+
+          <Button size="sm" variant="outline" className="font-semibold text-blue-600 border-blue-200 hover:bg-blue-50" onClick={handleGenerate} disabled={isGenerating}>
             {isGenerating ? <RotateCcw className="mr-2 h-4 w-4 animate-spin" /> : <Shield className="mr-2 h-4 w-4" />}
-            Auto-Generate 4 Akun
+            Auto-Generate Akun KPPS
           </Button>
           
           <div className="relative">
@@ -217,47 +251,61 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
               ref={fileInputRef}
               onChange={handleImport}
             />
+            {/* Import uses Download icon (Arrow Down) */}
             <Button size="sm" variant="outline" className="font-semibold text-green-600 border-green-200 hover:bg-green-50" onClick={() => fileInputRef.current?.click()} disabled={isImporting}>
               {isImporting ? <RotateCcw className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
               Import via Excel
             </Button>
           </div>
+
+          <Button size="sm" variant="outline" className="font-semibold text-emerald-700 border-emerald-300 hover:bg-emerald-50" onClick={handleDownloadTemplate}>
+            <FileSpreadsheet className="mr-2 h-4 w-4" />
+            Download Template Excel
+          </Button>
+
+          {/* Export uses Upload icon (Arrow Up) */}
+          <Button size="sm" variant="outline" className="font-semibold text-slate-600 border-slate-300 hover:bg-slate-100" onClick={handleExport}>
+            <Upload className="mr-2 h-4 w-4" />
+            Export Akun KPPS (Excel)
+          </Button>
         </div>
 
         <div className="rounded-md border mt-4 overflow-hidden">
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>Nama</TableHead>
+                <TableHead>Nama Ketua KPPS</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Afiliasi</TableHead>
-                <TableHead>TPS</TableHead>
+                <TableHead>NIK (16 Digit)</TableHead>
+                <TableHead>Lokasi TPS</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredWitnesses.length === 0 ? (
+              {filteredKpps.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-4 text-slate-500">Belum ada data saksi/pengawas untuk TPS ini.</TableCell>
+                  <TableCell colSpan={6} className="text-center py-4 text-slate-500">
+                    Belum ada data akun KPPS untuk TPS ini. Klik tombol "Auto-Generate Akun KPPS" atau "Import via Excel" untuk menambahkan.
+                  </TableCell>
                 </TableRow>
               ) : (
-                filteredWitnesses.map(w => (
-                  <TableRow key={w.id}>
-                    <TableCell>{w.full_name}</TableCell>
-                    <TableCell>{w.email}</TableCell>
+                filteredKpps.map(u => (
+                  <TableRow key={u.id}>
+                    <TableCell className="font-bold text-slate-900">{u.full_name || u.name}</TableCell>
+                    <TableCell className="font-mono text-slate-600">{u.email}</TableCell>
+                    <TableCell className="font-mono font-semibold text-blue-800">{u.nik || '-'}</TableCell>
+                    <TableCell className="font-semibold">{u.tps_code} ({u.address || 'TPS'})</TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${w.role === 'PENGAWAS' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
-                        {w.role}
+                      <span className="px-2 py-1 rounded text-xs font-semibold bg-emerald-100 text-emerald-700">
+                        {u.status || 'ACTIVE'}
                       </span>
                     </TableCell>
-                    <TableCell>{w.affiliation || '-'}</TableCell>
-                    <TableCell>{w.tps_code}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" onClick={() => { setEditUser(w); setIsEditModalOpen(true); }}>
+                      <Button variant="ghost" size="sm" onClick={() => { setEditUser(u); setIsEditModalOpen(true); }}>
                         <Edit className="h-4 w-4 text-slate-600" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(w.id)}>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(u.id)}>
                         <Trash className="h-4 w-4 text-red-500" />
                       </Button>
                     </TableCell>
@@ -272,12 +320,12 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Akun</DialogTitle>
+            <DialogTitle>Edit Akun Ketua KPPS</DialogTitle>
           </DialogHeader>
           {editUser && (
             <form onSubmit={handleEditSubmit} className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Nama</Label>
+                <Label>Nama Ketua KPPS</Label>
                 <Input value={editUser.full_name} onChange={e => setEditUser({...editUser, full_name: e.target.value})} required />
               </div>
               <div className="space-y-2">
@@ -285,8 +333,8 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
                 <Input type="email" value={editUser.email} onChange={e => setEditUser({...editUser, email: e.target.value})} required />
               </div>
               <div className="space-y-2">
-                <Label>Afiliasi</Label>
-                <Input value={editUser.affiliation || ''} onChange={e => setEditUser({...editUser, affiliation: e.target.value})} />
+                <Label>NIK (16 Digit)</Label>
+                <Input value={editUser.nik || ''} onChange={e => setEditUser({...editUser, nik: e.target.value})} maxLength={16} />
               </div>
               <Button type="submit" className="w-full">Simpan Perubahan</Button>
             </form>
@@ -309,7 +357,7 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
             <Table>
               <TableHeader className="bg-slate-50">
                 <TableRow>
-                  <TableHead>Nama</TableHead>
+                  <TableHead>TPS</TableHead>
                   <TableHead>Email (Username)</TableHead>
                   <TableHead>Password</TableHead>
                 </TableRow>
@@ -317,7 +365,7 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
               <TableBody>
                 {generatedAccounts?.map((acc, i) => (
                   <TableRow key={i}>
-                    <TableCell className="font-semibold">{acc.fullName || acc.name}</TableCell>
+                    <TableCell className="font-semibold">{acc.tps_code}</TableCell>
                     <TableCell className="font-mono text-sm text-blue-700">{acc.email}</TableCell>
                     <TableCell className="font-mono text-sm font-bold bg-slate-100">{acc.password}</TableCell>
                   </TableRow>
@@ -330,16 +378,14 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
             <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-semibold" onClick={() => {
               import('xlsx').then(xlsx => {
                 const worksheetData = generatedAccounts!.map(acc => ({
-                  "TPS": acc.tpsCode || acc.tps_code || "-",
-                  "Nama Lengkap": acc.fullName || acc.name || "-",
+                  "TPS": acc.tps_code || "-",
                   "Email (Username)": acc.email,
-                  "Role": acc.role,
                   "Password Asli": acc.password
                 }));
                 const worksheet = xlsx.utils.json_to_sheet(worksheetData);
                 const workbook = xlsx.utils.book_new();
-                xlsx.utils.book_append_sheet(workbook, worksheet, "Akun_Saksi_Baru");
-                xlsx.writeFile(workbook, "Daftar_Akun_Saksi_Pengawas_Baru.xlsx");
+                xlsx.utils.book_append_sheet(workbook, worksheet, "Akun_KPPS_Baru");
+                xlsx.writeFile(workbook, "Daftar_Akun_KPPS_Baru.xlsx");
               });
             }}>
               <Download className="w-4 h-4 mr-2" /> Export ke Excel

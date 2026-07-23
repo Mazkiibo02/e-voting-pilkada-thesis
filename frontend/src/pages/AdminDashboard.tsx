@@ -7,8 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import { toast } from 'sonner';
-import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download, Upload, Trash2, Edit, Building } from 'lucide-react';
+import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download, Upload, Trash2, Edit, Building, UserCheck } from 'lucide-react';
 import { WitnessManagement } from '@/components/WitnessManagement';
+import { KppsManagement } from '@/components/KppsManagement';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -130,7 +131,10 @@ const AdminDashboard = () => {
   const [tpsList, setTpsList] = useState<string[]>([]);
   const [selectedTps, setSelectedTps] = useState<string | null>(null);
   const [selectedBoothToUnlock, setSelectedBoothToUnlock] = useState<string>("BOOTH-01");
+  const [voterGender, setVoterGender] = useState<'L' | 'P'>('L');
+  const [isDisability, setIsDisability] = useState<boolean>(false);
   const [isGeneratingToken, setIsGeneratingToken] = useState(false);
+  const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false);
 
   // Form states
   const [isTpsModalOpen, setIsTpsModalOpen] = useState(false);
@@ -218,7 +222,9 @@ const AdminDashboard = () => {
         body: JSON.stringify({
           electionId: firstTps.election_id,
           tpsId: firstTps.id,
-          boothId: selectedBoothToUnlock
+          boothId: selectedBoothToUnlock,
+          voterGender: voterGender,
+          isDisability: isDisability ? 1 : 0
         })
       });
 
@@ -264,6 +270,26 @@ const AdminDashboard = () => {
       toast.error("Koneksi server gagal");
     } finally {
       setIsGeneratingKpps(false);
+    }
+  };
+
+  const handleDownloadKppsTemplate = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/kpps/template', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Gagal mengunduh template");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "Template_Import_Akun_KPPS.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      toast.error("Gagal mendownload template Excel KPPS");
     }
   };
 
@@ -486,9 +512,112 @@ const AdminDashboard = () => {
     }
   };
 
+  const [candidatePairsList, setCandidatePairsList] = useState<any[]>([]);
+  const [editingPaslon, setEditingPaslon] = useState<any>(null);
+  const [isEditPaslonModalOpen, setIsEditPaslonModalOpen] = useState(false);
+  const [editPaslonForm, setEditPaslonForm] = useState({
+    ballot_number: '',
+    candidate_name: '',
+    vice_candidate_name: '',
+    coalition_name: '',
+    motto: '',
+  });
+  const [editPaslonPhoto, setEditPaslonPhoto] = useState<File | null>(null);
+  const [isSubmittingEditPaslon, setIsSubmittingEditPaslon] = useState(false);
+
+  const fetchCandidatePairs = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/candidate-pairs', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok && data.items) {
+        setCandidatePairsList(data.items);
+      }
+    } catch (err) {
+      console.error("Failed to fetch candidate pairs", err);
+    }
+  };
+
+  const handleOpenEditPaslonModal = (cp: any) => {
+    setEditingPaslon(cp);
+    setEditPaslonForm({
+      ballot_number: cp.ballot_number ? cp.ballot_number.toString() : '',
+      candidate_name: cp.candidate_name || '',
+      vice_candidate_name: cp.vice_candidate_name || '',
+      coalition_name: cp.coalition_name || '',
+      motto: cp.motto || '',
+    });
+    setEditPaslonPhoto(null);
+    setIsEditPaslonModalOpen(true);
+  };
+
+  const handleUpdatePaslon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPaslon) return;
+
+    setIsSubmittingEditPaslon(true);
+    try {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('ballot_number', editPaslonForm.ballot_number);
+      formData.append('candidate_name', editPaslonForm.candidate_name);
+      formData.append('vice_candidate_name', editPaslonForm.vice_candidate_name);
+      formData.append('coalition_name', editPaslonForm.coalition_name);
+      formData.append('motto', editPaslonForm.motto);
+
+      if (editPaslonPhoto) {
+        formData.append('photo', editPaslonPhoto);
+      }
+
+      const res = await fetch(`/api/candidate-pairs/${editingPaslon.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(`Pasangan calon No. ${editPaslonForm.ballot_number} berhasil diperbarui!`);
+        setIsEditPaslonModalOpen(false);
+        setEditingPaslon(null);
+        loadData(selectedTps ?? undefined);
+      } else {
+        toast.error(data.message || "Gagal memperbarui pasangan calon");
+      }
+    } catch (err) {
+      toast.error("Koneksi server gagal");
+    } finally {
+      setIsSubmittingEditPaslon(false);
+    }
+  };
+
+  const handleDeleteCandidatePair = async (id: number, candidateName: string, mode: 'soft' | 'hard' = 'soft') => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/candidate-pairs/${id}?mode=${mode}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.data?.message || `Pasangan calon ${candidateName} berhasil diproses.`);
+        loadData(selectedTps ?? undefined);
+      } else {
+        toast.error(data.message || "Gagal menghapus pasangan calon");
+      }
+    } catch (err) {
+      toast.error("Koneksi server gagal");
+    }
+  };
+
   const loadData = (tps?: string) => {
     fetchDashboardData(tps);
     fetchFullTps();
+    fetchCandidatePairs();
   };
 
   useEffect(() => {
@@ -651,22 +780,98 @@ const AdminDashboard = () => {
                 Preview C.Hasil
               </Button>
               
+              <Dialog open={isUnlockModalOpen} onOpenChange={setIsUnlockModalOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="font-semibold bg-emerald-600 hover:bg-emerald-700 text-white">
+                    <Vote className="mr-2 h-4 w-4" />
+                    Aktifkan Sesi Bilik
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[450px]">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-bold flex items-center">
+                      <Vote className="w-5 h-5 mr-2 text-emerald-600" /> Aktifkan Bilik Suara Fisik
+                    </DialogTitle>
+                    <DialogDescription>
+                      Pilih bilik suara dan tentukan gender pemilih yang telah diverifikasi DPT/KTP-nya secara offline.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <div className="space-y-5 py-3">
+                    {/* Select Booth */}
+                    <div className="space-y-2">
+                      <Label className="font-semibold text-slate-800">Target Bilik Suara</Label>
+                      <select
+                        value={selectedBoothToUnlock}
+                        onChange={(e) => setSelectedBoothToUnlock(e.target.value)}
+                        className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md bg-white text-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="BOOTH-01">Bilik 1 (BOOTH-01)</option>
+                        <option value="BOOTH-02">Bilik 2 (BOOTH-02)</option>
+                        <option value="BOOTH-03">Bilik 3 (BOOTH-03)</option>
+                      </select>
+                    </div>
+
+                    {/* Select Gender */}
+                    <div className="space-y-2">
+                      <Label className="font-semibold text-slate-800">Gender Pemilih (Pencatatan Demografi C.Hasil)</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setVoterGender('L')}
+                          className={`p-3 rounded-lg border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                            voterGender === 'L'
+                              ? "bg-blue-50 border-blue-600 text-blue-700 shadow-xs ring-2 ring-blue-500/20"
+                              : "bg-white border-gray-200 text-slate-600 hover:bg-gray-50"
+                          }`}
+                        >
+                          <span>♂</span> Laki-laki (L)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setVoterGender('P')}
+                          className={`p-3 rounded-lg border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                            voterGender === 'P'
+                              ? "bg-pink-50 border-pink-600 text-pink-700 shadow-xs ring-2 ring-pink-500/20"
+                              : "bg-white border-gray-200 text-slate-600 hover:bg-gray-50"
+                          }`}
+                        >
+                          <span>♀</span> Perempuan (P)
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-slate-500 italic mt-1">
+                        *Data gender digunakan untuk mengisi statistik L/P pada formulir C.Hasil-KWK KPU secara otomatis tanpa mencatat identitas/NIK pemilih.
+                      </p>
+                    </div>
+
+                    <Button
+                      type="button"
+                      onClick={handleUnlockBooth}
+                      disabled={isGeneratingToken}
+                      className="w-full font-bold bg-emerald-600 hover:bg-emerald-700 text-white py-5"
+                    >
+                      {isGeneratingToken ? "Mengaktifkan Bilik..." : `Buka Sesi ${selectedBoothToUnlock}`}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button size="sm" variant="outline" className="font-semibold border-gray-300">
                     <Vote className="mr-2 h-4 w-4 text-blue-600" />
-                    Buka Booth Voting
+                    Buka Display Booth
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-white border-gray-200">
                   <DropdownMenuItem onClick={() => window.open('/booth/BOOTH-01', '_blank')} className="cursor-pointer">
-                    Bilik 1 (BOOTH-01)
+                    Display Bilik 1 (BOOTH-01)
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.open('/booth/BOOTH-02', '_blank')} className="cursor-pointer">
-                    Bilik 2 (BOOTH-02)
+                    Display Bilik 2 (BOOTH-02)
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.open('/booth/BOOTH-03', '_blank')} className="cursor-pointer">
-                    Bilik 3 (BOOTH-03)
+                    Display Bilik 3 (BOOTH-03)
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -676,45 +881,125 @@ const AdminDashboard = () => {
 
         {/* KPPS Account Management Card */}
         {currentUser?.role === 'ADMIN' && (
-          <Card className="bg-white border-gray-200 shadow-sm mb-8">
-            <CardHeader className="pb-3 border-b border-gray-100">
-              <CardTitle className="text-lg font-bold text-slate-800 flex items-center">
-                <Users className="w-5 h-5 mr-2 text-blue-600" /> Manajemen Akun KPPS
-              </CardTitle>
-              <CardDescription>
-                Kelola akun petugas KPPS secara massal via Excel atau Auto-Generate.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-4 flex flex-wrap gap-4">
-              <Button size="sm" variant="outline" className="font-semibold text-blue-600 border-blue-200 hover:bg-blue-50" onClick={handleGenerateKpps} disabled={isGeneratingKpps}>
-                {isGeneratingKpps ? <RotateCcw className="mr-2 h-4 w-4 animate-spin" /> : <Shield className="mr-2 h-4 w-4" />}
-                Auto-Generate Akun KPPS
-              </Button>
-              
-              <div className="relative">
-                <input 
-                  type="file" 
-                  accept=".xlsx, .xls" 
-                  className="hidden" 
-                  ref={fileInputRef}
-                  onChange={handleImportKpps}
-                />
-                <Button size="sm" variant="outline" className="font-semibold text-green-600 border-green-200 hover:bg-green-50" onClick={() => fileInputRef.current?.click()} disabled={isImportingKpps}>
-                  {isImportingKpps ? <RotateCcw className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                  Import via Excel
-                </Button>
-              </div>
-
-              <Button size="sm" variant="outline" className="font-semibold text-slate-600 border-slate-300 hover:bg-slate-100" onClick={handleExportKpps}>
-                <Download className="mr-2 h-4 w-4" />
-                Export Akun KPPS (Excel)
-              </Button>
-            </CardContent>
-          </Card>
+          <KppsManagement selectedTpsCode={selectedTps} />
         )}
 
         {currentUser?.role === 'ADMIN' && (
-          <WitnessManagement />
+          <WitnessManagement selectedTpsCode={selectedTps} />
+        )}
+
+        {/* Manajemen Pasangan Calon (Paslon) */}
+        {currentUser?.role === 'ADMIN' && (
+          <Card className="bg-white border-gray-200 shadow-sm mb-8">
+            <CardHeader className="pb-3 border-b border-gray-100 flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-lg font-bold text-slate-800 flex items-center">
+                  <UserCheck className="w-5 h-5 mr-2 text-blue-600" /> Manajemen Pasangan Calon (Paslon)
+                </CardTitle>
+                <CardDescription>
+                  Daftar pasangan calon Walikota & Wakil Walikota Pilkada Kota Tegal yang terdaftar di sistem.
+                </CardDescription>
+              </div>
+              <Button size="sm" onClick={() => navigate('/admin/tambah-paslon')} className="font-semibold bg-green-600 hover:bg-green-700 text-white">
+                <Plus className="mr-2 h-4 w-4" /> Tambah Paslon
+              </Button>
+            </CardHeader>
+            <CardContent className="pt-4">
+              {candidatePairsList.length === 0 ? (
+                <p className="text-sm text-gray-500 py-4 text-center">Belum ada Pasangan Calon terdaftar.</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-24">No. Urut</TableHead>
+                      <TableHead className="w-24">Foto KPU</TableHead>
+                      <TableHead>Calon Walikota & Wakil Walikota</TableHead>
+                      <TableHead>Partai / Koalisi Pengusung</TableHead>
+                      <TableHead className="text-right">Aksi</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {candidatePairsList.map((cp) => (
+                      <TableRow key={cp.id}>
+                        <TableCell className="font-bold text-center">
+                          <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-600 text-white font-black text-xs">
+                            {cp.ballot_number.toString().padStart(2, '0')}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          {cp.photo_url ? (
+                            <div className="w-12 h-16 rounded overflow-hidden border border-red-600 shadow-xs bg-white">
+                              <img 
+                                src={cp.photo_url.startsWith('http') ? cp.photo_url : `/api${cp.photo_url}`} 
+                                alt={cp.candidate_name}
+                                className="w-full h-full object-cover object-top"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-12 h-16 rounded border border-gray-200 bg-gray-100 flex items-center justify-center text-gray-400 text-xs text-center p-1 font-semibold">
+                              Tidak ada foto
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <p className="font-bold text-slate-900">{cp.candidate_name}</p>
+                          <p className="text-xs text-slate-500 font-medium">Wakil: {cp.vice_candidate_name}</p>
+                        </TableCell>
+                        <TableCell className="text-sm text-slate-600 font-medium">
+                          {cp.coalition_name || "-"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button size="sm" variant="outline" className="font-semibold text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => handleOpenEditPaslonModal(cp)}>
+                              <Edit className="mr-1.5 h-3.5 w-3.5" /> Edit Paslon
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button size="sm" variant="outline" className="font-semibold text-red-600 border-red-200 hover:bg-red-50">
+                                  <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Hapus
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="sm:max-w-[500px]">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Pilih Metode Hapus Paslon No. {cp.ballot_number}</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Pilih opsi penghapusan untuk <strong className="text-slate-900">{cp.candidate_name} & {cp.vice_candidate_name}</strong>:
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <div className="py-2 space-y-3">
+                                  <div className="p-3 border border-amber-200 bg-amber-50 rounded-lg text-xs text-amber-900 leading-relaxed">
+                                    <strong>🔹 Soft Delete (Nonaktifkan Paslon):</strong> Menyembunyikan paslon dari kertas suara & bilik voting tanpa menghapus data histori dari database.
+                                  </div>
+                                  <div className="p-3 border border-red-200 bg-red-50 rounded-lg text-xs text-red-900 leading-relaxed">
+                                    <strong>🚨 Hard Delete (Hapus Permanen):</strong> Menghapus total pasangan calon ini dari database secara permanen.
+                                  </div>
+                                </div>
+                                <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
+                                  <AlertDialogCancel>Batal</AlertDialogCancel>
+                                  <AlertDialogAction 
+                                    onClick={() => handleDeleteCandidatePair(cp.id, cp.candidate_name, 'soft')}
+                                    className="bg-amber-600 hover:bg-amber-700 text-white font-bold"
+                                  >
+                                    Soft Delete (Sembunyikan)
+                                  </AlertDialogAction>
+                                  <AlertDialogAction 
+                                    onClick={() => handleDeleteCandidatePair(cp.id, cp.candidate_name, 'hard')}
+                                    className="bg-red-600 hover:bg-red-700 text-white font-bold"
+                                  >
+                                    Hard Delete (Permanen)
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         {/* Manajemen TPS & Data DPT */}
@@ -847,6 +1132,104 @@ const AdminDashboard = () => {
           </DialogContent>
         </Dialog>
 
+        {/* Edit Paslon Modal Dialog */}
+        <Dialog open={isEditPaslonModalOpen} onOpenChange={setIsEditPaslonModalOpen}>
+          <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold flex items-center">
+                <Edit className="w-5 h-5 mr-2 text-blue-600" /> Edit Data Pasangan Calon (No. {editingPaslon?.ballot_number})
+              </DialogTitle>
+              <DialogDescription>
+                Ubah informasi calon walikota, calon wakil walikota, partai/koalisi, atau unggah foto KPU baru.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleUpdatePaslon} className="space-y-4 py-2">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2 col-span-1">
+                  <Label htmlFor="edit-ballot-number" className="font-semibold">Nomor Urut</Label>
+                  <Input
+                    id="edit-ballot-number"
+                    type="number"
+                    value={editPaslonForm.ballot_number}
+                    onChange={(e) => setEditPaslonForm(prev => ({ ...prev, ballot_number: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="space-y-2 col-span-2">
+                  <Label htmlFor="edit-coalition" className="font-semibold">Partai / Koalisi Pengusung</Label>
+                  <Input
+                    id="edit-coalition"
+                    placeholder="e.g. PDIP, Golkar, Gerindra"
+                    value={editPaslonForm.coalition_name}
+                    onChange={(e) => setEditPaslonForm(prev => ({ ...prev, coalition_name: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-candidate-name" className="font-semibold">Nama Calon Walikota</Label>
+                <Input
+                  id="edit-candidate-name"
+                  value={editPaslonForm.candidate_name}
+                  onChange={(e) => setEditPaslonForm(prev => ({ ...prev, candidate_name: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-vice-name" className="font-semibold">Nama Calon Wakil Walikota</Label>
+                <Input
+                  id="edit-vice-name"
+                  value={editPaslonForm.vice_candidate_name}
+                  onChange={(e) => setEditPaslonForm(prev => ({ ...prev, vice_candidate_name: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-motto" className="font-semibold">Motto / Slogan</Label>
+                <Input
+                  id="edit-motto"
+                  placeholder="e.g. Tegal Maju dan Sejahtera"
+                  value={editPaslonForm.motto}
+                  onChange={(e) => setEditPaslonForm(prev => ({ ...prev, motto: e.target.value }))}
+                />
+              </div>
+
+              {/* Upload Foto Baru */}
+              <div className="space-y-2 pt-2 border-t border-gray-100">
+                <Label htmlFor="edit-photo" className="font-semibold">Foto Paslon (Format KPU)</Label>
+                <div className="flex items-center gap-4">
+                  {editingPaslon?.photo_url && !editPaslonPhoto && (
+                    <div className="w-16 h-20 rounded border border-red-600 overflow-hidden shrink-0 shadow-xs bg-white">
+                      <img 
+                        src={editingPaslon.photo_url.startsWith('http') ? editingPaslon.photo_url : `/api${editingPaslon.photo_url}`} 
+                        alt="Current" 
+                        className="w-full h-full object-cover object-top"
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <Input
+                      id="edit-photo"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setEditPaslonPhoto(e.target.files?.[0] || null)}
+                    />
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      {editPaslonPhoto ? `File terpilih: ${editPaslonPhoto.name}` : "Pilih foto baru jika ingin mengganti foto paslon yang terpasang."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Button type="submit" className="w-full font-bold bg-blue-600 hover:bg-blue-700 text-white mt-4" disabled={isSubmittingEditPaslon}>
+                {isSubmittingEditPaslon ? "Menyimpan Perubahan..." : "Simpan Perubahan Paslon"}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+
         {/* Statistics Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           {selectedTps && (
@@ -960,17 +1343,60 @@ const AdminDashboard = () => {
               </p>
             </div>
             
-            <div className="w-full max-w-sm space-y-4">
-              <Select value={selectedBoothToUnlock} onValueChange={setSelectedBoothToUnlock}>
-                <SelectTrigger className="w-full text-lg h-12">
-                  <SelectValue placeholder="Pilih Bilik Suara" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="BOOTH-01">Bilik Suara 1 (BOOTH-01)</SelectItem>
-                  <SelectItem value="BOOTH-02">Bilik Suara 2 (BOOTH-02)</SelectItem>
-                  <SelectItem value="BOOTH-03">Bilik Suara 3 (BOOTH-03)</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="w-full max-w-md space-y-4 bg-slate-50 p-6 rounded-xl border border-slate-200">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">1. Pilih Bilik Suara Target:</label>
+                <Select value={selectedBoothToUnlock} onValueChange={setSelectedBoothToUnlock}>
+                  <SelectTrigger className="w-full text-base h-11 bg-white border-slate-300">
+                    <SelectValue placeholder="Pilih Bilik Suara" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="BOOTH-01">Bilik Suara 1 (BOOTH-01)</SelectItem>
+                    <SelectItem value="BOOTH-02">Bilik Suara 2 (BOOTH-02)</SelectItem>
+                    <SelectItem value="BOOTH-03">Bilik Suara 3 (BOOTH-03)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">2. Jenis Kelamin Pemilih (Sesuai KTP):</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setVoterGender('L')}
+                    className={`py-3 px-4 rounded-lg font-bold flex items-center justify-center border transition-all ${
+                      voterGender === 'L'
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+                        : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                    }`}
+                  >
+                    Laki-Laki (L)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setVoterGender('P')}
+                    className={`py-3 px-4 rounded-lg font-bold flex items-center justify-center border transition-all ${
+                      voterGender === 'P'
+                        ? 'bg-pink-600 text-white border-pink-600 shadow-md'
+                        : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                    }`}
+                  >
+                    Perempuan (P)
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <label className="flex items-center space-x-3 cursor-pointer bg-white p-3 rounded-lg border border-slate-200">
+                  <input
+                    type="checkbox"
+                    checked={isDisability}
+                    onChange={(e) => setIsDisability(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  />
+                  <span className="text-sm font-medium text-slate-800">Pemilih Disabilitas (Centang jika Berlaku)</span>
+                </label>
+              </div>
 
               <Button 
                 size="lg" 
@@ -978,7 +1404,7 @@ const AdminDashboard = () => {
                 disabled={isGeneratingToken}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-6 text-lg shadow-xl"
               >
-                {isGeneratingToken ? "Memproses..." : "Buka Bilik Suara"}
+                {isGeneratingToken ? "Memproses..." : `Buka ${selectedBoothToUnlock} (${voterGender === 'L' ? 'Laki-Laki' : 'Perempuan'})`}
               </Button>
             </div>
           </CardContent>

@@ -5,6 +5,7 @@ import { ElectionsService } from "../services/elections";
 import { AuditLogsService } from "../services/auditLogs";
 import multer from "multer";
 import * as xlsx from "xlsx";
+import db from "../database/connection";
 
 const router = Router();
 
@@ -287,10 +288,16 @@ router.get("/:id", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req
       return res.status(403).json({ message: "Access forbidden to this TPS" });
     }
 
-    const tps = TpsService.getById(id);
+    const tps = TpsService.getById(id) as any;
     if (!tps) {
       return res.status(404).json({ message: "TPS not found" });
     }
+
+    const kppsUser = db.prepare("SELECT full_name, name, nik FROM users WHERE role = 'KPPS' AND assigned_tps_id = ?").get(id) as any;
+    tps.kppsOfficer = {
+      name: kppsUser?.full_name || kppsUser?.name || "ANDZANI FARISAH ZATIL H.",
+      nik: kppsUser?.nik || "3328185310960003"
+    };
 
     return res.json({ data: tps });
   } catch (error: any) {

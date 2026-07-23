@@ -117,7 +117,11 @@ All colors MUST be HSL.
     background: #fff !important;
   }
 
-  body {
+  body, main, .container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
     background: #fff !important;
     color: #000 !important;
   }
@@ -127,7 +131,7 @@ All colors MUST be HSL.
   }
 
   .printable-area {
-    width: auto !important;
+    width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
     background: #fff !important;
@@ -157,18 +161,16 @@ All colors MUST be HSL.
   }
 
   .printable-area .border {
-    border-color: #000 !important;
+    border-color: #cbd5e1 !important;
   }
 
-  .printable-area section,
-  .printable-area .rounded-xl,
-  .printable-area .grid,
-  .printable-area .divide-y {
+  .printable-area section {
+    break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
 
   @page {
     size: A4 portrait;
-    margin: 12mm;
+    margin: 10mm;
   }
 }

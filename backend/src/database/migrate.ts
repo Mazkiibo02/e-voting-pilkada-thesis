@@ -111,6 +111,8 @@ function migrate() {
       { name: "education", type: "TEXT" },
       { name: "career_path", type: "TEXT" },
       { name: "photo_url", type: "TEXT" },
+      { name: "status", type: "TEXT DEFAULT 'ACTIVE'" },
+      { name: "is_deleted", type: "INTEGER DEFAULT 0" },
     ];
     for (const col of candidateColumns) {
       try {
@@ -120,6 +122,40 @@ function migrate() {
         const errStr = String(colErr);
         if (!errStr.includes("duplicate column name") && !errStr.includes("already exists")) {
           console.warn(`Could not add column ${col.name} to candidate_pairs:`, colErr);
+        }
+      }
+    }
+
+    // Run additive schema updates for voting_sessions table
+    const sessionColumns = [
+      { name: "voter_gender", type: "TEXT DEFAULT 'L'" },
+      { name: "is_disability", type: "INTEGER DEFAULT 0" }
+    ];
+    for (const col of sessionColumns) {
+      try {
+        db.exec(`ALTER TABLE voting_sessions ADD COLUMN ${col.name} ${col.type};`);
+        console.log(`Added column ${col.name} to voting_sessions table.`);
+      } catch (colErr: any) {
+        const errStr = String(colErr);
+        if (!errStr.includes("duplicate column name") && !errStr.includes("already exists")) {
+          console.warn(`Could not add column ${col.name} to voting_sessions:`, colErr);
+        }
+      }
+    }
+
+    // Run additive schema updates for tps_recaps table
+    const recapColumns = [
+      { name: "voters_male_voted", type: "INTEGER DEFAULT 0" },
+      { name: "voters_female_voted", type: "INTEGER DEFAULT 0" }
+    ];
+    for (const col of recapColumns) {
+      try {
+        db.exec(`ALTER TABLE tps_recaps ADD COLUMN ${col.name} ${col.type};`);
+        console.log(`Added column ${col.name} to tps_recaps table.`);
+      } catch (colErr: any) {
+        const errStr = String(colErr);
+        if (!errStr.includes("duplicate column name") && !errStr.includes("already exists")) {
+          console.warn(`Could not add column ${col.name} to tps_recaps:`, colErr);
         }
       }
     }

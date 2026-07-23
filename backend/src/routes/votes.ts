@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { VotesService, VoteError } from "../services/votes";
+import { VotingSessionsService } from "../services/votingSessions";
 
 const router = Router();
 
@@ -38,6 +39,30 @@ router.post("/cast", async (req: Request, res: Response) => {
       return res.status(error.status).json({ message: error.message });
     }
     console.error("Error casting vote:", error);
+    return res.status(500).json({ message: "An unexpected error occurred" });
+  }
+});
+
+/**
+ * POST /votes/expire
+ * Marks a voting session as EXPIRED when voter time expires without choosing a candidate.
+ */
+router.post("/expire", async (req: Request, res: Response) => {
+  try {
+    const { sessionId } = req.body;
+
+    if (sessionId === undefined || isNaN(Number(sessionId))) {
+      return res.status(400).json({ message: "sessionId is required and must be a valid number" });
+    }
+
+    const sId = Number(sessionId);
+    VotingSessionsService.updateStatus(sId, "EXPIRED");
+
+    return res.json({
+      message: "Session expired successfully",
+    });
+  } catch (error: any) {
+    console.error("Error expiring session:", error);
     return res.status(500).json({ message: "An unexpected error occurred" });
   }
 });

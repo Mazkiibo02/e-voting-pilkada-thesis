@@ -34,7 +34,8 @@ router.post("/tps/:tpsId/chasil/generate", authenticateToken, requireRole(["ADMI
     }
 
     // Call service to generate the document
-    const doc = DocumentsService.generateForm(tpsId);
+    const requestingUserId = req.user?.sub ? Number(req.user.sub) : undefined;
+    const doc = DocumentsService.generateForm(tpsId, requestingUserId);
 
     AuditLogsService.log({
       electionId: doc.election_id,

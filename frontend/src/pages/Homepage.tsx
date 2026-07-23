@@ -427,8 +427,8 @@ const Homepage = () => {
                   />
                   <CardContent className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4 min-w-0 w-full sm:w-auto">
-                      <div className="relative shrink-0 w-20 h-28 rounded-lg overflow-hidden border-2 border-red-600 shadow-sm bg-white flex flex-col">
-                        <div className="bg-red-600 text-white font-black text-xs text-center py-0.5 tracking-wider border-b border-red-700">
+                      <div className="relative shrink-0 w-24 sm:w-28 h-32 sm:h-36 rounded-xl overflow-hidden border-2 border-red-600 shadow-md bg-white flex flex-col">
+                        <div className="bg-red-600 text-white font-black text-xs sm:text-sm text-center py-0.5 tracking-wider border-b border-red-700">
                           {c.ballotNumber.toString().padStart(2, '0')}
                         </div>
                         <div className="flex-1 w-full bg-slate-100 relative flex items-center justify-center overflow-hidden">
@@ -442,7 +442,7 @@ const Homepage = () => {
                               }}
                             />
                           ) : (
-                            <Users className="h-6 w-6 text-gray-400" />
+                            <Users className="h-8 w-8 text-gray-400" />
                           )}
                         </div>
                       </div>
@@ -468,8 +468,8 @@ const Homepage = () => {
                             </DialogHeader>
                             <div className="mt-4 space-y-6">
                               {c.photoUrl ? (
-                                <div className="w-48 h-64 mx-auto mb-4 rounded-xl border-4 border-red-600 overflow-hidden shadow-md bg-white flex flex-col relative">
-                                  <div className="bg-red-600 text-white font-extrabold text-sm text-center py-1 tracking-wider border-b border-red-700">
+                                <div className="w-72 sm:w-80 h-88 sm:h-96 mx-auto mb-6 rounded-2xl border-4 border-red-600 overflow-hidden shadow-xl bg-white flex flex-col relative">
+                                  <div className="bg-red-600 text-white font-black text-base sm:text-lg text-center py-2 tracking-widest border-b border-red-700 shadow-sm">
                                     PASANGAN CALON {c.ballotNumber.toString().padStart(2, '0')}
                                   </div>
                                   <div className="flex-1 w-full bg-slate-100 relative flex items-center justify-center overflow-hidden">
@@ -479,14 +479,14 @@ const Homepage = () => {
                                       className="w-full h-full object-cover object-top"
                                     />
                                   </div>
-                                  <div className="bg-slate-900 text-white text-[10px] font-bold text-center py-1 truncate px-2">
+                                  <div className="bg-slate-900 text-white text-xs font-bold text-center py-2 tracking-wider uppercase px-3">
                                     SURAT SUARA PILKADA KOTA TEGAL
                                   </div>
                                 </div>
                               ) : (
-                                <div className="w-48 h-64 border-4 border-dashed border-gray-300 rounded-xl mx-auto mb-4 flex flex-col items-center justify-center bg-gray-50">
-                                  <Users className="h-12 w-12 text-gray-400 mb-2" />
-                                  <span className="text-xs font-semibold text-gray-400">Foto Paslon</span>
+                                <div className="w-72 sm:w-80 h-88 sm:h-96 border-4 border-dashed border-gray-300 rounded-2xl mx-auto mb-6 flex flex-col items-center justify-center bg-gray-50">
+                                  <Users className="h-16 w-16 text-gray-400 mb-3" />
+                                  <span className="text-sm font-semibold text-gray-400">Foto Paslon Tidak Tersedia</span>
                                 </div>
                               )}
                               {c.motto && (

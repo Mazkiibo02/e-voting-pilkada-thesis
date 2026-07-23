@@ -58,6 +58,7 @@ interface CandidateTotal {
   ballotNumber: number;
   candidateName: string;
   viceCandidateName: string;
+  coalitionName?: string | null;
   voteTotal: number;
   voteTotalInWords: string;
 }
@@ -424,7 +425,7 @@ const WitnessDashboard = () => {
                             <div className="text-xs text-slate-500 font-medium mt-0.5">Wakil: {candidate.viceCandidateName}</div>
                           </TableCell>
                           <TableCell className="text-xs font-semibold text-slate-600">
-                            {candidate.ballotNumber === 1 ? "Party Alpha" : candidate.ballotNumber === 2 ? "Party Beta" : "Party Gamma"}
+                            {candidate.coalitionName || "-"}
                           </TableCell>
                           <TableCell className="text-right font-black text-slate-900 text-base font-mono">
                             {candidate.voteTotal}

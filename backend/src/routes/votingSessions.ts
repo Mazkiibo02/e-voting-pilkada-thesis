@@ -27,7 +27,7 @@ function sanitizeSession(session: any) {
 // 1. POST /voting-sessions/unlock
 router.post("/unlock", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
   try {
-    const { electionId, tpsId, boothId } = req.body;
+    const { electionId, tpsId, boothId, voterGender, isDisability } = req.body;
 
     if (electionId === undefined || tpsId === undefined || boothId === undefined) {
       return res.status(400).json({ message: "electionId, tpsId, and boothId are required" });
@@ -84,6 +84,8 @@ router.post("/unlock", authenticateToken, requireRole(["ADMIN", "KPPS"]), async 
       boothId: String(boothId),
       expiresMinutes,
       createdByUserId,
+      voterGender: voterGender || 'L',
+      isDisability: isDisability ? 1 : 0
     });
 
     AuditLogsService.log({

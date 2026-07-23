@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getBoothSessionByToken, castVote, ActiveSession, CandidatePair } from "@/services/boothApi";
+import { getBoothSessionByToken, castVote, expireVoteSession, ActiveSession, CandidatePair } from "@/services/boothApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -94,6 +94,9 @@ const BoothVoting = () => {
         setTimeLeft(0);
         setUiState("error");
         setErrorMessage("Sesi voting telah kedaluwarsa. Silakan hubungi petugas KPPS.");
+        if (sessionData.sessionId) {
+          expireVoteSession(sessionData.sessionId);
+        }
         setSessionData(null);
         setSelectedPair(null);
       } else {
@@ -111,15 +114,15 @@ const BoothVoting = () => {
   useEffect(() => {
     if (uiState !== "success") return;
 
-    setCountdown(5);
+    setCountdown(3);
     countdownIntervalRef.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(countdownIntervalRef.current!);
-          // Return to login
+          // Return to standby booth
           localStorage.removeItem(`booth_token_${currentBoothId}`);
           navigate(`/booth/${currentBoothId}`);
-          return 5;
+          return 3;
         }
         return prev - 1;
       });
@@ -138,13 +141,14 @@ const BoothVoting = () => {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Cast vote action
-  const handleCastVote = async () => {
-    if (!sessionData || !selectedPair) return;
+  // Direct Cast vote action (1-Click selection)
+  const handleDirectCastVote = async (pair: CandidatePair) => {
+    if (!sessionData || isSubmitting) return;
 
+    setSelectedPair(pair);
     setIsSubmitting(true);
     try {
-      await castVote(sessionData.sessionId, selectedPair.id);
+      await castVote(sessionData.sessionId, pair.id);
       setUiState("success");
       setErrorMessage(null);
     } catch (err: any) {
@@ -255,7 +259,7 @@ const BoothVoting = () => {
               <div>
                 <h4 className="font-semibold text-blue-800 text-sm">Petunjuk Penggunaan:</h4>
                 <p className="text-blue-700/80 text-xs md:text-sm mt-0.5">
-                  Ketuk kartu salah satu Pasangan Calon untuk memilih. Setelah memilih, tombol konfirmasi pilihan akan muncul di bagian bawah layar.
+                  Sentuh kartu atau tekan tombol hijau <strong>PILIH PASANGAN CALON</strong> pada kartu pilihan Anda. Suara Anda akan langsung disimpan secara aman dan anonim tanpa konfirmasi berulang.
                 </p>
               </div>
             </div>
@@ -273,40 +277,40 @@ const BoothVoting = () => {
                   return (
                     <div
                       key={pair.id}
-                      onClick={() => setSelectedPair(pair)}
+                      onClick={() => handleDirectCastVote(pair)}
                       className={`relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 transform active:scale-[0.98] ${
                         isSelected
-                          ? "ring-4 ring-blue-500 bg-white border-transparent shadow-xl scale-[1.02]"
+                          ? "ring-4 ring-emerald-500 bg-white border-transparent shadow-xl scale-[1.02]"
                           : "bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 shadow-sm"
                       }`}
                     >
                       {/* Ballot Number badge */}
                       <div className={`absolute top-4 left-4 h-12 w-12 rounded-xl flex items-center justify-center text-xl font-black z-10 ${
                         isSelected
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 text-gray-500"
+                          ? "bg-emerald-600 text-white"
+                          : "bg-blue-600 text-white shadow-md"
                       }`}>
                         {pair.ballotNumber.toString().padStart(2, "0")}
                       </div>
 
                       {/* Selected Indicator */}
                       {isSelected && (
-                        <div className="absolute top-4 right-4 bg-blue-500 text-white p-1 rounded-full shadow-lg z-10">
-                          <Check className="h-4 w-4" />
+                        <div className="absolute top-4 right-4 bg-emerald-500 text-white p-1 rounded-full shadow-lg z-10">
+                          <Check className="h-5 w-5" />
                         </div>
                       )}
 
                       {/* Candidate Photo */}
                       {pair.photoUrl ? (
-                        <div className="h-56 w-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                        <div className="h-64 sm:h-72 w-full bg-slate-100/80 flex items-center justify-center p-2 overflow-hidden border-b border-gray-100">
                           <img 
                             src={pair.photoUrl.startsWith('http') ? pair.photoUrl : `/api${pair.photoUrl}`} 
                             alt={`Paslon ${pair.candidateName}`} 
-                            className="h-full w-full object-cover" 
+                            className="h-full w-full object-contain rounded-md shadow-xs" 
                           />
                         </div>
                       ) : (
-                        <div className="h-56 w-full bg-gray-100 flex items-center justify-center">
+                        <div className="h-64 sm:h-72 w-full bg-gray-100 flex items-center justify-center">
                           <span className="text-gray-400 font-medium">Foto Tidak Tersedia</span>
                         </div>
                       )}
@@ -331,12 +335,33 @@ const BoothVoting = () => {
                           </div>
                         )}
                         
-                        <div className="pt-2">
+                        <div className="pt-2 space-y-2">
+                          <Button
+                            type="button"
+                            size="lg"
+                            disabled={isSubmitting}
+                            className="w-full font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md py-6 text-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDirectCastVote(pair);
+                            }}
+                          >
+                            {isSubmitting && selectedPair?.id === pair.id ? (
+                              <>
+                                <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Memproses...
+                              </>
+                            ) : (
+                              <>
+                                PILIH PASLON NO. {pair.ballotNumber.toString().padStart(2, "0")}
+                              </>
+                            )}
+                          </Button>
+
                           <Button 
                             type="button" 
-                            variant="outline" 
+                            variant="ghost" 
                             size="sm" 
-                            className="w-full text-xs font-semibold"
+                            className="w-full text-xs font-semibold text-slate-500 hover:text-slate-900"
                             onClick={(e) => {
                               e.stopPropagation();
                               setModalPair(pair);
