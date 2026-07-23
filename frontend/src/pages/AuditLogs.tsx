@@ -134,17 +134,19 @@ const AuditLogs = () => {
       {/* Header */}
       <header className="bg-primary text-primary-foreground shadow-md">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <Shield className="h-8 w-8 text-amber-400" />
-            <div>
-              <h1 className="text-xl font-bold">Log Aktivitas & Audit Trail</h1>
-              <p className="text-sm opacity-90">Sistem E-Voting Berbasis Blockchain (Model Sim)</p>
+          <div className="flex items-center gap-4">
+            <Button variant="secondary" size="sm" onClick={() => navigate('/admin')} className="shrink-0">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Kembali
+            </Button>
+            <div className="flex items-center gap-3">
+              <Shield className="h-8 w-8 text-amber-400" />
+              <div>
+                <h1 className="text-xl font-bold">Log Aktivitas & Audit Trail</h1>
+                <p className="text-sm opacity-90">Sistem E-Voting Berbasis Blockchain (Model Sim)</p>
+              </div>
             </div>
           </div>
-          <Button variant="secondary" size="sm" onClick={() => navigate('/admin')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Kembali
-          </Button>
         </div>
       </header>
 

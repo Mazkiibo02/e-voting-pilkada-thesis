@@ -430,7 +430,10 @@ const ChasilPreview = () => {
         {/* TPS Selection Panel */}
         <div className="no-print p-4 bg-card border rounded-lg flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-white shadow-sm">
           <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-slate-700">Pilih TPS Penugasan:</span>
+            <Button variant="outline" size="sm" onClick={() => navigate('/admin')} className="font-semibold shrink-0">
+              <ArrowLeft className="mr-2 h-4 w-4" /> Kembali
+            </Button>
+            <span className="text-sm font-semibold text-slate-700 whitespace-nowrap">Pilih TPS Penugasan:</span>
             {loadingList ? (
               <Loader2 className="h-4 w-4 animate-spin text-primary" />
             ) : (
@@ -449,9 +452,6 @@ const ChasilPreview = () => {
           </div>
           
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate('/admin')} className="font-semibold">
-              Kembali ke Dashboard
-            </Button>
             <Button size="sm" onClick={handlePrint} disabled={!recapData} className="font-semibold">
               <FileDown className="mr-2 h-4 w-4" />
               Cetak / Simpan PDF
@@ -792,37 +792,7 @@ const ChasilPreview = () => {
                   </div>
                 </section>
 
-                {/* BLOCKCHAIN ACTION BUTTON (NO-PRINT) */}
-                <div className="no-print pt-4 border-t flex justify-end">
-                  {isFinalizationVisible && (
-                    <div className="w-full sm:w-auto">
-                      {tpsDetails?.status === 'BLOCKCHAIN_ANCHORED' ? (
-                        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-lg flex items-center gap-2.5">
-                          <CheckCircle className="h-5 w-5 text-emerald-600 shrink-0" />
-                          <span className="text-xs font-bold uppercase">Hasil TPS Terverifikasi On-Chain di Blockchain</span>
-                        </div>
-                      ) : (
-                        <Button
-                          onClick={handleAnchorToBlockchain}
-                          disabled={anchoring || !isFinalizationActive}
-                          className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-10 px-6 shadow-xs"
-                        >
-                          {anchoring ? (
-                            <>
-                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                              Menambatkan ke Blockchain...
-                            </>
-                          ) : (
-                            <>
-                              <Shield className="h-4 w-4 mr-2" />
-                              Tambatkan Hasil C.Hasil ke Blockchain
-                            </>
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                  )}
-                </div>
+
 
               </CardContent>
             </Card>
@@ -959,6 +929,42 @@ const ChasilPreview = () => {
                       </div>
                     )}
                   </div>
+                </div>
+
+                {/* BLOCKCHAIN ACTION BUTTON (NO-PRINT) */}
+                <div className="no-print mt-8 pt-6 border-t flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="text-xs text-slate-500 font-medium">
+                    Tahap akhir: Pastikan file C.Hasil telah diunggah sebelum menambatkan dokumen ke dalam jaringan blockchain.
+                  </div>
+                  
+                  {isFinalizationVisible && (
+                    <div className="w-full md:w-auto">
+                      {tpsDetails?.status === 'BLOCKCHAIN_ANCHORED' ? (
+                        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-lg flex items-center gap-2.5 shadow-sm">
+                          <CheckCircle className="h-5 w-5 text-emerald-600 shrink-0" />
+                          <span className="text-xs font-bold uppercase tracking-wide">Hasil TPS Terverifikasi On-Chain di Blockchain</span>
+                        </div>
+                      ) : (
+                        <Button
+                          onClick={handleAnchorToBlockchain}
+                          disabled={anchoring || !isFinalizationActive || !documentData?.signedFile}
+                          className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-12 px-8 shadow-sm transition-all"
+                        >
+                          {anchoring ? (
+                            <>
+                              <Loader2 className="h-5 w-5 mr-3 animate-spin" />
+                              Menambatkan ke Blockchain...
+                            </>
+                          ) : (
+                            <>
+                              <Shield className="h-5 w-5 mr-3" />
+                              Tambatkan Hasil C.Hasil ke Blockchain
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
