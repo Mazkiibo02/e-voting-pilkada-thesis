@@ -199,17 +199,20 @@ const AdminDashboard = () => {
       const tpsRes = await fetch(`/api/tps`, {
         headers: { 'Authorization': `Bearer ${tokenAuth}` }
       });
-
-      if (tpsRes.status === 401) {
-        toast.error("Sesi Anda telah berakhir, silakan login kembali.");
+      
+      const tpsData = await tpsRes.json();
+      
+      if (!tpsRes.ok) {
+        toast.error(tpsData.message || "Gagal mengambil data TPS dari server.");
+        setIsGeneratingToken(false);
         return;
       }
 
-      const tpsData = await tpsRes.json();
       const firstTps = tpsData.items?.[0];
       
       if (!firstTps) {
         toast.error("Tidak ada TPS aktif di sistem.");
+        setIsGeneratingToken(false);
         return;
       }
 
@@ -843,6 +846,23 @@ const AdminDashboard = () => {
                       </div>
                       <p className="text-[11px] text-slate-500 italic mt-1">
                         *Data gender digunakan untuk mengisi statistik L/P pada formulir C.Hasil-KWK KPU secara otomatis tanpa mencatat identitas/NIK pemilih.
+                      </p>
+                    </div>
+
+                    {/* Disability Checkbox */}
+                    <div className="space-y-2">
+                      <Label className="font-semibold text-slate-800">Opsi Tambahan</Label>
+                      <label className="flex items-center space-x-3 cursor-pointer bg-white p-3 rounded-lg border border-slate-200">
+                        <input
+                          type="checkbox"
+                          checked={isDisability}
+                          onChange={(e) => setIsDisability(e.target.checked)}
+                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-semibold text-slate-700">Tandai sebagai Pemilih Disabilitas</span>
+                      </label>
+                      <p className="text-[11px] text-slate-500 italic mt-1">
+                        *Digunakan untuk pendataan demografi disabilitas di formulir C.Hasil.
                       </p>
                     </div>
 
