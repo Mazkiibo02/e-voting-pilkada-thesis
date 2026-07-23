@@ -1282,7 +1282,13 @@ const AdminDashboard = () => {
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={stats.candidates}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="name" stroke="#64748b" interval={0} tick={{ fontSize: 12 }} />
+                    <XAxis 
+                      dataKey="name" 
+                      stroke="#64748b" 
+                      interval={0} 
+                      tick={{ fontSize: 12 }} 
+                      tickFormatter={(value) => value.length > 20 ? `${value.substring(0, 20)}...` : value}
+                    />
                     <YAxis stroke="#64748b" />
                     <Tooltip contentStyle={{ backgroundColor: '#fff', borderColor: '#e2e8f0' }} />
                     <Legend />
@@ -1311,7 +1317,7 @@ const AdminDashboard = () => {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, votes }) => `${name}: ${votes}`}
+                      label={({ name, votes }) => `${name.length > 20 ? name.substring(0, 20) + '...' : name}: ${votes}`}
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="votes"
