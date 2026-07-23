@@ -58,6 +58,28 @@ export const PublicService = {
       ORDER BY tps_code ASC
     `).all() as { tpsCode: string }[];
 
+    // Get Booth Activity
+    let boothCondition = "";
+    if (tpsCodeFilter) {
+      boothCondition = "WHERE t.tps_code = ?";
+    }
+    const boothActivity = db.prepare(`
+      SELECT 
+        s.booth_id as boothId,
+        COUNT(v.id) as voteCount
+      FROM voting_sessions s
+      LEFT JOIN votes v ON v.session_id = s.id
+      JOIN tps t ON s.tps_id = t.id
+      ${boothCondition}
+      GROUP BY s.booth_id
+      ORDER BY s.booth_id ASC
+    `).all(...params) as any[];
+
+    const boothsFormatted = boothActivity.map(b => ({
+      name: b.boothId || "Tanpa Bilik",
+      votes: b.voteCount
+    }));
+
     const candidatesFormatted = candidates.map(c => ({
       id: c.id,
       name: c.viceCandidateName 
@@ -76,6 +98,7 @@ export const PublicService = {
         ? Number(((totalVotesRow.total / totalReg) * 100).toFixed(1)) 
         : 0,
       candidates: candidatesFormatted,
+      booths: boothsFormatted,
       tpsList: tpsList.map(t => t.tpsCode)
     };
   }

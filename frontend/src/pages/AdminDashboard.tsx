@@ -1334,7 +1334,73 @@ const AdminDashboard = () => {
           </Card>
         </div>
 
-        {/* Charts Removed for secret ballot */}
+        {/* Booth Activity Charts */}
+        <div className="grid lg:grid-cols-2 gap-6 mb-8">
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-slate-900">Aktivitas Bilik Suara</CardTitle>
+              <CardDescription className="text-slate-500">Jumlah pemilih selesai per bilik</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!stats?.booths || stats.booths.length === 0 ? (
+                <div className="flex h-[300px] items-center justify-center text-slate-500 font-medium border border-dashed border-slate-200 rounded-md bg-slate-50">
+                  Belum ada data bilik
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={stats.booths}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis 
+                      dataKey="name" 
+                      stroke="#64748b" 
+                      interval={0} 
+                      tick={{ fontSize: 12 }} 
+                    />
+                    <YAxis stroke="#64748b" />
+                    <Tooltip contentStyle={{ backgroundColor: '#fff', borderColor: '#e2e8f0' }} />
+                    <Legend />
+                    <Bar dataKey="votes" fill="#3b82f6" name="Jumlah Pemilih Selesai" />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-slate-900">Distribusi Beban Bilik</CardTitle>
+              <CardDescription className="text-slate-500">Persentase penggunaan bilik</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!stats?.booths || stats.booths.length === 0 ? (
+                <div className="flex h-[300px] items-center justify-center text-slate-500 font-medium border border-dashed border-slate-200 rounded-md bg-slate-50">
+                  Belum ada data bilik
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={stats.booths}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="votes"
+                      nameKey="name"
+                    >
+                      {stats.booths.map((entry: any, index: number) => {
+                        const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+                        return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />;
+                      })}
+                    </Pie>
+                    <Tooltip contentStyle={{ backgroundColor: '#fff', borderColor: '#e2e8f0' }} />
+                    <Legend layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Booth Unlock Panel */}
         {currentUser?.role === 'KPPS' && (
