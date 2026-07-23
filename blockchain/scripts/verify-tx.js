@@ -1,12 +1,11 @@
 const { ethers } = require("hardhat");
 
 async function main() {
-  const args = process.argv.slice(2);
-  const txHash = args[0];
+  const txHash = process.env.TX_HASH;
 
   if (!txHash) {
     console.error("❌ Mohon masukkan Hash Transaksi (Tx Hash).");
-    console.error("Penggunaan: npx hardhat run scripts/verify-tx.js --network localhost <HASH>");
+    console.error("Penggunaan: TX_HASH=<HASH> npx hardhat run scripts/verify-tx.js --network localhost");
     process.exit(1);
   }
 
