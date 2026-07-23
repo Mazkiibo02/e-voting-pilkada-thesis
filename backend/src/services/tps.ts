@@ -47,6 +47,7 @@ export const TpsService = {
     village?: string;
     address?: string;
     status?: string;
+    registered_voters_total?: number;
     male_dpt?: number;
     female_dpt?: number;
   }): TPS {
