@@ -80,6 +80,20 @@ export const PublicService = {
       votes: b.voteCount
     }));
 
+    // Get TPS Statuses (useful for Admin view)
+    let tpsStatusesFormatted: {name: string, count: number}[] = [];
+    if (!tpsCodeFilter) {
+      const tpsStatuses = db.prepare(`
+        SELECT status, COUNT(*) as count
+        FROM tps
+        GROUP BY status
+      `).all() as any[];
+      tpsStatusesFormatted = tpsStatuses.map(t => ({
+        name: t.status,
+        count: t.count
+      }));
+    }
+
     const candidatesFormatted = candidates.map(c => ({
       id: c.id,
       name: c.viceCandidateName 
@@ -99,6 +113,7 @@ export const PublicService = {
         : 0,
       candidates: candidatesFormatted,
       booths: boothsFormatted,
+      tpsStatuses: tpsStatusesFormatted,
       tpsList: tpsList.map(t => t.tpsCode)
     };
   }
