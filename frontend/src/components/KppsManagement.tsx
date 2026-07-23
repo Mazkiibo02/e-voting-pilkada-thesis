@@ -58,7 +58,7 @@ export const KppsManagement = ({ selectedTpsCode }: KppsManagementProps) => {
   const fetchKppsUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('/api/kpps', { headers: { 'Authorization': `Bearer ${token}` } });
+      const res = await fetch(`/api/kpps?t=${Date.now()}`, { headers: { 'Authorization': `Bearer ${token}` } });
       const data = await res.json();
       if (res.ok) setKppsUsers(data.data || []);
     } catch (e) {
@@ -342,7 +342,12 @@ export const KppsManagement = ({ selectedTpsCode }: KppsManagementProps) => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!generatedAccounts} onOpenChange={() => setGeneratedAccounts(null)}>
+      <Dialog open={!!generatedAccounts} onOpenChange={(open) => {
+        if (!open) {
+          setGeneratedAccounts(null);
+          fetchKppsUsers();
+        }
+      }}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold flex items-center text-emerald-700">
@@ -390,7 +395,7 @@ export const KppsManagement = ({ selectedTpsCode }: KppsManagementProps) => {
             }}>
               <Download className="w-4 h-4 mr-2" /> Export ke Excel
             </Button>
-            <Button onClick={() => setGeneratedAccounts(null)}>Tutup</Button>
+            <Button onClick={() => { setGeneratedAccounts(null); fetchKppsUsers(); }}>Tutup</Button>
           </div>
         </DialogContent>
       </Dialog>
