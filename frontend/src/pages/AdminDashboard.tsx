@@ -775,7 +775,9 @@ const AdminDashboard = () => {
                 <Shield className="mr-2 h-4 w-4 text-amber-500" />
                 Log Aktivitas
               </Button>
-              <Button size="sm" onClick={() => navigate('/admin/chasil-preview')} className="font-semibold">
+              {currentUser?.role === 'KPPS' && (
+                <>
+                  <Button size="sm" onClick={() => navigate('/admin/chasil-preview')} className="font-semibold">
                 <Shield className="mr-2 h-4 w-4" />
                 Preview C.Hasil
               </Button>
@@ -875,6 +877,8 @@ const AdminDashboard = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              </>
+              )}
             </div>
           </div>
         </div>
@@ -1335,6 +1339,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Booth Unlock Panel */}
+        {currentUser?.role === 'KPPS' && (
         <Card className="bg-white border-gray-200 shadow-sm mt-8">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -1415,6 +1420,7 @@ const AdminDashboard = () => {
             </div>
           </CardContent>
         </Card>
+        )}
       </main>
 
       <footer className="text-center text-sm text-slate-500 py-8">
