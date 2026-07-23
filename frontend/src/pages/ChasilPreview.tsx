@@ -297,19 +297,29 @@ const ChasilPreview = () => {
   const previewData = useMemo(() => {
     if (!tpsDetails || !recapData) return null;
 
-    const totalReg = recapData.totalRegisteredVoters || 100;
+    const totalReg = tpsDetails.registered_voters_total || 0;
     const totalVer = recapData.totalVerifiedVoters || 0;
-    const regL = Math.floor(totalReg * 0.49);
-    const regP = totalReg - regL;
-    const verL = Math.floor(totalVer * 0.5);
-    const verP = totalVer - verL;
+    const regL = tpsDetails.male_dpt || 0;
+    const regP = tpsDetails.female_dpt || 0;
+    const verL = recapData.voters_male_voted || 0;
+    const verP = recapData.voters_female_voted || 0;
 
     const receivedBallots = Math.ceil(totalReg * 1.025);
     const usedBallots = recapData.totalValidVotes + recapData.totalInvalidVotes;
     const remainingBallots = Math.max(0, receivedBallots - usedBallots);
 
-    const activeKppsName = tpsDetails?.kppsOfficer?.name || 'ANDZANI FARISAH ZATIL H.';
-    const activeKppsNik = tpsDetails?.kppsOfficer?.nik || '3328185310960003';
+    const activeKppsName = tpsDetails?.kppsOfficer?.name || 'Ketua KPPS';
+    const activeKppsNik = tpsDetails?.kppsOfficer?.nik || '-';
+    
+    const extractTime = (isoString?: string) => {
+      if (!isoString) return '-';
+      try {
+        const d = new Date(isoString);
+        return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+      } catch (e) {
+        return '-';
+      }
+    };
 
     return {
       electionName: electionDetails ? electionDetails.name : 'Pemilihan Walikota dan Wakil Walikota Kota Tegal',
@@ -322,13 +332,13 @@ const ChasilPreview = () => {
       },
       votingDate: electionDetails ? electionDetails.voting_date : '2024-11-27',
       tpsNumber: tpsDetails.tps_number || '006',
-      tpsCode: tpsDetails.tps_code ? `33281820040${tpsDetails.tps_number.slice(-2)}` : '3328182004006',
+      tpsCode: tpsDetails.tps_code || '3328182004006',
       officerName: activeKppsName,
-      deviceId: 'e533af4304cb53ad',
-      votingStart: '07:00',
-      votingEnd: '13:00',
-      countingStart: '13:30',
-      countingEnd: '14:15',
+      deviceId: tpsDetails?.kppsOfficer?.device_id || 'UNKNOWN-DEVICE',
+      votingStart: extractTime(tpsDetails.opened_at) || '07:00',
+      votingEnd: extractTime(tpsDetails.closed_at) || '13:00',
+      countingStart: extractTime(tpsDetails.closed_at) || '13:00',
+      countingEnd: extractTime(recapData.generated_at) || '14:00',
       documentId: documentData ? `CHASIL-KWK-ID-${documentData.id}` : 'Belum digenerate',
       documentHash: documentData?.signedFile?.sha256 || documentData?.signed_file_hash_sha256 || 'Belum diunggah',
       blockchainTx: documentData?.blockchainRecord?.transactionHash || 'Belum ditambatkan',
@@ -363,14 +373,9 @@ const ChasilPreview = () => {
         votes: ct.voteTotal,
         voteInWords: ct.voteTotalInWords || String(ct.voteTotal),
       })),
-      officerList: [
-        { name: activeKppsName, nik: activeKppsNik, phone: "085878276954", role: "Ketua KPPS" },
-        { name: "SITI PUTRI NURKHOLIFAH", nik: "3328186101840001", phone: "087722578390", role: "Anggota KPPS 2" },
-        { name: "TRESNO JUNIAWAN", nik: "3328180606880006", phone: "0895384252998", role: "Saksi Paslon 1" },
-        { name: "FARAH AHDHIATHIN FAUZIAH", nik: "3328185310960003", phone: "085878276954", role: "Saksi Paslon 2" },
-        { name: "YAYAN KARSENO", nik: "3328180501850001", phone: "085742077121", role: "Saksi Paslon 3" },
-        { name: "MUHAMAD NUR FAOJI", nik: "3328180101980012", phone: "085772222710", role: "Pengawas Bawaslu" }
-      ],
+      officerList: tpsDetails.officers && tpsDetails.officers.length > 0 
+        ? tpsDetails.officers 
+        : [{ name: activeKppsName, nik: activeKppsNik, phone: "-", role: "Ketua KPPS" }],
       digitalSignatures: [
         {
           file: `crop_pilkada-${tpsDetails.tps_code}_R_2024-11-27_16-46-34_4668646648330051681.jpg`,
@@ -388,7 +393,7 @@ const ChasilPreview = () => {
           hash2: "Linx+Ghi/3cE4o+B+feKOnyEtCnjn79NLk="
         }
       ],
-      publicKey: "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEeRV1c20/qPBAnsHtw3hreBOWyDOq4ys4SG5fMY97lL69N8ofLM3QMEWjRra748ZARscAqjvCM+gQ6ux7DSIkPw=="
+      publicKey: tpsDetails?.kppsOfficer?.public_key || "Belum ada kunci publik"
     };
   }, [tpsDetails, electionDetails, recapData, documentData]);
 

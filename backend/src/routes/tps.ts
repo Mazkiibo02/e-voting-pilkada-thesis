@@ -293,11 +293,20 @@ router.get("/:id", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req
       return res.status(404).json({ message: "TPS not found" });
     }
 
-    const kppsUser = db.prepare("SELECT full_name, name, nik FROM users WHERE role = 'KPPS' AND assigned_tps_id = ?").get(id) as any;
+    const kppsUser = db.prepare("SELECT full_name, name, nik, device_id, public_key FROM users WHERE role = 'KPPS' AND assigned_tps_id = ?").get(id) as any;
     tps.kppsOfficer = {
       name: kppsUser?.full_name || kppsUser?.name || "ANDZANI FARISAH ZATIL H.",
-      nik: kppsUser?.nik || "3328185310960003"
+      nik: kppsUser?.nik || "3328185310960003",
+      device_id: kppsUser?.device_id || "e533af4304cb53ad",
+      public_key: kppsUser?.public_key || "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEeRV1c20/qPBAnsHtw3hreBOWyDOq4ys4SG5fMY97lL69N8ofLM3QMEWjRra748ZARscAqjvCM+gQ6ux7DSIkPw=="
     };
+
+    const officers = db.prepare("SELECT full_name, name, nik, role, affiliation FROM users WHERE assigned_tps_id = ? AND role IN ('KPPS', 'WITNESS', 'PANWAS')").all(id) as any[];
+    tps.officers = officers.map(o => ({
+      name: o.full_name || o.name,
+      nik: o.nik,
+      role: o.affiliation || o.role
+    }));
 
     return res.json({ data: tps });
   } catch (error: any) {
@@ -341,7 +350,8 @@ router.post("/", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequ
     const {
       election_id,
       location,
-      registered_voters_total,
+      male_dpt,
+      female_dpt,
     } = req.body;
 
     // Default to the first active election if not provided
@@ -355,10 +365,15 @@ router.post("/", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequ
       }
     }
 
-    const regTotal = Number(registered_voters_total);
-    if (isNaN(regTotal) || regTotal < 0) {
-      return res.status(400).json({ message: "registered_voters_total must be non-negative" });
+    const maleDpt = Number(male_dpt);
+    const femaleDpt = Number(female_dpt);
+    if (isNaN(maleDpt) || maleDpt < 0) {
+      return res.status(400).json({ message: "male_dpt must be non-negative" });
     }
+    if (isNaN(femaleDpt) || femaleDpt < 0) {
+      return res.status(400).json({ message: "female_dpt must be non-negative" });
+    }
+    const regTotal = maleDpt + femaleDpt;
     
     // Strict KPU Guardrail
     if (regTotal > 500) {
@@ -395,6 +410,8 @@ router.post("/", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequ
       tps_code: tps_code,
       address: location.trim(),
       status: "OPEN",
+      male_dpt: maleDpt,
+      female_dpt: femaleDpt,
       registered_voters_total: regTotal,
     });
 
@@ -428,7 +445,8 @@ router.patch("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: Auth
       village,
       address,
       status,
-      registered_voters_total,
+      male_dpt,
+      female_dpt,
     } = req.body;
 
     if (election_id !== undefined) {
@@ -449,10 +467,17 @@ router.patch("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: Auth
       return res.status(400).json({ message: "tps_code cannot be empty" });
     }
 
-    if (registered_voters_total !== undefined) {
-      const regTotal = Number(registered_voters_total);
-      if (isNaN(regTotal) || regTotal < 0) {
-        return res.status(400).json({ message: "registered_voters_total must be non-negative" });
+    if (male_dpt !== undefined) {
+      const maleTotal = Number(male_dpt);
+      if (isNaN(maleTotal) || maleTotal < 0) {
+        return res.status(400).json({ message: "male_dpt must be non-negative" });
+      }
+    }
+    
+    if (female_dpt !== undefined) {
+      const femaleTotal = Number(female_dpt);
+      if (isNaN(femaleTotal) || femaleTotal < 0) {
+        return res.status(400).json({ message: "female_dpt must be non-negative" });
       }
     }
 
@@ -472,7 +497,8 @@ router.patch("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: Auth
       village: village ? village.trim() : undefined,
       address: address ? address.trim() : undefined,
       status: status ? status.toUpperCase() : undefined,
-      registered_voters_total: registered_voters_total !== undefined ? Number(registered_voters_total) : undefined,
+      male_dpt: male_dpt !== undefined ? Number(male_dpt) : undefined,
+      female_dpt: female_dpt !== undefined ? Number(female_dpt) : undefined,
     });
 
     if (!updated) {

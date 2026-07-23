@@ -66,12 +66,12 @@ function seed() {
 
       // Insert 3 TPS
       const tpsStmt = db.prepare(
-        `INSERT INTO tps (election_id, tps_number, tps_code, province, city_regency, district, village, address, registered_voters_total, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO tps (election_id, tps_number, tps_code, province, city_regency, district, village, address, male_dpt, female_dpt, registered_voters_total, status, opened_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`
       );
       const tpsList = [
-        [electionId, "001", "TPS-001", "Jawa Tengah", "Kota Tegal", "Tegal Timur", "Kejambon", "Kecamatan Tegal Timur, Kelurahan Kejambon", 100, "OPEN"],
-        [electionId, "002", "TPS-002", "Jawa Tengah", "Kota Tegal", "Tegal Selatan", "Randugunting", "Kecamatan Tegal Selatan, Kelurahan Randugunting", 100, "OPEN"],
-        [electionId, "003", "TPS-003", "Jawa Tengah", "Kota Tegal", "Margadana", "Sumurpanggang", "Kecamatan Margadana, Kelurahan Sumurpanggang", 100, "OPEN"],
+        [electionId, "001", "3376011001001", "Jawa Tengah", "Kota Tegal", "Tegal Timur", "Kejambon", "Kecamatan Tegal Timur, Kelurahan Kejambon", 49, 52, 101, "OPEN"],
+        [electionId, "002", "3376011002002", "Jawa Tengah", "Kota Tegal", "Tegal Selatan", "Randugunting", "Kecamatan Tegal Selatan, Kelurahan Randugunting", 55, 60, 115, "OPEN"],
+        [electionId, "003", "3376011003003", "Jawa Tengah", "Kota Tegal", "Margadana", "Sumurpanggang", "Kecamatan Margadana, Kelurahan Sumurpanggang", 45, 50, 95, "OPEN"],
       ];
       for (const t of tpsList) {
         const r = tpsStmt.run(...t);
@@ -100,21 +100,32 @@ function seed() {
     // - kpps@example.local / Kpps123!
     // - witness@example.local / Witness123!
     const userStmt = db.prepare(`
-      INSERT INTO users (name, full_name, email, password_hash, role, assigned_tps_id, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO users (name, full_name, email, password_hash, role, affiliation, nik, assigned_tps_id, device_id, public_key, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(email) DO UPDATE SET
         name = excluded.name,
         full_name = excluded.full_name,
         password_hash = excluded.password_hash,
         role = excluded.role,
+        affiliation = excluded.affiliation,
+        nik = excluded.nik,
         assigned_tps_id = COALESCE(excluded.assigned_tps_id, users.assigned_tps_id),
+        device_id = excluded.device_id,
+        public_key = excluded.public_key,
         status = excluded.status,
         updated_at = CURRENT_TIMESTAMP
     `);
 
-    userStmt.run("Admin Demo", "Super Administrator", "admin@example.local", hashPassword("Admin123!"), "ADMIN", null, "ACTIVE");
-    userStmt.run("KPPS Demo", "Ketua KPPS Demo", "kpps@example.local", hashPassword("Kpps123!"), "KPPS", targetTpsId, "ACTIVE");
-    userStmt.run("Witness Demo", "Saksi TPS Demo", "witness@example.local", hashPassword("Witness123!"), "WITNESS", targetTpsId, "ACTIVE");
+    const pkMock = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEeRV1c20/qPBAnsHtw3hreBOWyDOq4ys4SG5fMY97lL69N8ofLM3QMEWjRra748ZARscAqjvCM+gQ6ux7DSIkPw==";
+    const deviceIdMock = "e533af4304cb53ad";
+
+    userStmt.run("Admin Demo", "Super Administrator", "admin@example.local", hashPassword("Admin123!"), "ADMIN", null, null, null, null, null, "ACTIVE");
+    userStmt.run("KPPS Demo", "Ketua KPPS Demo", "kpps@example.local", hashPassword("Kpps123!"), "KPPS", "Ketua KPPS", "3328185310960003", targetTpsId, deviceIdMock, pkMock, "ACTIVE");
+    userStmt.run("SITI PUTRI NURKHOLIFAH", "SITI PUTRI NURKHOLIFAH", "siti@example.local", hashPassword("Kpps123!"), "KPPS", "Anggota KPPS 2", "3328186101840001", targetTpsId, null, null, "ACTIVE");
+    userStmt.run("TRESNO JUNIAWAN", "TRESNO JUNIAWAN", "tresno@example.local", hashPassword("Witness123!"), "WITNESS", "Saksi Paslon 1", "3328180606880006", targetTpsId, null, null, "ACTIVE");
+    userStmt.run("FARAH AHDHIATHIN FAUZIAH", "FARAH AHDHIATHIN FAUZIAH", "farah@example.local", hashPassword("Witness123!"), "WITNESS", "Saksi Paslon 2", "3328185310960003", targetTpsId, null, null, "ACTIVE");
+    userStmt.run("YAYAN KARSENO", "YAYAN KARSENO", "yayan@example.local", hashPassword("Witness123!"), "WITNESS", "Saksi Paslon 3", "3328180501850001", targetTpsId, null, null, "ACTIVE");
+    userStmt.run("MUHAMAD NUR FAOJI", "MUHAMAD NUR FAOJI", "muhamad@example.local", hashPassword("Witness123!"), "WITNESS", "Pengawas Bawaslu", "3328180101980012", targetTpsId, null, null, "ACTIVE");
 
     db.exec("COMMIT;");
 

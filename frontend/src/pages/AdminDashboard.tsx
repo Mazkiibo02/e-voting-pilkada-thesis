@@ -139,20 +139,26 @@ const AdminDashboard = () => {
   // Form states
   const [isTpsModalOpen, setIsTpsModalOpen] = useState(false);
   const [newTpsLocation, setNewTpsLocation] = useState("");
-  const [newTpsDpt, setNewTpsDpt] = useState("");
+  const [newTpsMaleDpt, setNewTpsMaleDpt] = useState("");
+  const [newTpsFemaleDpt, setNewTpsFemaleDpt] = useState("");
   const [tpsError, setTpsError] = useState("");
   const [isSubmittingTps, setIsSubmittingTps] = useState(false);
 
   const handleAddTps = async (e: React.FormEvent) => {
     e.preventDefault();
     setTpsError("");
-    const dptValue = parseInt(newTpsDpt, 10);
-    if (isNaN(dptValue) || dptValue < 0) {
-      setTpsError("Jumlah DPT tidak valid.");
+    const maleDptValue = parseInt(newTpsMaleDpt, 10);
+    const femaleDptValue = parseInt(newTpsFemaleDpt, 10);
+    if (isNaN(maleDptValue) || maleDptValue < 0) {
+      setTpsError("Jumlah DPT Laki-laki tidak valid.");
       return;
     }
-    if (dptValue > 500) {
-      setTpsError("Maksimal 500 DPT sesuai regulasi KPU.");
+    if (isNaN(femaleDptValue) || femaleDptValue < 0) {
+      setTpsError("Jumlah DPT Perempuan tidak valid.");
+      return;
+    }
+    if (maleDptValue + femaleDptValue > 500) {
+      setTpsError("Maksimal 500 DPT total sesuai regulasi KPU.");
       return;
     }
     if (!newTpsLocation.trim()) {
@@ -171,7 +177,8 @@ const AdminDashboard = () => {
         },
         body: JSON.stringify({
           location: newTpsLocation,
-          registered_voters_total: dptValue
+          male_dpt: maleDptValue,
+          female_dpt: femaleDptValue
         })
       });
       const data = await res.json();
@@ -179,7 +186,8 @@ const AdminDashboard = () => {
         toast.success(`TPS berhasil ditambahkan: ${data.data.tps_code}`);
         setIsTpsModalOpen(false);
         setNewTpsLocation("");
-        setNewTpsDpt("");
+        setNewTpsMaleDpt("");
+        setNewTpsFemaleDpt("");
         loadData(selectedTps ?? undefined);
       } else {
         setTpsError(data.message || "Gagal menambah TPS");
@@ -369,7 +377,8 @@ const AdminDashboard = () => {
   const [fullTpsList, setFullTpsList] = useState<any[]>([]);
   const [editingTps, setEditingTps] = useState<any>(null);
   const [editTpsLocation, setEditTpsLocation] = useState("");
-  const [editTpsDpt, setEditTpsDpt] = useState("");
+  const [editTpsMaleDpt, setEditTpsMaleDpt] = useState("");
+  const [editTpsFemaleDpt, setEditTpsFemaleDpt] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
   const tpsFileInputRef = useRef<HTMLInputElement>(null);
@@ -468,20 +477,26 @@ const AdminDashboard = () => {
   const handleOpenEditModal = (tps: any) => {
     setEditingTps(tps);
     setEditTpsLocation(tps.address || "");
-    setEditTpsDpt((tps.registered_voters_total ?? 100).toString());
+    setEditTpsMaleDpt((tps.male_dpt ?? 0).toString());
+    setEditTpsFemaleDpt((tps.female_dpt ?? 0).toString());
     setIsEditModalOpen(true);
   };
 
   const handleUpdateTps = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingTps) return;
-    const dptVal = parseInt(editTpsDpt, 10);
-    if (isNaN(dptVal) || dptVal < 0) {
-      toast.error("Jumlah DPT tidak valid.");
+    const maleDptVal = parseInt(editTpsMaleDpt, 10);
+    const femaleDptVal = parseInt(editTpsFemaleDpt, 10);
+    if (isNaN(maleDptVal) || maleDptVal < 0) {
+      toast.error("Jumlah DPT Laki-laki tidak valid.");
       return;
     }
-    if (dptVal > 500) {
-      toast.error("Maksimal 500 DPT sesuai regulasi KPU.");
+    if (isNaN(femaleDptVal) || femaleDptVal < 0) {
+      toast.error("Jumlah DPT Perempuan tidak valid.");
+      return;
+    }
+    if (maleDptVal + femaleDptVal > 500) {
+      toast.error("Maksimal 500 DPT total sesuai regulasi KPU.");
       return;
     }
 
@@ -496,7 +511,8 @@ const AdminDashboard = () => {
         },
         body: JSON.stringify({
           address: editTpsLocation,
-          registered_voters_total: dptVal
+          male_dpt: maleDptVal,
+          female_dpt: femaleDptVal
         })
       });
       const data = await res.json();
@@ -746,14 +762,28 @@ const AdminDashboard = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="dpt">Jumlah DPT</Label>
-                      <Input
-                        id="dpt"
-                        type="number"
-                        placeholder="Maksimal 500"
-                        value={newTpsDpt}
-                        onChange={(e) => setNewTpsDpt(e.target.value)}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="male_dpt">DPT Laki-laki</Label>
+                      <Input 
+                        id="male_dpt" 
+                        type="number" 
+                        min="0"
+                        value={newTpsMaleDpt}
+                        onChange={(e) => setNewTpsMaleDpt(e.target.value)}
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="female_dpt">DPT Perempuan</Label>
+                      <Input 
+                        id="female_dpt" 
+                        type="number" 
+                        min="0"
+                        value={newTpsFemaleDpt}
+                        onChange={(e) => setNewTpsFemaleDpt(e.target.value)}
+                      />
+                    </div>
+                  </div>
                     </div>
                     {tpsError && (
                       <div className="p-3 bg-red-50 text-red-600 text-sm font-semibold rounded-md border border-red-200">
@@ -1140,14 +1170,28 @@ const AdminDashboard = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-dpt">Jumlah DPT</Label>
-                <Input
-                  id="edit-dpt"
-                  type="number"
-                  placeholder="Maksimal 500"
-                  value={editTpsDpt}
-                  onChange={(e) => setEditTpsDpt(e.target.value)}
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-male-dpt">DPT Laki-laki</Label>
+                    <Input 
+                      id="edit-male-dpt" 
+                      type="number" 
+                      min="0"
+                      value={editTpsMaleDpt}
+                      onChange={(e) => setEditTpsMaleDpt(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-female-dpt">DPT Perempuan</Label>
+                    <Input 
+                      id="edit-female-dpt" 
+                      type="number" 
+                      min="0"
+                      value={editTpsFemaleDpt}
+                      onChange={(e) => setEditTpsFemaleDpt(e.target.value)}
+                    />
+                  </div>
+                </div>
               </div>
               <Button type="submit" className="w-full" disabled={isSubmittingEdit}>
                 {isSubmittingEdit ? "Simpan Perubahan..." : "Simpan Perubahan"}

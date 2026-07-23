@@ -12,6 +12,10 @@ export interface TPS {
   address: string | null;
   status: string;
   registered_voters_total: number;
+  male_dpt: number;
+  female_dpt: number;
+  opened_at: string | null;
+  closed_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -43,17 +47,20 @@ export const TpsService = {
     village?: string;
     address?: string;
     status?: string;
-    registered_voters_total?: number;
+    male_dpt?: number;
+    female_dpt?: number;
   }): TPS {
     const stmt = db.prepare(`
       INSERT INTO tps (
         election_id, tps_number, tps_code, province, city_regency, 
-        district, village, address, status, registered_voters_total
+        district, village, address, status, registered_voters_total, male_dpt, female_dpt
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     const status = data.status || "DRAFT";
-    const regVoters = data.registered_voters_total !== undefined ? data.registered_voters_total : 0;
+    const maleDpt = data.male_dpt || 0;
+    const femaleDpt = data.female_dpt || 0;
+    const regVoters = data.registered_voters_total !== undefined ? data.registered_voters_total : (maleDpt + femaleDpt);
     
     const result = stmt.run(
       data.election_id,
@@ -65,7 +72,9 @@ export const TpsService = {
       data.village || null,
       data.address || null,
       status,
-      regVoters
+      regVoters,
+      maleDpt,
+      femaleDpt
     );
     
     return this.getById(Number(result.lastInsertRowid))!;
@@ -84,6 +93,10 @@ export const TpsService = {
       address?: string;
       status?: string;
       registered_voters_total?: number;
+      male_dpt?: number;
+      female_dpt?: number;
+      opened_at?: string | null;
+      closed_at?: string | null;
     }
   ): TPS | null {
     const existing = this.getById(id);
@@ -98,12 +111,28 @@ export const TpsService = {
     const village = data.village !== undefined ? data.village : existing.village;
     const address = data.address !== undefined ? data.address : existing.address;
     const status = data.status !== undefined ? data.status : existing.status;
-    const regVoters = data.registered_voters_total !== undefined ? data.registered_voters_total : existing.registered_voters_total;
+    const maleDpt = data.male_dpt !== undefined ? data.male_dpt : existing.male_dpt;
+    const femaleDpt = data.female_dpt !== undefined ? data.female_dpt : existing.female_dpt;
+    const regVoters = data.registered_voters_total !== undefined ? data.registered_voters_total : (maleDpt + femaleDpt);
+    
+    let openedAt = existing.opened_at;
+    let closedAt = existing.closed_at;
+    
+    if (status === 'OPEN' && existing.status !== 'OPEN') {
+      openedAt = new Date().toISOString();
+    }
+    if (status === 'CLOSED' && existing.status !== 'CLOSED') {
+      closedAt = new Date().toISOString();
+    }
+    
+    if (data.opened_at !== undefined) openedAt = data.opened_at;
+    if (data.closed_at !== undefined) closedAt = data.closed_at;
 
     const stmt = db.prepare(`
       UPDATE tps
       SET election_id = ?, tps_number = ?, tps_code = ?, province = ?, city_regency = ?, 
-          district = ?, village = ?, address = ?, status = ?, registered_voters_total = ?, updated_at = CURRENT_TIMESTAMP
+          district = ?, village = ?, address = ?, status = ?, registered_voters_total = ?,
+          male_dpt = ?, female_dpt = ?, opened_at = ?, closed_at = ?, updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
     `);
     stmt.run(
@@ -117,6 +146,10 @@ export const TpsService = {
       address,
       status,
       regVoters,
+      maleDpt,
+      femaleDpt,
+      openedAt,
+      closedAt,
       id
     );
 
