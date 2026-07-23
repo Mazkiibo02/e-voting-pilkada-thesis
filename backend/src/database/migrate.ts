@@ -48,7 +48,8 @@ function migrate() {
     // Run additive schema updates for users table
     const usersColumns = [
       { name: "full_name", type: "TEXT" },
-      { name: "affiliation", type: "TEXT" }
+      { name: "affiliation", type: "TEXT" },
+      { name: "nik", type: "TEXT" }
     ];
     for (const col of usersColumns) {
       try {

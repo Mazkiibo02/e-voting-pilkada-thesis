@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash TEXT,
   role TEXT,
   affiliation TEXT,
+  nik TEXT,
   assigned_tps_id INTEGER,
   status TEXT DEFAULT 'ACTIVE',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
