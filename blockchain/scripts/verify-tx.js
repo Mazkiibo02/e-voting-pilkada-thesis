@@ -24,9 +24,10 @@ async function main() {
     console.log(`\n✅ Transaksi Ditemukan di Block #${receipt.blockNumber}`);
     console.log(`⏱️ Waktu Konfirmasi: Terverifikasi dan Immutable (Permanen)`);
     
-    // ABI for storeRecapHash function
-    // function storeRecapHash(string _tpsId, string _chasilHash)
-    const abi = ["function storeRecapHash(string _tpsId, string _chasilHash)"];
+    // ABI for anchorTpsResult function
+    const abi = [
+      "function anchorTpsResult(uint256 _electionId, uint256 _tpsId, uint256[] memory _candidatePairIds, uint256[] memory _voteTotals, uint256 _totalRegisteredVoters, uint256 _totalVerifiedVoters, string memory _documentHash, string memory _auditLogHash)"
+    ];
     const iface = new ethers.Interface(abi);
 
     try {
@@ -36,8 +37,10 @@ async function main() {
         console.log(`\n======================================================`);
         console.log(`🧾 BUKTI PENAMBATAN DOKUMEN (IMMUTABILITY PROOF)`);
         console.log(`======================================================`);
-        console.log(`🔹 ID TPS         : ${decodedData.args[0]}`);
-        console.log(`🔹 Hash Dokumen   : ${decodedData.args[1]}`);
+        console.log(`🔹 ID Pemilihan   : ${decodedData.args[0]}`);
+        console.log(`🔹 ID TPS         : ${decodedData.args[1]}`);
+        console.log(`🔹 Hash Dokumen   : ${decodedData.args[6]}`);
+        console.log(`🔹 Hash Audit Log : ${decodedData.args[7]}`);
         console.log(`======================================================\n`);
         console.log(`💡 CARA UJI ANTI-FRAUD UNTUK DOSEN PEMBIMBING:`);
         console.log(`1. Buka file PDF asli yang diunduh dari aplikasi e-voting.`);
@@ -50,7 +53,7 @@ async function main() {
         console.log(`6. Hasilnya, Hash akan BERUBAH dan TIDAK COCOK dengan catatan Blockchain ini!`);
         console.log(`7. Karena catatan di Blockchain ini tidak bisa diubah (Immutable), kecurangan langsung ketahuan.\n`);
       } else {
-         console.log("⚠️ Data transaksi tidak cocok dengan fungsi storeRecapHash.");
+         console.log("⚠️ Data transaksi tidak cocok dengan fungsi anchorTpsResult.");
       }
     } catch (e) {
       console.log("⚠️ Gagal mendekode data transaksi. Mungkin ini bukan transaksi penambatan C.Hasil.");
