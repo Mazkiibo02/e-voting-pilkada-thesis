@@ -1340,17 +1340,17 @@ const AdminDashboard = () => {
                       data={stats.candidates}
                       cx="50%"
                       cy="50%"
-                      labelLine={false}
-                      label={({ name, votes }) => `${name.length > 20 ? name.substring(0, 20) + '...' : name}: ${votes}`}
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="votes"
+                      nameKey="name"
                     >
                       {stats.candidates.map((entry: any, index: number) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip contentStyle={{ backgroundColor: '#fff', borderColor: '#e2e8f0' }} />
+                    <Legend layout="horizontal" verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
                   </PieChart>
                 </ResponsiveContainer>
               )}

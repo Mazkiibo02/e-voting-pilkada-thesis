@@ -378,17 +378,6 @@ const BoothVoting = () => {
               </div>
             )}
 
-            {/* Bottom Floating bar for Actions */}
-            <div className="border-t border-gray-200 pt-6 flex justify-end">
-              <Button
-                onClick={() => setUiState("confirm")}
-                size="lg"
-                disabled={!selectedPair}
-                className="w-full md:w-auto px-8 py-6 text-base font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-xl transition-all disabled:opacity-50"
-              >
-                Konfirmasi Pilihan
-              </Button>
-            </div>
           </div>
         )}
 
