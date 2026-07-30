@@ -1,4 +1,5 @@
 import db from "../database/connection";
+import { Party, PartiesService } from "./parties";
 
 export interface CandidatePair {
   id: number;
@@ -18,31 +19,90 @@ export interface CandidatePair {
   is_deleted: number | null;
   created_at: string;
   updated_at: string;
+  parties?: Party[];
+  party_ids?: number[];
 }
 
 export const CandidatePairsService = {
-  getAll(electionId?: number, includeDeleted = false): CandidatePair[] {
-    const filter = includeDeleted ? "" : " AND (is_deleted = 0 OR is_deleted IS NULL) AND (status != 'DELETED' OR status IS NULL)";
-    if (electionId) {
-      const stmt = db.prepare(`SELECT * FROM candidate_pairs WHERE election_id = ? ${filter} ORDER BY ballot_number ASC`);
-      return stmt.all(electionId) as unknown as CandidatePair[];
-    } else {
-      const whereClause = includeDeleted ? "" : " WHERE (is_deleted = 0 OR is_deleted IS NULL) AND (status != 'DELETED' OR status IS NULL)";
-      const stmt = db.prepare(`SELECT * FROM candidate_pairs ${whereClause} ORDER BY ballot_number ASC`);
-      return stmt.all() as unknown as CandidatePair[];
+  attachParties(cp: CandidatePair): CandidatePair {
+    if (!cp) return cp;
+
+    const stmt = db.prepare(`
+      SELECT p.* 
+      FROM parties p
+      JOIN paslon_parties pp ON pp.party_id = p.id
+      WHERE pp.paslon_id = ?
+      ORDER BY p.acronym ASC
+    `);
+    const parties = stmt.all(cp.id) as unknown as Party[];
+    cp.parties = parties;
+    cp.party_ids = parties.map(p => p.id);
+
+    if (parties.length > 0) {
+      cp.coalition_name = parties.map(p => p.acronym).join(", ");
     }
+
+    return cp;
+  },
+
+  getAll(electionId?: number, includeDeleted = false): CandidatePair[] {
+    const filter = includeDeleted ? "" : " AND (cp.is_deleted = 0 OR cp.is_deleted IS NULL) AND (cp.status != 'DELETED' OR cp.status IS NULL)";
+    let list: CandidatePair[] = [];
+    if (electionId) {
+      const stmt = db.prepare(`SELECT cp.* FROM candidate_pairs cp WHERE cp.election_id = ? ${filter} ORDER BY cp.ballot_number ASC`);
+      list = stmt.all(electionId) as unknown as CandidatePair[];
+    } else {
+      const whereClause = includeDeleted ? "" : " WHERE (cp.is_deleted = 0 OR cp.is_deleted IS NULL) AND (cp.status != 'DELETED' OR cp.status IS NULL)";
+      const stmt = db.prepare(`SELECT cp.* FROM candidate_pairs cp ${whereClause} ORDER BY cp.ballot_number ASC`);
+      list = stmt.all() as unknown as CandidatePair[];
+    }
+
+    return list.map(cp => this.attachParties(cp));
   },
 
   getById(id: number): CandidatePair | null {
     const stmt = db.prepare("SELECT * FROM candidate_pairs WHERE id = ?");
-    const cp = stmt.get(id);
-    return cp ? (cp as unknown as CandidatePair) : null;
+    const cp = stmt.get(id) as unknown as CandidatePair | null;
+    return cp ? this.attachParties(cp) : null;
   },
 
   getByBallotNumber(electionId: number, ballotNumber: number): CandidatePair | null {
     const stmt = db.prepare("SELECT * FROM candidate_pairs WHERE election_id = ? AND ballot_number = ? AND (is_deleted = 0 OR is_deleted IS NULL)");
-    const cp = stmt.get(electionId, ballotNumber);
-    return cp ? (cp as unknown as CandidatePair) : null;
+    const cp = stmt.get(electionId, ballotNumber) as unknown as CandidatePair | null;
+    return cp ? this.attachParties(cp) : null;
+  },
+
+  setParties(paslonId: number, electionId: number, partyIds: number[]) {
+    // Delete existing paslon_parties
+    db.prepare("DELETE FROM paslon_parties WHERE paslon_id = ?").run(paslonId);
+
+    if (!partyIds || partyIds.length === 0) {
+      db.prepare("UPDATE candidate_pairs SET coalition_name = NULL WHERE id = ?").run(paslonId);
+      return;
+    }
+
+    const partyStmt = db.prepare("INSERT INTO paslon_parties (paslon_id, party_id, election_id) VALUES (?, ?, ?)");
+    const fetchedParties: Party[] = [];
+
+    for (const pId of partyIds) {
+      const party = PartiesService.getById(pId);
+      if (!party) {
+        throw new Error(`Partai dengan ID ${pId} tidak ditemukan.`);
+      }
+      try {
+        partyStmt.run(paslonId, pId, electionId);
+        fetchedParties.push(party);
+      } catch (err: any) {
+        const errStr = String(err);
+        if (errStr.includes("UNIQUE constraint failed") || errStr.includes("paslon_parties.party_id")) {
+          throw new Error(`Partai ${party.name} (${party.acronym}) sudah mengusung paslon lain pada pemilihan ini.`);
+        }
+        throw err;
+      }
+    }
+
+    const coalitionName = fetchedParties.map(p => p.acronym).join(", ");
+    db.prepare("UPDATE candidate_pairs SET coalition_name = ? WHERE id = ?").run(coalitionName, paslonId);
   },
 
   create(data: {
@@ -59,6 +119,7 @@ export const CandidatePairsService = {
     career_path?: string;
     photo_url?: string;
     status?: string;
+    party_ids?: number[];
   }): CandidatePair {
     const stmt = db.prepare(`
       INSERT INTO candidate_pairs (
@@ -84,7 +145,13 @@ export const CandidatePairsService = {
       data.status || "ACTIVE"
     );
     
-    return this.getById(Number(result.lastInsertRowid))!;
+    const newPaslonId = Number(result.lastInsertRowid);
+
+    if (data.party_ids && data.party_ids.length > 0) {
+      this.setParties(newPaslonId, data.election_id, data.party_ids);
+    }
+
+    return this.getById(newPaslonId)!;
   },
 
   update(
@@ -104,6 +171,7 @@ export const CandidatePairsService = {
       photo_url?: string;
       status?: string;
       is_deleted?: number;
+      party_ids?: number[];
     }
   ): CandidatePair | null {
     const existing = this.getById(id);
@@ -148,6 +216,10 @@ export const CandidatePairsService = {
       id
     );
 
+    if (data.party_ids !== undefined) {
+      this.setParties(id, electionId, data.party_ids);
+    }
+
     return this.getById(id);
   },
 
@@ -155,6 +227,7 @@ export const CandidatePairsService = {
     const existing = this.getById(id);
     if (!existing) return false;
 
+    db.prepare("DELETE FROM paslon_parties WHERE paslon_id = ?").run(id);
     const stmt = db.prepare("UPDATE candidate_pairs SET is_deleted = 1, status = 'DELETED', updated_at = CURRENT_TIMESTAMP WHERE id = ?");
     stmt.run(id);
     return true;
@@ -164,6 +237,7 @@ export const CandidatePairsService = {
     const existing = this.getById(id);
     if (!existing) return false;
 
+    db.prepare("DELETE FROM paslon_parties WHERE paslon_id = ?").run(id);
     const stmt = db.prepare("DELETE FROM candidate_pairs WHERE id = ?");
     stmt.run(id);
     return true;

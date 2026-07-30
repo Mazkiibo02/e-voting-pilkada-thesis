@@ -21,6 +21,7 @@ import publicRoutes from "./routes/public";
 import statsRoutes from "./routes/stats";
 import kppsRoutes from "./routes/kpps";
 import witnessesRoutes from "./routes/witnesses";
+import partiesRoutes from "./routes/parties";
 import db from "./database/connection";
 
 const app = express();
@@ -44,6 +45,7 @@ app.use("/public", publicRoutes);
 app.use("/stats", statsRoutes);
 app.use("/kpps", kppsRoutes);
 app.use("/witnesses", witnessesRoutes);
+app.use("/parties", partiesRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "E-Voting Backend Running" });

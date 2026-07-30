@@ -175,6 +175,8 @@ Central/public layer: PostgreSQL/MySQL
 ```txt
 elections
 tps
+parties
+paslon_parties (Many-to-Many with UNIQUE(party_id, election_id) constraint)
 candidate_pairs
 voters
 users

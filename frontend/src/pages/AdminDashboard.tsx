@@ -7,7 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 import { toast } from 'sonner';
-import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download, Upload, Trash2, Edit, Building, UserCheck } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download, Upload, Trash2, Edit, Building, UserCheck, Flag } from 'lucide-react';
 import { WitnessManagement } from '@/components/WitnessManagement';
 import { KppsManagement } from '@/components/KppsManagement';
 import {
@@ -542,6 +543,8 @@ const AdminDashboard = () => {
     motto: '',
   });
   const [editPaslonPhoto, setEditPaslonPhoto] = useState<File | null>(null);
+  const [editPaslonParties, setEditPaslonParties] = useState<any[]>([]);
+  const [editPaslonSelectedPartyIds, setEditPaslonSelectedPartyIds] = useState<number[]>([]);
   const [isSubmittingEditPaslon, setIsSubmittingEditPaslon] = useState(false);
 
   const fetchCandidatePairs = async () => {
@@ -559,7 +562,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleOpenEditPaslonModal = (cp: any) => {
+  const handleOpenEditPaslonModal = async (cp: any) => {
     setEditingPaslon(cp);
     setEditPaslonForm({
       ballot_number: cp.ballot_number ? cp.ballot_number.toString() : '',
@@ -568,13 +571,32 @@ const AdminDashboard = () => {
       coalition_name: cp.coalition_name || '',
       motto: cp.motto || '',
     });
+    setEditPaslonSelectedPartyIds(cp.party_ids || []);
     setEditPaslonPhoto(null);
     setIsEditPaslonModalOpen(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/parties?election_id=${cp.election_id}&exclude_paslon_id=${cp.id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok && data.items) {
+        setEditPaslonParties(data.items);
+      }
+    } catch (err) {
+      console.error("Failed to fetch parties for edit paslon", err);
+    }
   };
 
   const handleUpdatePaslon = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingPaslon) return;
+
+    if (editPaslonSelectedPartyIds.length === 0) {
+      toast.error("Pilih minimal satu partai politik pengusung");
+      return;
+    }
 
     setIsSubmittingEditPaslon(true);
     try {
@@ -583,8 +605,8 @@ const AdminDashboard = () => {
       formData.append('ballot_number', editPaslonForm.ballot_number);
       formData.append('candidate_name', editPaslonForm.candidate_name);
       formData.append('vice_candidate_name', editPaslonForm.vice_candidate_name);
-      formData.append('coalition_name', editPaslonForm.coalition_name);
       formData.append('motto', editPaslonForm.motto);
+      formData.append('party_ids', JSON.stringify(editPaslonSelectedPartyIds));
 
       if (editPaslonPhoto) {
         formData.append('photo', editPaslonPhoto);
@@ -607,8 +629,8 @@ const AdminDashboard = () => {
       } else {
         toast.error(data.message || "Gagal memperbarui pasangan calon");
       }
-    } catch (err) {
-      toast.error("Koneksi server gagal");
+    } catch (err: any) {
+      toast.error(err.message || "Koneksi server gagal");
     } finally {
       setIsSubmittingEditPaslon(false);
     }
@@ -800,6 +822,10 @@ const AdminDashboard = () => {
               <Button size="sm" variant="outline" onClick={() => navigate('/admin/tambah-paslon')} className="font-semibold text-green-600 border-green-200 hover:bg-green-50">
                 <Plus className="mr-2 h-4 w-4" />
                 Tambah Paslon
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => navigate('/admin/parties')} className="font-semibold text-purple-600 border-purple-200 hover:bg-purple-50">
+                <Flag className="mr-2 h-4 w-4" />
+                Manajemen Partai
               </Button>
               </>
               )}
@@ -1212,25 +1238,67 @@ const AdminDashboard = () => {
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleUpdatePaslon} className="space-y-4 py-2">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2 col-span-1">
-                  <Label htmlFor="edit-ballot-number" className="font-semibold">Nomor Urut</Label>
-                  <Input
-                    id="edit-ballot-number"
-                    type="number"
-                    value={editPaslonForm.ballot_number}
-                    onChange={(e) => setEditPaslonForm(prev => ({ ...prev, ballot_number: e.target.value }))}
-                    required
-                  />
-                </div>
-                <div className="space-y-2 col-span-2">
-                  <Label htmlFor="edit-coalition" className="font-semibold">Partai / Koalisi Pengusung</Label>
-                  <Input
-                    id="edit-coalition"
-                    placeholder="e.g. PDIP, Golkar, Gerindra"
-                    value={editPaslonForm.coalition_name}
-                    onChange={(e) => setEditPaslonForm(prev => ({ ...prev, coalition_name: e.target.value }))}
-                  />
+              <div className="space-y-2">
+                <Label className="font-semibold">Nomor Urut</Label>
+                <Input
+                  type="number"
+                  value={editPaslonForm.ballot_number}
+                  onChange={(e) => setEditPaslonForm(prev => ({ ...prev, ballot_number: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="font-semibold flex items-center gap-2">
+                  <Building className="h-4 w-4 text-blue-600" />
+                  Partai Politik Pengusung (Koalisi)
+                </Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 border rounded-md bg-slate-50">
+                  {editPaslonParties.map((party: any) => {
+                    const isSelected = editPaslonSelectedPartyIds.includes(party.id);
+                    const isDisabled = party.is_endorsed;
+
+                    return (
+                      <div
+                        key={party.id}
+                        className={`flex items-center justify-between p-2 rounded border transition-colors ${
+                          isDisabled
+                            ? 'bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed'
+                            : isSelected
+                            ? 'bg-blue-50 border-blue-300'
+                            : 'bg-white border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            id={`edit-party-${party.id}`}
+                            checked={isSelected}
+                            disabled={isDisabled}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setEditPaslonSelectedPartyIds(prev => [...prev, party.id]);
+                              } else {
+                                setEditPaslonSelectedPartyIds(prev => prev.filter(id => id !== party.id));
+                              }
+                            }}
+                          />
+                          <label
+                            htmlFor={`edit-party-${party.id}`}
+                            className={`text-xs font-medium ${
+                              isDisabled ? 'cursor-not-allowed text-gray-500' : 'cursor-pointer text-slate-900'
+                            }`}
+                          >
+                            <span className="font-bold">{party.acronym}</span> - {party.name}
+                          </label>
+                        </div>
+                        {isDisabled && (
+                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 text-[9px] px-1 py-0">
+                            Paslon {party.endorsed_ballot_number ? `No. ${party.endorsed_ballot_number}` : ''}
+                          </Badge>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

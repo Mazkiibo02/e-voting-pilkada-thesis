@@ -37,6 +37,7 @@ The following major foundations are now implemented:
 22. Dynamic TPS Management with 500 DPT KPU Guardrail completed.
 23. Full-stack "Tambah Paslon" (Candidate Management) implementation completed.
 24. Public result dashboard completed, including Real-Time Quick Count and Dynamic DPT synchronization.
+25. Political party normalization (`parties` master table and `paslon_parties` pivot table) completed with database-level single-endorsement rule enforcement via `UNIQUE(party_id, election_id)` constraint.
 
 **Environment Status**: Database has been fully sterilized and UI hardcoded fallback data has been removed.
 

@@ -25,6 +25,23 @@ const upload = multer({ storage: storage });
 
 const router = Router();
 
+function parsePartyIds(raw: any): number[] | undefined {
+  if (raw === undefined || raw === null || raw === "") return undefined;
+  if (Array.isArray(raw)) {
+    return raw.map(x => Number(x)).filter(x => !isNaN(x));
+  }
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed.map(x => Number(x)).filter(x => !isNaN(x));
+      }
+    } catch (e) {}
+    return raw.split(",").map(x => Number(x.trim())).filter(x => !isNaN(x));
+  }
+  return undefined;
+}
+
 // GET /candidate-pairs
 router.get("/", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
   try {
@@ -83,7 +100,7 @@ router.get("/elections/:electionId/candidate-pairs", authenticateToken, requireR
 // POST /candidate-pairs
 router.post("/", authenticateToken, requireRole(["ADMIN"]), upload.single("photo"), async (req: AuthRequest, res: Response) => {
   try {
-    let { election_id, ballot_number, candidate_name, vice_candidate_name, coalition_name, vision_summary, motto, vision, mission, education, career_path } = req.body;
+    let { election_id, ballot_number, candidate_name, vice_candidate_name, coalition_name, vision_summary, motto, vision, mission, education, career_path, party_ids } = req.body;
     const photo_url = req.file ? `/uploads/candidates/${req.file.filename}` : undefined;
 
     let finalElectionId = Number(election_id);
@@ -127,6 +144,8 @@ router.post("/", authenticateToken, requireRole(["ADMIN"]), upload.single("photo
       });
     }
 
+    const parsedPartyIds = parsePartyIds(party_ids);
+
     const newCp = CandidatePairsService.create({
       election_id: finalElectionId,
       ballot_number: Number(ballot_number),
@@ -139,12 +158,17 @@ router.post("/", authenticateToken, requireRole(["ADMIN"]), upload.single("photo
       mission: mission ? mission.trim() : undefined,
       education: education ? education.trim() : undefined,
       career_path: career_path ? career_path.trim() : undefined,
-      photo_url: photo_url
+      photo_url: photo_url,
+      party_ids: parsedPartyIds
     });
 
     return res.status(201).json({ data: newCp });
   } catch (error: any) {
-    return res.status(500).json({ message: "Failed to create candidate pair" });
+    const errStr = String(error.message || error);
+    if (errStr.includes("sudah mengusung paslon lain") || errStr.includes("UNIQUE constraint failed: paslon_parties")) {
+      return res.status(400).json({ message: error.message || "Partai politik yang dipilih sudah mengusung paslon lain pada pemilihan ini." });
+    }
+    return res.status(500).json({ message: error.message || "Failed to create candidate pair" });
   }
 });
 
@@ -161,7 +185,7 @@ router.patch("/:id", authenticateToken, requireRole(["ADMIN"]), upload.single("p
       return res.status(404).json({ message: "Candidate pair not found" });
     }
 
-    const { election_id, ballot_number, candidate_name, vice_candidate_name, coalition_name, vision_summary, motto, vision, mission, education, career_path } = req.body;
+    const { election_id, ballot_number, candidate_name, vice_candidate_name, coalition_name, vision_summary, motto, vision, mission, education, career_path, party_ids } = req.body;
     const photo_url = req.file ? `/uploads/candidates/${req.file.filename}` : undefined;
 
     const finalElectionId = election_id !== undefined ? Number(election_id) : existing.election_id;
@@ -200,6 +224,8 @@ router.patch("/:id", authenticateToken, requireRole(["ADMIN"]), upload.single("p
       }
     }
 
+    const parsedPartyIds = parsePartyIds(party_ids);
+
     const updated = CandidatePairsService.update(id, {
       election_id: election_id !== undefined ? finalElectionId : undefined,
       ballot_number: ballot_number !== undefined ? finalBallotNumber : undefined,
@@ -212,12 +238,17 @@ router.patch("/:id", authenticateToken, requireRole(["ADMIN"]), upload.single("p
       mission: mission !== undefined ? mission.trim() : undefined,
       education: education !== undefined ? education.trim() : undefined,
       career_path: career_path !== undefined ? career_path.trim() : undefined,
-      photo_url: photo_url
+      photo_url: photo_url,
+      party_ids: parsedPartyIds
     });
 
     return res.json({ data: updated });
   } catch (error: any) {
-    return res.status(500).json({ message: "Failed to update candidate pair" });
+    const errStr = String(error.message || error);
+    if (errStr.includes("sudah mengusung paslon lain") || errStr.includes("UNIQUE constraint failed: paslon_parties")) {
+      return res.status(400).json({ message: error.message || "Partai politik yang dipilih sudah mengusung paslon lain pada pemilihan ini." });
+    }
+    return res.status(500).json({ message: error.message || "Failed to update candidate pair" });
   }
 });
 

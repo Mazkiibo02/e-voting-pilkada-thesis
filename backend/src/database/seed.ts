@@ -29,6 +29,8 @@ function seed() {
         "votes",
         "voting_sessions",
         "users",
+        "paslon_parties",
+        "parties",
         "candidate_pairs",
         "tps",
         "elections",
@@ -125,6 +127,29 @@ function seed() {
     userStmt.run("TRESNO JUNIAWAN", "TRESNO JUNIAWAN", "tresno@example.local", hashPassword("Witness123!"), "WITNESS", "Saksi Paslon 1", "3328180606880006", targetTpsId, null, null, "ACTIVE");
     userStmt.run("FARAH AHDHIATHIN FAUZIAH", "FARAH AHDHIATHIN FAUZIAH", "farah@example.local", hashPassword("Witness123!"), "WITNESS", "Saksi Paslon 2", "3328185310960003", targetTpsId, null, null, "ACTIVE");
     userStmt.run("YAYAN KARSENO", "YAYAN KARSENO", "yayan@example.local", hashPassword("Witness123!"), "WITNESS", "Saksi Paslon 3", "3328180501850001", targetTpsId, null, null, "ACTIVE");
+
+    // Seed political parties master data if not exists
+    const existingParties = db.prepare("SELECT COUNT(*) as c FROM parties").get() as any;
+    if (!existingParties || Number(existingParties.c || 0) === 0 || RESET) {
+      const partyStmt = db.prepare("INSERT INTO parties (name, acronym, logo_url) VALUES (?, ?, ?)");
+      const partiesList = [
+        ["Partai Demokrasi Indonesia Perjuangan", "PDI Perjuangan", "/uploads/parties/pdip.png"],
+        ["Partai Golongan Karya", "Golkar", "/uploads/parties/golkar.png"],
+        ["Partai Gerakan Indonesia Raya", "Gerindra", "/uploads/parties/gerindra.png"],
+        ["Partai Kebangkitan Bangsa", "PKB", "/uploads/parties/pkb.png"],
+        ["Partai NasDem", "NasDem", "/uploads/parties/nasdem.png"],
+        ["Partai Keadilan Sejahtera", "PKS", "/uploads/parties/pks.png"],
+        ["Partai Demokrat", "Demokrat", "/uploads/parties/demokrat.png"],
+        ["Partai Amanat Nasional", "PAN", "/uploads/parties/pan.png"],
+        ["Partai Persatuan Pembangunan", "PPP", "/uploads/parties/ppp.png"],
+        ["Partai Solidaritas Indonesia", "PSI", "/uploads/parties/psi.png"],
+        ["Partai Perindo", "Perindo", "/uploads/parties/perindo.png"],
+      ];
+      for (const p of partiesList) {
+        partyStmt.run(...p);
+      }
+      console.log(`Seeded ${partiesList.length} political parties.`);
+    }
 
     db.exec("COMMIT;");
 
