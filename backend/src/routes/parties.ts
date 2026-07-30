@@ -109,6 +109,7 @@ router.post("/", authenticateToken, requireRole(["ADMIN"]), upload.single("logo"
 
     return res.status(201).json({ data: newParty });
   } catch (error: any) {
+    console.error("ERROR ASLI CREATE PARTY:", error);
     return res.status(500).json({ message: "Failed to create political party" });
   }
 });
