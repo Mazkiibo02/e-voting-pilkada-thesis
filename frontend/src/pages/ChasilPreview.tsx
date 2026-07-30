@@ -734,7 +734,7 @@ const ChasilPreview = () => {
                 {/* 4. DAFTAR PPS, SAKSI, & PANWAS (HALAMAN 4 RESMI KPU) */}
                 <section className="space-y-4 rounded-xl border border-slate-300 bg-white p-6 shadow-xs">
                   <h2 className="text-sm font-black uppercase text-slate-900 border-b pb-2 tracking-wide">
-                    DAFTAR PPS, SAKSI, & PANWAS (PENGAWAS TPS)
+                    DAFTAR PPS & SAKSI TPS
                   </h2>
                   <table className="w-full text-xs border-collapse border border-slate-300">
                     <thead>

@@ -125,7 +125,6 @@ function seed() {
     userStmt.run("TRESNO JUNIAWAN", "TRESNO JUNIAWAN", "tresno@example.local", hashPassword("Witness123!"), "WITNESS", "Saksi Paslon 1", "3328180606880006", targetTpsId, null, null, "ACTIVE");
     userStmt.run("FARAH AHDHIATHIN FAUZIAH", "FARAH AHDHIATHIN FAUZIAH", "farah@example.local", hashPassword("Witness123!"), "WITNESS", "Saksi Paslon 2", "3328185310960003", targetTpsId, null, null, "ACTIVE");
     userStmt.run("YAYAN KARSENO", "YAYAN KARSENO", "yayan@example.local", hashPassword("Witness123!"), "WITNESS", "Saksi Paslon 3", "3328180501850001", targetTpsId, null, null, "ACTIVE");
-    userStmt.run("MUHAMAD NUR FAOJI", "MUHAMAD NUR FAOJI", "muhamad@example.local", hashPassword("Witness123!"), "WITNESS", "Pengawas Bawaslu", "3328180101980012", targetTpsId, null, null, "ACTIVE");
 
     db.exec("COMMIT;");
 

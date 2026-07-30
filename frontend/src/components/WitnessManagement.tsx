@@ -72,7 +72,7 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
       return;
     }
     
-    if (!confirm("Apakah Anda yakin ingin generate otomatis 4 akun Saksi & Pengawas untuk TPS ini?")) return;
+    if (!confirm("Apakah Anda yakin ingin generate otomatis akun Saksi untuk TPS ini?")) return;
     
     setIsGenerating(true);
     try {
@@ -183,10 +183,10 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
     <Card className="bg-white border-gray-200 shadow-sm mb-8">
       <CardHeader className="pb-3 border-b border-gray-100">
         <CardTitle className="text-lg font-bold text-slate-800 flex items-center">
-          <Users className="w-5 h-5 mr-2 text-indigo-600" /> Manajemen Akun Saksi & Pengawas
+          <Users className="w-5 h-5 mr-2 text-indigo-600" /> Manajemen Akun Saksi
         </CardTitle>
         <CardDescription>
-          Kelola akun Saksi dan Pengawas (Bawaslu) per TPS.
+          Kelola akun Saksi Paslon per TPS.
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-4 space-y-4">
@@ -206,7 +206,7 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
           </div>
           <Button size="sm" variant="outline" className="font-semibold text-indigo-600 border-indigo-200 hover:bg-indigo-50" onClick={handleGenerate} disabled={isGenerating}>
             {isGenerating ? <RotateCcw className="mr-2 h-4 w-4 animate-spin" /> : <Shield className="mr-2 h-4 w-4" />}
-            Auto-Generate 4 Akun
+            Auto-Generate Akun Saksi
           </Button>
           
           <div className="relative">
@@ -239,7 +239,7 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
             <TableBody>
               {filteredWitnesses.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-4 text-slate-500">Belum ada data saksi/pengawas untuk TPS ini.</TableCell>
+                  <TableCell colSpan={6} className="text-center py-4 text-slate-500">Belum ada data saksi untuk TPS ini.</TableCell>
                 </TableRow>
               ) : (
                 filteredWitnesses.map(w => (
@@ -247,7 +247,7 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
                     <TableCell>{w.full_name}</TableCell>
                     <TableCell>{w.email}</TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${w.role === 'PENGAWAS' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                      <span className="px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700">
                         {w.role}
                       </span>
                     </TableCell>
@@ -339,7 +339,7 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
                 const worksheet = xlsx.utils.json_to_sheet(worksheetData);
                 const workbook = xlsx.utils.book_new();
                 xlsx.utils.book_append_sheet(workbook, worksheet, "Akun_Saksi_Baru");
-                xlsx.writeFile(workbook, "Daftar_Akun_Saksi_Pengawas_Baru.xlsx");
+                xlsx.writeFile(workbook, "Daftar_Akun_Saksi_Baru.xlsx");
               });
             }}>
               <Download className="w-4 h-4 mr-2" /> Export ke Excel

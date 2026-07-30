@@ -161,6 +161,14 @@ function migrate() {
       }
     }
 
+    // Purge any PENGAWAS / Bawaslu users for real-world governance alignment
+    try {
+      db.exec("DELETE FROM users WHERE role = 'PENGAWAS' OR LOWER(affiliation) LIKE '%bawaslu%' OR LOWER(affiliation) LIKE '%pengawas%';");
+      console.log("Purged PENGAWAS and Bawaslu user accounts from database.");
+    } catch (e) {
+      console.warn("Could not purge PENGAWAS accounts:", e);
+    }
+
     console.log("Database migrated successfully:", DB_PATH);
   } catch (err: any) {
     // If the file exists but is not a valid SQLite DB (corrupted or empty), remove and retry

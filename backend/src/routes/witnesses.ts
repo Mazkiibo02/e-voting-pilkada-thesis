@@ -21,7 +21,7 @@ function generateRandomPassword(length = 8): string {
 
 /**
  * GET /witnesses
- * Purpose: List all Saksi and Pengawas accounts
+ * Purpose: List all Saksi accounts
  * Allowed roles: ADMIN
  */
 router.get("/", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequest, res: Response) => {
@@ -30,20 +30,20 @@ router.get("/", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequest, re
       SELECT u.id, u.name, u.full_name, u.email, u.role, u.affiliation, u.status, u.assigned_tps_id, t.tps_code 
       FROM users u
       LEFT JOIN tps t ON u.assigned_tps_id = t.id
-      WHERE u.role IN ('WITNESS', 'PENGAWAS')
+      WHERE u.role = 'WITNESS'
       ORDER BY u.id DESC
     `).all();
 
     return res.json({ data: users });
   } catch (error: any) {
     console.error("Error fetching witnesses:", error);
-    return res.status(500).json({ message: "Gagal mengambil data saksi dan pengawas." });
+    return res.status(500).json({ message: "Gagal mengambil data saksi." });
   }
 });
 
 /**
  * POST /witnesses/generate
- * Purpose: Automatically generate 3 Saksi and 1 Pengawas for a given tps_id
+ * Purpose: Automatically generate WITNESS accounts based on registered Paslon for a given tps_id
  * Allowed roles: ADMIN
  */
 router.post("/generate", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequest, res: Response) => {
@@ -53,6 +53,30 @@ router.post("/generate", authenticateToken, requireRole(["ADMIN"]), (req: AuthRe
   try {
     const tps = db.prepare("SELECT * FROM tps WHERE id = ?").get(tps_id) as any;
     if (!tps) return res.status(404).json({ message: "TPS tidak ditemukan." });
+
+    const candidatePairs = db.prepare(
+      "SELECT * FROM candidate_pairs WHERE election_id = ? AND is_deleted = 0 ORDER BY ballot_number ASC"
+    ).all(tps.election_id) as any[];
+
+    const rolesToGenerate: { type: string; affiliation: string; role: string }[] = [];
+
+    if (candidatePairs.length > 0) {
+      candidatePairs.forEach((cp, idx) => {
+        const paslonNum = cp.ballot_number || (idx + 1);
+        rolesToGenerate.push({
+          type: "Saksi",
+          affiliation: `Paslon ${paslonNum}`,
+          role: "WITNESS"
+        });
+      });
+    } else {
+      // Fallback default: 3 Paslon witnesses
+      rolesToGenerate.push(
+        { type: "Saksi", affiliation: "Paslon 1", role: "WITNESS" },
+        { type: "Saksi", affiliation: "Paslon 2", role: "WITNESS" },
+        { type: "Saksi", affiliation: "Paslon 3", role: "WITNESS" }
+      );
+    }
 
     const generatedAccounts: any[] = [];
     
@@ -64,13 +88,6 @@ router.post("/generate", authenticateToken, requireRole(["ADMIN"]), (req: AuthRe
       `);
 
       const tpsCodeSafe = tps.tps_code ? tps.tps_code.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() : `tps${tps.id}`;
-      
-      const rolesToGenerate = [
-        { type: "Saksi", affiliation: "Paslon 1", role: "WITNESS" },
-        { type: "Saksi", affiliation: "Paslon 2", role: "WITNESS" },
-        { type: "Saksi", affiliation: "Paslon 3", role: "WITNESS" },
-        { type: "Pengawas", affiliation: "Bawaslu", role: "PENGAWAS" }
-      ];
 
       for (const account of rolesToGenerate) {
         const rawPassword = generateRandomPassword();
@@ -111,23 +128,23 @@ router.post("/generate", authenticateToken, requireRole(["ADMIN"]), (req: AuthRe
       action: "WITNESS_ACCOUNTS_GENERATED",
       entityType: "USER",
       entityId: tps.id,
-      description: `Generated 4 Saksi/Pengawas accounts for ${tps.tps_code}.`,
+      description: `Generated ${generatedAccounts.length} Saksi accounts for ${tps.tps_code}.`,
       metadataJson: { generatedCount: generatedAccounts.length, tps_id: tps.id }
     }, req);
 
     return res.status(200).json({
-      message: `Berhasil generate 4 akun Saksi/Pengawas untuk ${tps.tps_code}.`,
+      message: `Berhasil generate ${generatedAccounts.length} akun Saksi untuk ${tps.tps_code}.`,
       data: generatedAccounts
     });
   } catch (error: any) {
-    console.error("Error generating Saksi/Pengawas accounts:", error);
+    console.error("Error generating Saksi accounts:", error);
     return res.status(500).json({ message: "Gagal membuat akun otomatis." });
   }
 });
 
 /**
  * POST /witnesses/import
- * Purpose: Import Saksi/Pengawas accounts from Excel
+ * Purpose: Import Saksi accounts from Excel
  * Allowed roles: ADMIN
  */
 router.post("/import", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequest, res: Response) => {
@@ -156,7 +173,7 @@ router.post("/import", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequ
           const tpsCode = row["Kode TPS"] || row["kode_tps"] || row["KODE TPS"];
           const nama = row["Nama"] || row["nama"] || row["NAMA"];
           const email = row["Email"] || row["email"] || row["EMAIL"];
-          const afiliasi = row["Afiliasi"] || row["afiliasi"] || row["AFILIASI"] || "Independen";
+          const afiliasi = row["Afiliasi"] || row["afiliasi"] || row["AFILIASI"] || "Saksi Paslon";
           let password = row["Password"] || row["password"] || row["PASSWORD"];
 
           if (!tpsCode || !nama || !email) {
@@ -175,9 +192,7 @@ router.post("/import", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequ
 
           if (!password) password = generateRandomPassword();
           const hashedPassword = bcrypt.hashSync(password.toString(), 10);
-
-          const isPengawas = /(pengawas|bawaslu|independen)/i.test(afiliasi.toString());
-          const role = isPengawas ? "PENGAWAS" : "WITNESS";
+          const role = "WITNESS";
 
           insertUser.run(
             nama.toString(),
@@ -203,12 +218,12 @@ router.post("/import", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequ
         actorRole: req.user?.role || null,
         action: "WITNESS_ACCOUNTS_IMPORTED",
         entityType: "USER",
-        description: `Imported ${importedAccounts.length} Saksi/Pengawas accounts via Excel.`,
+        description: `Imported ${importedAccounts.length} Saksi accounts via Excel.`,
         metadataJson: { importedCount: importedAccounts.length }
       }, req);
 
       return res.status(200).json({
-        message: `Berhasil import ${importedAccounts.length} akun Saksi/Pengawas.`,
+        message: `Berhasil import ${importedAccounts.length} akun Saksi.`,
         data: importedAccounts
       });
     } catch (error: any) {
@@ -220,7 +235,7 @@ router.post("/import", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequ
 
 /**
  * PUT /witnesses/:id
- * Purpose: Update witness/pengawas details
+ * Purpose: Update witness details
  * Allowed roles: ADMIN
  */
 router.put("/:id", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequest, res: Response) => {
@@ -234,20 +249,17 @@ router.put("/:id", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequest,
     const existing = db.prepare("SELECT id, role FROM users WHERE id = ?").get(id) as any;
     if (!existing) return res.status(404).json({ message: "User not found." });
     
-    if (existing.role !== 'WITNESS' && existing.role !== 'PENGAWAS') {
-        return res.status(400).json({ message: "User is not a Saksi or Pengawas." });
+    if (existing.role !== 'WITNESS') {
+      return res.status(400).json({ message: "User is not a Saksi." });
     }
 
     const emailCheck = db.prepare("SELECT id FROM users WHERE email = ? AND id != ?").get(email, id);
     if (emailCheck) return res.status(400).json({ message: "Email sudah digunakan oleh akun lain." });
 
-    const isPengawas = /(pengawas|bawaslu|independen)/i.test((affiliation || "").toString());
-    const newRole = isPengawas ? "PENGAWAS" : "WITNESS";
-
     db.prepare(`
-      UPDATE users SET full_name = ?, name = ?, email = ?, affiliation = ?, role = ?, updated_at = CURRENT_TIMESTAMP
+      UPDATE users SET full_name = ?, name = ?, email = ?, affiliation = ?, role = 'WITNESS', updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `).run(full_name, full_name, email, affiliation || null, newRole, id);
+    `).run(full_name, full_name, email, affiliation || null, id);
 
     AuditLogsService.log({
       actorUserId: req.user?.sub ? Number(req.user.sub) : null,
@@ -255,8 +267,8 @@ router.put("/:id", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequest,
       action: "WITNESS_ACCOUNT_UPDATED",
       entityType: "USER",
       entityId: id,
-      description: `Updated Saksi/Pengawas account ID ${id}.`,
-      metadataJson: { full_name, email, affiliation, role: newRole }
+      description: `Updated Saksi account ID ${id}.`,
+      metadataJson: { full_name, email, affiliation, role: "WITNESS" }
     }, req);
 
     return res.status(200).json({ message: "Akun berhasil diperbarui." });
@@ -268,7 +280,7 @@ router.put("/:id", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequest,
 
 /**
  * DELETE /witnesses/:id
- * Purpose: Delete a witness/pengawas account
+ * Purpose: Delete a witness account
  * Allowed roles: ADMIN
  */
 router.delete("/:id", authenticateToken, requireRole(["ADMIN"]), (req: AuthRequest, res: Response) => {
@@ -279,8 +291,8 @@ router.delete("/:id", authenticateToken, requireRole(["ADMIN"]), (req: AuthReque
     const existing = db.prepare("SELECT id, role FROM users WHERE id = ?").get(id) as any;
     if (!existing) return res.status(404).json({ message: "User not found." });
     
-    if (existing.role !== 'WITNESS' && existing.role !== 'PENGAWAS') {
-        return res.status(400).json({ message: "User is not a Saksi or Pengawas." });
+    if (existing.role !== 'WITNESS') {
+      return res.status(400).json({ message: "User is not a Saksi." });
     }
 
     db.prepare("DELETE FROM users WHERE id = ?").run(id);
@@ -291,7 +303,7 @@ router.delete("/:id", authenticateToken, requireRole(["ADMIN"]), (req: AuthReque
       action: "WITNESS_ACCOUNT_DELETED",
       entityType: "USER",
       entityId: id,
-      description: `Deleted Saksi/Pengawas account ID ${id}.`,
+      description: `Deleted Saksi account ID ${id}.`,
       metadataJson: { id }
     }, req);
 

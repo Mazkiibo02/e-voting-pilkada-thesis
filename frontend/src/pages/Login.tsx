@@ -52,9 +52,6 @@ const Login = () => {
           } else if (data.user.role === 'WITNESS') {
             toast.success('Login Saksi berhasil');
             navigate('/witness');
-          } else if (data.user.role === 'PENGAWAS') {
-            toast.success('Login Pengawas berhasil');
-            navigate('/pengawas');
           } else {
             toast.success(`Login berhasil: ${data.user?.role}`);
             navigate('/');

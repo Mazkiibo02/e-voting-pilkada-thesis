@@ -94,8 +94,7 @@ export function generateChasilHtml(data: ChasilTemplateData): string {
     { name: "SITI PUTRI NURKHOLIFAH", nik: "3328186101840001", phone: "087722578390", role: "Anggota KPPS 2" },
     { name: "TRESNO JUNIAWAN", nik: "3328180606880006", phone: "0895384252998", role: "Saksi Paslon 1" },
     { name: "FARAH AHDHIATHIN FAUZIAH", nik: "3328185310960003", phone: "085878276954", role: "Saksi Paslon 2" },
-    { name: "YAYAN KARSENO", nik: "3328180501850001", phone: "085742077121", role: "Saksi Paslon 3" },
-    { name: "MUHAMAD NUR FAOJI", nik: "3328180101980012", phone: "085772222710", role: "Pengawas Bawaslu" }
+    { name: "YAYAN KARSENO", nik: "3328180501850001", phone: "085742077121", role: "Saksi Paslon 3" }
   ];
 
   const officerRowsHtml = officers
@@ -397,8 +396,8 @@ export function generateChasilHtml(data: ChasilTemplateData): string {
       </tbody>
     </table>
 
-    <!-- DAFTAR PPS, SAKSI, & PANWAS (HALAMAN 4 RESMI KPU) -->
-    <div class="section-header">DAFTAR PPS, SAKSI, & PANWAS (PENGAWAS TPS)</div>
+    <!-- DAFTAR PPS & SAKSI (HALAMAN 4 RESMI KPU) -->
+    <div class="section-header">DAFTAR PPS & SAKSI TPS</div>
     <table>
       <thead>
         <tr>
@@ -413,24 +412,6 @@ export function generateChasilHtml(data: ChasilTemplateData): string {
         ${officerRowsHtml}
       </tbody>
     </table>
-
-    <!-- DAFTAR FILE & DIGITAL SIGNATURE + KEAMANAN DOKUMEN (HALAMAN 5 RESMI KPU) -->
-    <div class="section-header">DAFTAR FILE & DIGITAL SIGNATURE</div>
-    <div class="sig-block">
-      <div><strong>1. crop_pilkada-${escapeHtml(fullTpsCode)}_R_2024-11-27_16-46-34_4668646648330051681.jpg</strong></div>
-      <div style="color: #555;">MEYCIQCE/Na2UrDhNpFjME3lq7W6ajrhoZtXx9nvWV5SwrcMYAIhALhTxyTlx</div>
-      <div style="color: #555;">LsvtGJ6bDVDkF3EEdkFZv2RPh/Gx9GmkbrW</div>
-    </div>
-    <div class="sig-block">
-      <div><strong>2. crop_pilkada-${escapeHtml(fullTpsCode)}_R_2024-11-27_16-46-49_760012134384309558.jpg</strong></div>
-      <div style="color: #555;">MEYCIQD5xfefKPpMui04NCAB1sQYaTQjlibqWY5K++Q6QVk4/gIhANS7jrT6L</div>
-      <div style="color: #555;">MF1BmCdU1FweQpI6wzSRhPVJ59eVZKinfqv</div>
-    </div>
-    <div class="sig-block">
-      <div><strong>3. crop_pilkada-${escapeHtml(fullTpsCode)}_R_2024-11-27_16-47-13_2820272982775534001.jpg</strong></div>
-      <div style="color: #555;">MEUCIFuhMfULelfKclcVXh29eMHfc+uWNPFQ73e5eiHRy6nKAiEAxv+P6wgTM</div>
-      <div style="color: #555;">Linx+Ghi/3cE4o+B+feKOnyEtCnjn79NLk=</div>
-    </div>
 
     <div class="section-header">HALAMAN INFORMASI KEAMANAN DOKUMEN</div>
     <div class="sig-block">
