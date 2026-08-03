@@ -6,12 +6,13 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { initializeMockData } from '@/lib/storage';
 import { toast } from 'sonner';
-import { Shield, Vote } from 'lucide-react';
+import { Shield, Vote, Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Initialize data on component mount
   useState(() => {
@@ -109,13 +110,27 @@ const Login = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-slate-700">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={adminPassword}
-                  onChange={(e) => setAdminPassword(e.target.value)}
-                  className="bg-white border-gray-200 text-slate-900 focus:border-blue-500 focus:ring-blue-500"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    className="bg-white border-gray-200 text-slate-900 focus:border-blue-500 focus:ring-blue-500 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 focus:outline-none"
+                    title={showPassword ? "Sembunyikan Password" : "Tampilkan Password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md">
                 Login

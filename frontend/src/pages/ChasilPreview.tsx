@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { ArrowDown, FileDown, FileText, ImageIcon, Shield, Upload, XCircle, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, ArrowDown, FileDown, FileText, ImageIcon, Shield, Upload, XCircle, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const bytesToReadable = (value: number) => {
