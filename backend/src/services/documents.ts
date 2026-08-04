@@ -139,6 +139,9 @@ export const DocumentsService = {
         WHERE tps_id = ? AND status = 'USED'
       `).get(tpsId) as any;
 
+      // Fetch KPPS members for this TPS
+      const dbKppsMembers = db.prepare("SELECT full_name as fullName, nik, position, phone FROM kpps_members WHERE tps_id = ? ORDER BY id ASC").all(tpsId) as any[];
+
       // Generate HTML string
       const templateData: ChasilTemplateData = {
         election: {
@@ -176,6 +179,7 @@ export const DocumentsService = {
           name: activeUser?.full_name || activeUser?.name || "Petugas KPPS Aktif",
           nik: activeUser?.nik || "3328185310960003"
         },
+        kppsMembers: dbKppsMembers,
         voterGenderBreakdown: {
           maleCount: Number(genderCounts?.male_count || 0),
           femaleCount: Number(genderCounts?.female_count || 0),

@@ -120,3 +120,48 @@ export async function expireVoteSession(sessionId: number): Promise<void> {
     body: JSON.stringify({ sessionId }),
   }).catch(() => {});
 }
+
+/**
+ * Unlocks / activates a booth session for a voter.
+ */
+export async function unlockBooth(boothId: string, voterGender = "L", isDisability = false, tokenAuth?: string): Promise<{ token: string; message: string }> {
+  const token = tokenAuth || localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/voting-sessions/unlock`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      boothId,
+      voterGender,
+      isDisability,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Gagal mengaktifkan bilik suara.");
+  }
+
+  const data = await res.json();
+  return {
+    token: data.session?.token || data.token,
+    message: data.message,
+  };
+}
+
+/**
+ * Resets / cancels an active booth session.
+ */
+export async function resetBoothSession(boothId: string): Promise<void> {
+  const token = localStorage.getItem("token");
+  await fetch(`${API_BASE}/voting-sessions/booth/${boothId}/cancel`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  }).catch(() => {});
+}
+

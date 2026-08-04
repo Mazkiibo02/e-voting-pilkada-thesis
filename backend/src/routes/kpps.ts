@@ -300,4 +300,218 @@ router.delete("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: Aut
   }
 });
 
+/**
+ * 7. GET /kpps/members
+ * Fetch KPPS members for a TPS or logged-in user's TPS
+ * Allowed roles: ADMIN, KPPS, KPPS_OPERATOR
+ */
+router.get("/members", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR"]), async (req: AuthRequest, res: Response) => {
+  try {
+    let tpsId = req.query.tps_id ? Number(req.query.tps_id) : req.user?.assignedTpsId;
+    if (!tpsId && req.user?.role === "ADMIN") {
+      const allMembers = db.prepare(`
+        SELECT km.*, t.tps_code 
+        FROM kpps_members km
+        LEFT JOIN tps t ON km.tps_id = t.id
+        ORDER BY t.tps_code ASC, km.position ASC
+      `).all();
+      return res.json({ data: allMembers });
+    }
+
+    if (!tpsId) {
+      return res.status(400).json({ message: "Parameter tps_id diperlukan." });
+    }
+
+    const members = db.prepare(`
+      SELECT * FROM kpps_members WHERE tps_id = ? ORDER BY id ASC
+    `).all(tpsId);
+
+    return res.json({ data: members });
+  } catch (error: any) {
+    console.error("Error fetching KPPS members:", error);
+    return res.status(500).json({ message: "Gagal memuat daftar anggota KPPS." });
+  }
+});
+
+/**
+ * 8. POST /kpps/members
+ * Create/Add a KPPS member (Anggota 2-5)
+ * Allowed roles: ADMIN, KPPS
+ */
+router.post("/members", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+  try {
+    const { tps_id, full_name, nik, position, phone } = req.body;
+    const assignedTpsId = req.user?.role === "ADMIN" ? (tps_id ? Number(tps_id) : null) : req.user?.assignedTpsId;
+
+    if (!assignedTpsId || !full_name || !position) {
+      return res.status(400).json({ message: "Nama lengkap, posisi/jabatan, dan TPS wajib diisi." });
+    }
+
+    const result = db.prepare(`
+      INSERT INTO kpps_members (tps_id, full_name, nik, position, phone)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(assignedTpsId, full_name, nik || null, position, phone || null);
+
+    return res.status(201).json({ message: "Berhasil menambah anggota KPPS.", id: result.lastInsertRowid });
+  } catch (error: any) {
+    console.error("Error adding KPPS member:", error);
+    return res.status(500).json({ message: "Gagal menambah anggota KPPS." });
+  }
+});
+
+/**
+ * 9. PUT /kpps/members/:id
+ * Update a KPPS member
+ * Allowed roles: ADMIN, KPPS
+ */
+router.put("/members/:id", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+  try {
+    const id = req.params.id;
+    const { full_name, nik, position, phone } = req.body;
+
+    db.prepare(`
+      UPDATE kpps_members SET full_name = ?, nik = ?, position = ?, phone = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(full_name, nik || null, position, phone || null, Number(id));
+
+    return res.json({ message: "Berhasil memperbarui data anggota KPPS." });
+  } catch (error: any) {
+    console.error("Error updating KPPS member:", error);
+    return res.status(500).json({ message: "Gagal memperbarui anggota KPPS." });
+  }
+});
+
+/**
+ * 10. DELETE /kpps/members/:id
+ * Delete a KPPS member
+ * Allowed roles: ADMIN, KPPS
+ */
+router.delete("/members/:id", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+  try {
+    const id = req.params.id;
+    db.prepare("DELETE FROM kpps_members WHERE id = ?").run(Number(id));
+    return res.json({ message: "Berhasil menghapus anggota KPPS." });
+  } catch (error: any) {
+    console.error("Error deleting KPPS member:", error);
+    return res.status(500).json({ message: "Gagal menghapus anggota KPPS." });
+  }
+});
+
+/**
+ * 11. POST /kpps/operators/generate
+ * Generate 2 Operator Bilik (KPPS_OPERATOR) accounts per TPS
+ * Allowed roles: ADMIN, KPPS
+ */
+router.post("/operators/generate", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+  try {
+    let targetTpsId = req.body.tps_id ? Number(req.body.tps_id) : req.user?.assignedTpsId;
+
+    let targetTpsList: any[] = [];
+    if (targetTpsId) {
+      const tps = db.prepare("SELECT * FROM tps WHERE id = ?").get(targetTpsId);
+      if (tps) targetTpsList.push(tps);
+    } else if (req.user?.role === "ADMIN") {
+      targetTpsList = db.prepare("SELECT * FROM tps").all() as any[];
+    }
+
+    if (targetTpsList.length === 0) {
+      return res.status(400).json({ message: "TPS tidak ditemukan." });
+    }
+
+    const generatedOperators: any[] = [];
+
+    db.exec("BEGIN TRANSACTION;");
+    try {
+      const insertUser = db.prepare(`
+        INSERT INTO users (name, full_name, email, password_hash, role, affiliation, assigned_tps_id, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      for (const tps of targetTpsList) {
+        const existingCount = (db.prepare(`
+          SELECT COUNT(*) as count FROM users WHERE assigned_tps_id = ? AND role = 'KPPS_OPERATOR'
+        `).get(tps.id) as any).count;
+
+        const needed = Math.max(0, 2 - existingCount);
+
+        for (let i = 1; i <= needed; i++) {
+          const opNum = existingCount + i;
+          const rawPassword = generateRandomPassword(8);
+          const hashedPassword = bcrypt.hashSync(rawPassword, 10);
+          const tpsCodeSafe = tps.tps_code ? tps.tps_code.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() : `tps${tps.id}`;
+          const email = `operator${opNum}_${tpsCodeSafe}@example.local`;
+          const fullName = `Operator Bilik ${opNum} (${tps.tps_code})`;
+
+          insertUser.run(
+            fullName,
+            fullName,
+            email,
+            hashedPassword,
+            "KPPS_OPERATOR",
+            `Operator Bilik ${opNum}`,
+            tps.id,
+            "ACTIVE"
+          );
+
+          generatedOperators.push({
+            tpsCode: tps.tps_code,
+            fullName,
+            email,
+            password: rawPassword,
+            role: "KPPS_OPERATOR"
+          });
+        }
+      }
+
+      db.exec("COMMIT;");
+    } catch (e) {
+      db.exec("ROLLBACK;");
+      throw e;
+    }
+
+    return res.status(200).json({
+      message: generatedOperators.length > 0 
+        ? `Berhasil generate ${generatedOperators.length} akun Operator Bilik.`
+        : "Seluruh TPS target sudah memiliki 2 akun Operator Bilik.",
+      data: generatedOperators
+    });
+  } catch (error: any) {
+    console.error("Error generating operator accounts:", error);
+    return res.status(500).json({ message: "Gagal membuat akun Operator Bilik." });
+  }
+});
+
+/**
+ * 12. GET /kpps/operators
+ * Fetch Operator Bilik accounts
+ * Allowed roles: ADMIN, KPPS
+ */
+router.get("/operators", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+  try {
+    let tpsId = req.query.tps_id ? Number(req.query.tps_id) : req.user?.assignedTpsId;
+    
+    const operators = tpsId 
+      ? db.prepare(`
+          SELECT u.id, u.name, u.full_name, u.email, u.role, u.affiliation, u.assigned_tps_id, u.status, t.tps_code, t.address
+          FROM users u
+          LEFT JOIN tps t ON u.assigned_tps_id = t.id
+          WHERE u.role = 'KPPS_OPERATOR' AND u.assigned_tps_id = ?
+          ORDER BY t.tps_code ASC, u.id ASC
+        `).all(tpsId)
+      : db.prepare(`
+          SELECT u.id, u.name, u.full_name, u.email, u.role, u.affiliation, u.assigned_tps_id, u.status, t.tps_code, t.address
+          FROM users u
+          LEFT JOIN tps t ON u.assigned_tps_id = t.id
+          WHERE u.role = 'KPPS_OPERATOR'
+          ORDER BY t.tps_code ASC, u.id ASC
+        `).all();
+
+    return res.json({ data: operators });
+  } catch (error: any) {
+    console.error("Error fetching operators:", error);
+    return res.status(500).json({ message: "Gagal memuat data Operator Bilik." });
+  }
+});
+
 export default router;
+

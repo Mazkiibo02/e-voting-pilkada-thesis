@@ -161,12 +161,24 @@ function migrate() {
       }
     }
 
-    // Purge any PENGAWAS / Bawaslu users for real-world governance alignment
+    // Ensure kpps_members table exists
     try {
-      db.exec("DELETE FROM users WHERE role = 'PENGAWAS' OR LOWER(affiliation) LIKE '%bawaslu%' OR LOWER(affiliation) LIKE '%pengawas%';");
-      console.log("Purged PENGAWAS and Bawaslu user accounts from database.");
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS kpps_members (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          tps_id INTEGER NOT NULL,
+          full_name TEXT NOT NULL,
+          nik TEXT,
+          position TEXT NOT NULL,
+          phone TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (tps_id) REFERENCES tps(id) ON DELETE CASCADE
+        );
+      `);
+      console.log("Ensured kpps_members table exists.");
     } catch (e) {
-      console.warn("Could not purge PENGAWAS accounts:", e);
+      console.warn("Could not create kpps_members table:", e);
     }
 
     console.log("Database migrated successfully:", DB_PATH);

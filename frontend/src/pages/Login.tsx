@@ -50,6 +50,9 @@ const Login = () => {
           if (data.user.role === 'ADMIN' || data.user.role === 'KPPS') {
             toast.success(`Login ${data.user.role} berhasil`);
             navigate('/admin');
+          } else if (data.user.role === 'KPPS_OPERATOR') {
+            toast.success('Login Operator Bilik Suara berhasil');
+            navigate('/operator');
           } else if (data.user.role === 'WITNESS') {
             toast.success('Login Saksi berhasil');
             navigate('/witness');

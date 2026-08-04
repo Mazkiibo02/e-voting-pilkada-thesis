@@ -36,6 +36,12 @@ export interface ChasilTemplateData {
     name: string;
     nik: string;
   };
+  kppsMembers?: Array<{
+    fullName: string;
+    nik?: string;
+    position: string;
+    phone?: string;
+  }>;
   voterGenderBreakdown?: {
     maleCount: number;
     femaleCount: number;
@@ -48,7 +54,7 @@ export interface ChasilTemplateData {
 }
 
 export function generateChasilHtml(data: ChasilTemplateData): string {
-  const { election, tps, recap, candidateTotals, kppsOfficer, voterGenderBreakdown, documentId, status, generatedAt } = data;
+  const { election, tps, recap, candidateTotals, kppsOfficer, kppsMembers, voterGenderBreakdown, documentId, status, generatedAt } = data;
 
   const totalReg = recap.total_registered_voters || 100;
   const totalVer = recap.total_verified_voters || 0;
@@ -73,9 +79,9 @@ export function generateChasilHtml(data: ChasilTemplateData): string {
       <td style="text-align: center; font-weight: bold; font-family: monospace; font-size: 1.1em;">${escapeHtml(c.ballotNumber)}</td>
       <td>
         <div style="font-weight: bold; font-size: 1.05em;">${escapeHtml(c.candidateName)} & ${escapeHtml(c.viceCandidateName)}</div>
-        <div style="font-size: 0.85em; color: #555;">${escapeHtml(c.coalitionName || "Koalisi Pendukung")}</div>
+        <div style="font-size: 0.85em; color: #555;">${escapeHtml(c.coalitionName || 'Jalur Independen')}</div>
       </td>
-      <td style="text-align: center; font-size: 1.2em; font-weight: bold; font-family: monospace; color: #1c7ed6;">
+      <td style="text-align: center; font-family: monospace; font-weight: bold; font-size: 1.2em;">
         ${escapeHtml(c.voteTotal)}
       </td>
       <td style="font-style: italic; text-transform: uppercase; font-size: 0.9em; font-weight: bold;">
@@ -89,13 +95,36 @@ export function generateChasilHtml(data: ChasilTemplateData): string {
   const activeKppsName = kppsOfficer?.name || "ANDZANI FARISAH ZATIL H.";
   const activeKppsNik = kppsOfficer?.nik || "3328185310960003";
 
-  const officers = [
-    { name: activeKppsName, nik: activeKppsNik, phone: "085878276954", role: "Ketua KPPS" },
-    { name: "SITI PUTRI NURKHOLIFAH", nik: "3328186101840001", phone: "087722578390", role: "Anggota KPPS 2" },
+  // Build complete list of 5 KPPS officers + Witnesses
+  const officers: Array<{ name: string; nik: string; phone: string; role: string }> = [
+    { name: activeKppsName, nik: activeKppsNik, phone: "085878276954", role: "KPPS 1 (Ketua TPS)" }
+  ];
+
+  if (kppsMembers && kppsMembers.length > 0) {
+    kppsMembers.forEach((m) => {
+      officers.push({
+        name: m.fullName,
+        nik: m.nik || "-",
+        phone: m.phone || "-",
+        role: m.position
+      });
+    });
+  } else {
+    // Default fallback 4 KPPS members if not explicitly registered in database
+    officers.push(
+      { name: "SITI PUTRI NURKHOLIFAH", nik: "3328186101840001", phone: "087722578390", role: "KPPS 2 (Operator DPT)" },
+      { name: "TRI AGUNG SANTOSO", nik: "3328180405890002", phone: "085640123984", role: "KPPS 3 (Operator Bilik 1)" },
+      { name: "DWI NURHAYATI", nik: "3328184512910005", phone: "089678123412", role: "KPPS 4 (Operator Bilik 2)" },
+      { name: "EKO WAHYUDI", nik: "3328181203870003", phone: "081234567890", role: "KPPS 5 (Tinta & Pintu Keluar)" }
+    );
+  }
+
+  // Add default Paslon witnesses
+  officers.push(
     { name: "TRESNO JUNIAWAN", nik: "3328180606880006", phone: "0895384252998", role: "Saksi Paslon 1" },
     { name: "FARAH AHDHIATHIN FAUZIAH", nik: "3328185310960003", phone: "085878276954", role: "Saksi Paslon 2" },
     { name: "YAYAN KARSENO", nik: "3328180501850001", phone: "085742077121", role: "Saksi Paslon 3" }
-  ];
+  );
 
   const officerRowsHtml = officers
     .map(

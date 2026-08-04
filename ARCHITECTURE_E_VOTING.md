@@ -33,22 +33,23 @@ The project must remain aligned with these architecture decisions:
 ```txt
 Frontend React/Vite (Fully converted to Light Mode)
   ├─ Admin dashboard / C.Hasil preview & multi-booth dropdown selector
+  ├─ Dedicated Booth Operator Dashboard (/operator) for KPPS 3 & 4 booth activation
   ├─ Booth voting UI (/booth/:boothId) - Kiosk / Standby Mode (Polling to unlock remotely)
   └─ Public Transparency Dashboard landing page (/)
 
 Express Backend TypeScript
-  ├─ Auth + RBAC (simplified to exclude voter login/tab)
-  ├─ Elections / TPS / Candidate Pairs / Voters
-  ├─ Temporary Voting Sessions
+  ├─ Auth + RBAC (ADMIN, KPPS, KPPS_OPERATOR, WITNESS)
+  ├─ Elections / TPS / Candidate Pairs / Voters / KPPS Members (kpps_members)
+  ├─ Temporary Voting Sessions & Booth Activation
   ├─ Local Vote Casting
   ├─ TPS Recap and Validation
-  ├─ C.Hasil-KWK-inspired Document Generation
+  ├─ C.Hasil-KWK-inspired Document Generation (rendered with 5 KPPS members + Saksi)
   ├─ Signed C.Hasil Upload & SHA-256 Hashing
   ├─ Activity Log / Audit Trail (with LEFT JOIN user name extraction)
   └─ Witness, Blockchain (implemented), and Public transparency endpoints
 
 SQLite Local Database
-  ├─ elections, tps, candidate_pairs, voters, users
+  ├─ elections, tps, candidate_pairs, voters, users, kpps_members
   ├─ voting_sessions, votes
   ├─ tps_recaps, tps_recap_candidate_totals
   ├─ documents, witness_verifications
