@@ -27,6 +27,26 @@ const VALID_TPS_STATUSES = [
   "BLOCKCHAIN_ANCHORED",
 ];
 
+export function normalizeAddress(address: string): string {
+  if (!address) return "";
+  let normalized = address.toLowerCase();
+
+  // Standardize common Indonesian address abbreviations
+  normalized = normalized.replace(/\bkec\.\s*/g, "kecamatan ");
+  normalized = normalized.replace(/\bkel\.\s*/g, "kelurahan ");
+  normalized = normalized.replace(/\bjl\.\s*/g, "jalan ");
+  normalized = normalized.replace(/\bjln\.\s*/g, "jalan ");
+  normalized = normalized.replace(/\bno\.\s*/g, "nomor ");
+  normalized = normalized.replace(/\brw\.\s*/g, "rw ");
+  normalized = normalized.replace(/\brt\.\s*/g, "rt ");
+
+  // Remove non-alphanumeric characters
+  normalized = normalized.replace(/[^a-z0-9]/g, " ");
+
+  // Collapse consecutive spaces
+  return normalized.replace(/\s+/g, " ").trim();
+}
+
 // Helper to filter TPS list for KPPS or check access to single TPS
 const enforceTpsAccess = (req: AuthRequest, tpsId: number): boolean => {
   if (req.user?.role === "KPPS") {
@@ -385,31 +405,47 @@ router.post("/", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequ
       return res.status(400).json({ message: "Lokasi Spesifik wajib diisi." });
     }
 
-    // Check duplicate location / address (case-insensitive)
-    const existingLocation = db.prepare(`
-      SELECT id, tps_code FROM tps WHERE LOWER(TRIM(address)) = LOWER(?) AND election_id = ?
-    `).get(trimmedLocation, finalElectionId) as any;
+    const normInputLoc = normalizeAddress(trimmedLocation);
 
-    if (existingLocation) {
+    // Check duplicate location / address using normalizer across all TPS in this election
+    const allTpsInElection = TpsService.getAll(finalElectionId);
+    const existingDuplicateLoc = allTpsInElection.find(tps => {
+      if (!tps.address) return false;
+      return normalizeAddress(tps.address) === normInputLoc;
+    });
+
+    if (existingDuplicateLoc) {
       return res.status(400).json({
-        message: `Lokasi spesifik "${trimmedLocation}" sudah terdaftar pada ${existingLocation.tps_code}. Setiap TPS harus memiliki lokasi yang berbeda.`
+        message: `Lokasi spesifik "${trimmedLocation}" (ter-normalisasi: "${normInputLoc}") identik dengan lokasi terdaftar pada ${existingDuplicateLoc.tps_code} ("${existingDuplicateLoc.address}"). Setiap TPS harus memiliki lokasi yang unik.`
       });
     }
 
-    // Auto-generate or validate tps_code and tps_number
-    let tps_code = req.body.tps_code ? String(req.body.tps_code).trim().toUpperCase() : "";
-    let tps_number = req.body.tps_number ? String(req.body.tps_number).trim() : "";
+    // Auto-generate or validate manual tps_code and tps_number
+    let rawCodeInput = req.body.tps_code || req.body.tps_number || "";
+    let tps_code = "";
+    let tps_number = "";
 
-    if (tps_code) {
-      // Check duplicate tps_code (case-insensitive)
+    if (rawCodeInput && String(rawCodeInput).trim() !== "") {
+      const strCode = String(rawCodeInput).trim();
+      if (/^\d+$/.test(strCode)) {
+        tps_number = strCode.padStart(2, "0");
+        tps_code = `TPS-${strCode.padStart(3, "0")}`;
+      } else if (strCode.toUpperCase().startsWith("TPS-")) {
+        tps_code = strCode.toUpperCase();
+        tps_number = tps_code.replace("TPS-", "");
+      } else {
+        tps_code = `TPS-${strCode.toUpperCase()}`;
+        tps_number = tps_code.replace("TPS-", "");
+      }
+
+      // Check if this tps_code already exists
       const existingTpsCode = db.prepare("SELECT id FROM tps WHERE LOWER(tps_code) = LOWER(?) AND election_id = ?").get(tps_code, finalElectionId);
       if (existingTpsCode) {
         return res.status(400).json({ message: `Kode TPS "${tps_code}" sudah terdaftar dalam sistem (pemeriksaan tidak peka huruf besar/kecil).` });
       }
     } else {
-      const allTps = TpsService.getAll(finalElectionId);
       let maxSuffix = 0;
-      allTps.forEach(tps => {
+      allTpsInElection.forEach(tps => {
         if (tps.tps_code && tps.tps_code.startsWith("TPS-")) {
           const parts = tps.tps_code.split("-");
           if (parts.length === 2) {
@@ -477,13 +513,16 @@ router.patch("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: Auth
       if (!trimmedAddress) {
         return res.status(400).json({ message: "Lokasi spesifik tidak boleh kosong." });
       }
-      const existingLocation = db.prepare(`
-        SELECT id, tps_code FROM tps WHERE LOWER(TRIM(address)) = LOWER(?) AND election_id = ? AND id != ?
-      `).get(trimmedAddress, targetElectionId, id) as any;
+      const normInputLoc = normalizeAddress(trimmedAddress);
+      const allTpsInElection = TpsService.getAll(targetElectionId);
+      const existingDuplicateLoc = allTpsInElection.find(tps => {
+        if (tps.id === id || !tps.address) return false;
+        return normalizeAddress(tps.address) === normInputLoc;
+      });
 
-      if (existingLocation) {
+      if (existingDuplicateLoc) {
         return res.status(400).json({
-          message: `Lokasi spesifik "${trimmedAddress}" sudah terdaftar pada ${existingLocation.tps_code}. Setiap TPS harus memiliki lokasi yang berbeda.`
+          message: `Lokasi spesifik "${trimmedAddress}" (ter-normalisasi: "${normInputLoc}") identik dengan lokasi terdaftar pada ${existingDuplicateLoc.tps_code} ("${existingDuplicateLoc.address}"). Setiap TPS harus memiliki lokasi yang unik.`
         });
       }
     }
@@ -492,10 +531,15 @@ router.patch("/:id", authenticateToken, requireRole(["ADMIN"]), async (req: Auth
       if (typeof tps_code !== "string" || tps_code.trim() === "") {
         return res.status(400).json({ message: "tps_code cannot be empty" });
       }
-      const normalizedCode = tps_code.trim().toUpperCase();
-      const existingCode = db.prepare("SELECT id FROM tps WHERE LOWER(tps_code) = LOWER(?) AND election_id = ? AND id != ?").get(normalizedCode, targetElectionId, id);
+      let formattedCode = tps_code.trim().toUpperCase();
+      if (/^\d+$/.test(formattedCode)) {
+        formattedCode = `TPS-${formattedCode.padStart(3, "0")}`;
+      } else if (!formattedCode.startsWith("TPS-")) {
+        formattedCode = `TPS-${formattedCode}`;
+      }
+      const existingCode = db.prepare("SELECT id FROM tps WHERE LOWER(tps_code) = LOWER(?) AND election_id = ? AND id != ?").get(formattedCode, targetElectionId, id);
       if (existingCode) {
-        return res.status(400).json({ message: `Kode TPS "${normalizedCode}" sudah terdaftar dalam sistem (pemeriksaan tidak peka huruf besar/kecil).` });
+        return res.status(400).json({ message: `Kode TPS "${formattedCode}" sudah terdaftar dalam sistem (pemeriksaan tidak peka huruf besar/kecil).` });
       }
     }
 

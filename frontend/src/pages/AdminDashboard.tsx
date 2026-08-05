@@ -139,6 +139,7 @@ const AdminDashboard = () => {
 
   // Form states
   const [isTpsModalOpen, setIsTpsModalOpen] = useState(false);
+  const [newTpsCode, setNewTpsCode] = useState("");
   const [newTpsLocation, setNewTpsLocation] = useState("");
   const [newTpsMaleDpt, setNewTpsMaleDpt] = useState("");
   const [newTpsFemaleDpt, setNewTpsFemaleDpt] = useState("");
@@ -177,6 +178,7 @@ const AdminDashboard = () => {
           'Authorization': `Bearer ${tokenAuth}`
         },
         body: JSON.stringify({
+          tps_code: newTpsCode.trim() ? newTpsCode.trim() : undefined,
           location: newTpsLocation,
           male_dpt: maleDptValue,
           female_dpt: femaleDptValue
@@ -186,6 +188,7 @@ const AdminDashboard = () => {
       if (res.ok) {
         toast.success(`TPS berhasil ditambahkan: ${data.data.tps_code}`);
         setIsTpsModalOpen(false);
+        setNewTpsCode("");
         setNewTpsLocation("");
         setNewTpsMaleDpt("");
         setNewTpsFemaleDpt("");
@@ -774,6 +777,15 @@ const AdminDashboard = () => {
                     </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleAddTps} className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="tps_code">Kode / Nomor TPS (Opsional)</Label>
+                      <Input
+                        id="tps_code"
+                        placeholder="e.g. TPS-001 atau 001 (Kosongkan untuk otomatis)"
+                        value={newTpsCode}
+                        onChange={(e) => setNewTpsCode(e.target.value)}
+                      />
+                    </div>
                     <div className="space-y-2">
                       <Label htmlFor="location">Lokasi Spesifik</Label>
                       <Input
