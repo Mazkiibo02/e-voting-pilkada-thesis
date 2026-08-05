@@ -972,8 +972,12 @@ const AdminDashboard = () => {
         </div>
 
         {/* KPPS Account Management Card */}
-        {currentUser?.role === 'ADMIN' && (
-          <KppsManagement selectedTpsCode={selectedTps} />
+        {(currentUser?.role === 'ADMIN' || currentUser?.role === 'KPPS') && (
+          <KppsManagement
+            selectedTpsCode={selectedTps}
+            userRole={currentUser?.role}
+            userAssignedTpsId={currentUser?.assignedTpsId}
+          />
         )}
 
         {currentUser?.role === 'ADMIN' && (

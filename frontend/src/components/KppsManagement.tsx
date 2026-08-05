@@ -11,9 +11,11 @@ import { Users, RotateCcw, Shield, Download, Upload, Trash, Edit, FileSpreadshee
 
 interface KppsManagementProps {
   selectedTpsCode?: string;
+  userRole?: string;
+  userAssignedTpsId?: number | null;
 }
 
-export const KppsManagement = ({ selectedTpsCode }: KppsManagementProps) => {
+export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }: KppsManagementProps) => {
   const [activeTab, setActiveTab] = useState<'KETUA' | 'MEMBERS' | 'OPERATORS'>('KETUA');
 
   // Main data states
@@ -51,8 +53,13 @@ export const KppsManagement = ({ selectedTpsCode }: KppsManagementProps) => {
     fetchOperatorUsers();
   }, []);
 
-  // Sync local TPS selection with parent filter if provided
+  // Sync local TPS selection with parent filter or user assigned TPS
   useEffect(() => {
+    if (userRole === 'KPPS' && userAssignedTpsId) {
+      setSelectedTpsId(userAssignedTpsId.toString());
+      return;
+    }
+
     if (selectedTpsCode && selectedTpsCode !== "ALL") {
       const matched = tpsList.find(t => t.tps_code === selectedTpsCode || t.id.toString() === selectedTpsCode);
       if (matched) {
@@ -63,7 +70,7 @@ export const KppsManagement = ({ selectedTpsCode }: KppsManagementProps) => {
     } else if (selectedTpsCode === "ALL") {
       setSelectedTpsId("ALL");
     }
-  }, [selectedTpsCode, tpsList]);
+  }, [selectedTpsCode, tpsList, userRole, userAssignedTpsId]);
 
   const fetchTps = async () => {
     try {
@@ -278,9 +285,10 @@ export const KppsManagement = ({ selectedTpsCode }: KppsManagementProps) => {
 
   // Member CRUD handlers
   const handleOpenAddMember = () => {
+    let defaultTps = selectedTpsId !== "ALL" ? selectedTpsId : (userAssignedTpsId ? userAssignedTpsId.toString() : (tpsList[0]?.id?.toString() || ''));
     setMemberForm({
       id: null,
-      tps_id: selectedTpsId !== "ALL" ? selectedTpsId : (tpsList[0]?.id?.toString() || ''),
+      tps_id: defaultTps,
       full_name: '',
       nik: '',
       position: 'KPPS 2 (Operator DPT)',
@@ -400,15 +408,17 @@ export const KppsManagement = ({ selectedTpsCode }: KppsManagementProps) => {
         {/* Top Controls */}
         <div className="flex flex-wrap gap-3 items-center justify-between">
           <div className="w-64">
-            <Select value={selectedTpsId} onValueChange={setSelectedTpsId}>
+            <Select value={selectedTpsId} onValueChange={setSelectedTpsId} disabled={userRole === 'KPPS'}>
               <SelectTrigger>
                 <SelectValue placeholder="Pilih TPS" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">Semua TPS</SelectItem>
-                {tpsList.map(tps => (
-                  <SelectItem key={tps.id} value={tps.id.toString()}>{tps.tps_code} - {tps.address}</SelectItem>
-                ))}
+                {userRole !== 'KPPS' && <SelectItem value="ALL">Semua TPS</SelectItem>}
+                {tpsList
+                  .filter(tps => userRole !== 'KPPS' || !userAssignedTpsId || tps.id === userAssignedTpsId)
+                  .map(tps => (
+                    <SelectItem key={tps.id} value={tps.id.toString()}>{tps.tps_code} - {tps.address}</SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
