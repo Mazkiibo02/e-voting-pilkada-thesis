@@ -1,11 +1,11 @@
--- Schema for Krandon E-Voting (updated field lengths)
+-- Schema for Krandon E-Voting (updated to exact specs: Name 50, Email 50, URL/Paths 100)
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS elections (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name VARCHAR(100) NOT NULL,
+  name VARCHAR(50) NOT NULL,
   election_type VARCHAR(50),
-  region_name VARCHAR(100),
+  region_name VARCHAR(50),
   voting_date VARCHAR(10),
   status VARCHAR(20) DEFAULT 'DRAFT',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -33,20 +33,22 @@ CREATE TABLE IF NOT EXISTS tps (
   FOREIGN KEY (election_id) REFERENCES elections(id) ON DELETE CASCADE
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tps_code_nocase ON tps(tps_code COLLATE NOCASE);
+
 CREATE TABLE IF NOT EXISTS candidate_pairs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   election_id INTEGER NOT NULL,
   ballot_number INTEGER,
-  candidate_name VARCHAR(100),
-  vice_candidate_name VARCHAR(100),
-  coalition_name VARCHAR(150),
+  candidate_name VARCHAR(50),
+  vice_candidate_name VARCHAR(50),
+  coalition_name VARCHAR(50),
   vision_summary TEXT,
   motto TEXT,
   vision TEXT,
   mission TEXT,
   education TEXT,
   career_path TEXT,
-  photo_url VARCHAR(255),
+  photo_url VARCHAR(100),
   status VARCHAR(20) DEFAULT 'ACTIVE',
   is_deleted INTEGER DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -56,9 +58,9 @@ CREATE TABLE IF NOT EXISTS candidate_pairs (
 
 CREATE TABLE IF NOT EXISTS parties (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name VARCHAR(100) NOT NULL,
+  name VARCHAR(50) NOT NULL,
   acronym VARCHAR(20) NOT NULL,
-  logo_url VARCHAR(255),
+  logo_url VARCHAR(100),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -78,14 +80,14 @@ CREATE TABLE IF NOT EXISTS paslon_parties (
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name VARCHAR(50) NOT NULL,
-  full_name VARCHAR(100),
-  email VARCHAR(100) UNIQUE,
+  full_name VARCHAR(50),
+  email VARCHAR(50) UNIQUE,
   password_hash VARCHAR(60),
   role VARCHAR(30),
-  affiliation VARCHAR(100),
+  affiliation VARCHAR(50),
   nik VARCHAR(16),
   assigned_tps_id INTEGER,
-  device_id VARCHAR(100),
+  device_id VARCHAR(50),
   public_key TEXT,
   status VARCHAR(20) DEFAULT 'ACTIVE',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -152,7 +154,7 @@ CREATE TABLE IF NOT EXISTS tps_recap_candidate_totals (
   recap_id INTEGER NOT NULL,
   candidate_pair_id INTEGER NOT NULL,
   vote_total INTEGER DEFAULT 0,
-  vote_total_in_words VARCHAR(100),
+  vote_total_in_words VARCHAR(50),
   FOREIGN KEY (recap_id) REFERENCES tps_recaps(id) ON DELETE CASCADE,
   FOREIGN KEY (candidate_pair_id) REFERENCES candidate_pairs(id) ON DELETE CASCADE
 );
@@ -163,15 +165,15 @@ CREATE TABLE IF NOT EXISTS documents (
   tps_id INTEGER,
   recap_id INTEGER,
   document_type VARCHAR(30),
-  generated_pdf_path VARCHAR(255),
-  uploaded_signed_file_path VARCHAR(255),
+  generated_pdf_path VARCHAR(100),
+  uploaded_signed_file_path VARCHAR(100),
   signed_file_hash_sha256 VARCHAR(64),
   qr_payload TEXT,
   status VARCHAR(30) DEFAULT 'NOT_GENERATED',
   generated_at DATETIME,
   signed_file_uploaded_at DATETIME,
-  signed_file_original_name VARCHAR(150),
-  signed_file_stored_name VARCHAR(255),
+  signed_file_original_name VARCHAR(50),
+  signed_file_stored_name VARCHAR(50),
   signed_file_mime_type VARCHAR(50),
   signed_file_size_bytes INTEGER,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -187,8 +189,8 @@ CREATE TABLE IF NOT EXISTS witness_verifications (
   candidate_pair_id INTEGER,
   status VARCHAR(30) DEFAULT 'PENDING',
   note TEXT,
-  evidence_file_path VARCHAR(255),
-  evidence_file_original_name VARCHAR(150),
+  evidence_file_path VARCHAR(100),
+  evidence_file_original_name VARCHAR(50),
   evidence_file_mime_type VARCHAR(50),
   evidence_file_size_bytes INTEGER,
   signed_at DATETIME,
@@ -219,9 +221,9 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   election_id INTEGER,
   tps_id INTEGER,
   actor_user_id INTEGER,
-  actor_email VARCHAR(100),
+  actor_email VARCHAR(50),
   actor_role VARCHAR(30),
-  actor_display VARCHAR(100),
+  actor_display VARCHAR(50),
   action VARCHAR(50),
   entity_type VARCHAR(50),
   entity_id INTEGER,
@@ -233,7 +235,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 CREATE TABLE IF NOT EXISTS kpps_members (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   tps_id INTEGER NOT NULL,
-  full_name VARCHAR(100) NOT NULL,
+  full_name VARCHAR(50) NOT NULL,
   nik VARCHAR(16),
   position VARCHAR(50) NOT NULL,
   phone VARCHAR(20),
