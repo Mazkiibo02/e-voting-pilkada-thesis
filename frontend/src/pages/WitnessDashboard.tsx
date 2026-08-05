@@ -190,9 +190,15 @@ const WitnessDashboard = () => {
       return;
     }
 
-    if (actionType === "OBJECTED" && !notes.trim()) {
-      toast.error("Catatan alasan keberatan wajib diisi.");
-      return;
+    if (actionType === "OBJECTED") {
+      if (!notes.trim()) {
+        toast.error("Catatan alasan keberatan wajib diisi.");
+        return;
+      }
+      if (!evidenceFile) {
+        toast.error("Upload berkas bukti fisik keberatan wajib dilampirkan.");
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -618,7 +624,7 @@ const WitnessDashboard = () => {
 
                           <div className="space-y-2">
                             <Label htmlFor="evidence" className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                              Langkah 3: Unggah Bukti Keberatan (Opsional)
+                              Langkah 3: Unggah Bukti Keberatan <span className="text-red-500 font-bold">(Wajib *)</span>
                             </Label>
                             <div className="border border-dashed rounded-lg p-4 bg-slate-50/70 hover:bg-slate-50 transition-colors flex flex-col items-center justify-center cursor-pointer relative">
                               <input

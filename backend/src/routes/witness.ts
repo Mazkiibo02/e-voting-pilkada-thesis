@@ -77,8 +77,13 @@ router.post("/verify", authenticateToken, requireRole(["WITNESS"]), async (req: 
         return res.status(400).json({ message: "Status harus bernilai APPROVED atau OBJECTED." });
       }
 
-      if (status === "OBJECTED" && (!notes || notes.trim() === "")) {
-        return res.status(400).json({ message: "Catatan alasan keberatan wajib diisi." });
+      if (status === "OBJECTED") {
+        if (!notes || notes.trim() === "") {
+          return res.status(400).json({ message: "Catatan alasan keberatan wajib diisi." });
+        }
+        if (!req.file) {
+          return res.status(400).json({ message: "Upload berkas bukti fisik keberatan (PDF/JPG/PNG) wajib dilampirkan." });
+        }
       }
 
       // If a file is uploaded, validate it

@@ -138,9 +138,14 @@ export const WitnessService = {
       throw new WitnessError(409, "Rekap TPS belum dibuat oleh KPPS.");
     }
 
-    // 4. If status is OBJECTED, note is mandatory
-    if (status === "OBJECTED" && (!note || note.trim() === "")) {
-      throw new WitnessError(400, "Catatan alasan keberatan wajib diisi.");
+    // 4. If status is OBJECTED, note and evidence file are mandatory
+    if (status === "OBJECTED") {
+      if (!note || note.trim() === "") {
+        throw new WitnessError(400, "Catatan alasan keberatan wajib diisi.");
+      }
+      if (!file) {
+        throw new WitnessError(400, "Upload berkas bukti fisik keberatan (PDF/JPG/PNG) wajib dilampirkan.");
+      }
     }
 
     let evidenceFilePath: string | null = null;
