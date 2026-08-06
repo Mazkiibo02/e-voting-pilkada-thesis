@@ -160,6 +160,11 @@ const BoothVoting = () => {
     }
   };
 
+  const handleCastVote = async () => {
+    if (!selectedPair) return;
+    await handleDirectCastVote(selectedPair);
+  };
+
   const handleResetToWaiting = () => {
     localStorage.removeItem(`booth_token_${currentBoothId}`);
     navigate(`/booth/${currentBoothId}`);

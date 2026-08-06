@@ -19,6 +19,7 @@ export interface ActiveSession {
   electionId: number;
   tpsId: number;
   boothId: string;
+  token?: string;
   status: string;
   expiresAt: string;
   election: {
