@@ -16,7 +16,9 @@ interface KppsManagementProps {
 }
 
 export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }: KppsManagementProps) => {
-  const [activeTab, setActiveTab] = useState<'KETUA' | 'MEMBERS' | 'OPERATORS'>('KETUA');
+  const [activeTab, setActiveTab] = useState<'KETUA' | 'MEMBERS' | 'OPERATORS'>(
+    userRole === 'KPPS' ? 'MEMBERS' : 'KETUA'
+  );
 
   // Main data states
   const [kppsUsers, setKppsUsers] = useState<any[]>([]);
@@ -55,9 +57,14 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
 
   // Sync local TPS selection with parent filter or user assigned TPS
   useEffect(() => {
-    if (userRole === 'KPPS' && userAssignedTpsId) {
-      setSelectedTpsId(userAssignedTpsId.toString());
-      return;
+    if (userRole === 'KPPS') {
+      if (activeTab === 'KETUA') {
+        setActiveTab('MEMBERS');
+      }
+      if (userAssignedTpsId) {
+        setSelectedTpsId(userAssignedTpsId.toString());
+        return;
+      }
     }
 
     if (selectedTpsCode && selectedTpsCode !== "ALL") {
@@ -377,14 +384,16 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
 
         {/* Tab Buttons */}
         <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 shrink-0">
-          <button
-            onClick={() => setActiveTab('KETUA')}
-            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
-              activeTab === 'KETUA' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Ketua KPPS
-          </button>
+          {userRole !== 'KPPS' && (
+            <button
+              onClick={() => setActiveTab('KETUA')}
+              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
+                activeTab === 'KETUA' ? 'bg-white text-blue-600 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Ketua KPPS
+            </button>
+          )}
           <button
             onClick={() => setActiveTab('MEMBERS')}
             className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
