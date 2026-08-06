@@ -26,53 +26,43 @@ function sanitizeSession(session: any) {
 }
 
 // 1. POST /voting-sessions/unlock
-router.post("/unlock", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+router.post("/unlock", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR"]), async (req: AuthRequest, res: Response) => {
   try {
-    const { electionId, tpsId, boothId, voterGender, isDisability, voterId } = req.body;
+    let { electionId, tpsId, boothId, voterGender, isDisability, voterId } = req.body;
 
-    if (electionId === undefined || tpsId === undefined || boothId === undefined) {
-      return res.status(400).json({ message: "electionId, tpsId, and boothId are required" });
+    if (!boothId || typeof boothId !== "string" || boothId.trim() === "") {
+      return res.status(400).json({ message: "boothId is required" });
     }
 
-    const eId = Number(electionId);
-    const tId = Number(tpsId);
-
-    if (isNaN(eId) || isNaN(tId)) {
-      return res.status(400).json({ message: "Invalid ID parameter formats" });
+    let tId = tpsId !== undefined && tpsId !== null ? Number(tpsId) : NaN;
+    if (isNaN(tId) && (req.user?.role === "KPPS" || req.user?.role === "KPPS_OPERATOR") && req.user.assignedTpsId) {
+      tId = req.user.assignedTpsId;
     }
 
-    // Check election exists
-    const election = ElectionsService.getById(eId);
-    if (!election) {
-      return res.status(404).json({ message: "Election not found" });
+    if (isNaN(tId)) {
+      const allTps = TpsService.getAll();
+      if (allTps.length > 0) {
+        tId = allTps[0].id;
+      } else {
+        return res.status(400).json({ message: "TPS tidak ditemukan dalam sistem." });
+      }
     }
 
-    // Check TPS exists
     let tps = TpsService.getById(tId);
     if (!tps) {
-      const allTps = TpsService.getAll();
-      if (allTps.length === 0) {
-        tps = TpsService.create({
-          election_id: eId,
-          tps_code: 'TPS-001',
-          tps_number: '01',
-          province: 'Jawa Tengah',
-          city_regency: 'Kota Tegal',
-          district: 'Tegal Timur',
-          village: 'Mintaragen',
-          address: 'TPS 01 Pusat',
-          status: 'OPEN'
-        });
-      } else {
-        return res.status(404).json({ message: "TPS not found" });
-      }
+      return res.status(404).json({ message: "TPS not found" });
+    }
+
+    let eId = electionId !== undefined && electionId !== null ? Number(electionId) : NaN;
+    if (isNaN(eId)) {
+      eId = tps.election_id || (ElectionsService.getAll()[0]?.id ?? 1);
     }
 
     const actualTpsId = tps.id;
 
-    // Check KPPS assigned_tps_id must match actualTpsId
-    if (req.user?.role === "KPPS" && req.user.assignedTpsId !== actualTpsId) {
-      return res.status(403).json({ message: "Access forbidden: KPPS cannot manage voting sessions for this TPS" });
+    // Check KPPS / KPPS_OPERATOR assigned_tps_id must match actualTpsId
+    if ((req.user?.role === "KPPS" || req.user?.role === "KPPS_OPERATOR") && req.user.assignedTpsId && req.user.assignedTpsId !== actualTpsId) {
+      return res.status(403).json({ message: "Access forbidden: KPPS Operator cannot manage voting sessions for this TPS" });
     }
 
     let finalGender = voterGender || 'L';
@@ -145,11 +135,11 @@ router.post("/unlock", authenticateToken, requireRole(["ADMIN", "KPPS"]), async 
 });
 
 // 2. GET /voting-sessions
-router.get("/", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+router.get("/", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR"]), async (req: AuthRequest, res: Response) => {
   try {
     const filters: any = {};
 
-    if (req.user?.role === "KPPS") {
+    if (req.user?.role === "KPPS" || req.user?.role === "KPPS_OPERATOR") {
       filters.tpsId = req.user.assignedTpsId;
     } else if (req.query.tpsId !== undefined) {
       filters.tpsId = Number(req.query.tpsId);
@@ -230,8 +220,30 @@ router.get("/booth/:boothId/status", async (req, res) => {
   }
 });
 
+// 3c. POST /voting-sessions/booth/:boothId/cancel
+router.post("/booth/:boothId/cancel", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR"]), async (req: AuthRequest, res: Response) => {
+  try {
+    const { boothId } = req.params;
+    if (!boothId || typeof boothId !== "string" || boothId.trim() === "") {
+      return res.status(400).json({ message: "Booth ID is required" });
+    }
+
+    const activeSession = VotingSessionsService.getActiveSessionForBooth(boothId.trim());
+    if (activeSession) {
+      if ((req.user?.role === "KPPS" || req.user?.role === "KPPS_OPERATOR") && req.user.assignedTpsId && activeSession.tpsId !== req.user.assignedTpsId) {
+        return res.status(403).json({ message: "Access forbidden" });
+      }
+      VotingSessionsService.updateStatus(activeSession.sessionId, "CANCELLED");
+    }
+
+    return res.json({ success: true, message: `Sesi bilik ${boothId} berhasil dibatalkan.` });
+  } catch (e: any) {
+    return res.status(500).json({ message: "Gagal mereset bilik suara." });
+  }
+});
+
 // 4. GET /voting-sessions/:id
-router.get("/:id", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+router.get("/:id", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR"]), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
     if (isNaN(id)) {
@@ -243,7 +255,7 @@ router.get("/:id", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req
       return res.status(404).json({ message: "Voting session not found" });
     }
 
-    if (req.user?.role === "KPPS" && session.tps_id !== req.user.assignedTpsId) {
+    if ((req.user?.role === "KPPS" || req.user?.role === "KPPS_OPERATOR") && session.tps_id !== req.user.assignedTpsId) {
       return res.status(403).json({ message: "Access forbidden: KPPS cannot view voting sessions for other TPS" });
     }
 
@@ -254,7 +266,7 @@ router.get("/:id", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req
 });
 
 // 5. POST /voting-sessions/:id/cancel
-router.post("/:id/cancel", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+router.post("/:id/cancel", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR"]), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
     if (isNaN(id)) {
@@ -266,7 +278,7 @@ router.post("/:id/cancel", authenticateToken, requireRole(["ADMIN", "KPPS"]), as
       return res.status(404).json({ message: "Voting session not found" });
     }
 
-    if (req.user?.role === "KPPS" && session.tps_id !== req.user.assignedTpsId) {
+    if ((req.user?.role === "KPPS" || req.user?.role === "KPPS_OPERATOR") && session.tps_id !== req.user.assignedTpsId) {
       return res.status(403).json({ message: "Access forbidden: KPPS cannot cancel voting sessions for other TPS" });
     }
 
@@ -294,7 +306,7 @@ router.post("/:id/cancel", authenticateToken, requireRole(["ADMIN", "KPPS"]), as
 });
 
 // 6. POST /voting-sessions/:id/expire
-router.post("/:id/expire", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+router.post("/:id/expire", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR"]), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
     if (isNaN(id)) {
@@ -306,7 +318,7 @@ router.post("/:id/expire", authenticateToken, requireRole(["ADMIN", "KPPS"]), as
       return res.status(404).json({ message: "Voting session not found" });
     }
 
-    if (req.user?.role === "KPPS" && session.tps_id !== req.user.assignedTpsId) {
+    if ((req.user?.role === "KPPS" || req.user?.role === "KPPS_OPERATOR") && session.tps_id !== req.user.assignedTpsId) {
       return res.status(403).json({ message: "Access forbidden: KPPS cannot manually expire voting sessions for other TPS" });
     }
 

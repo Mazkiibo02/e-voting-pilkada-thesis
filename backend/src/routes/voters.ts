@@ -17,7 +17,7 @@ router.get("/", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR"
     const status = req.query.status ? String(req.query.status) : undefined;
 
     let targetTpsId = tpsIdParam;
-    if (req.user?.role === "KPPS" && req.user.assignedTpsId) {
+    if ((req.user?.role === "KPPS" || req.user?.role === "KPPS_OPERATOR") && req.user.assignedTpsId) {
       targetTpsId = req.user.assignedTpsId;
     }
 

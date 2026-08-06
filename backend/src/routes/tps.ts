@@ -48,20 +48,20 @@ export function normalizeAddress(address: string): string {
   return normalized.replace(/\s+/g, " ").trim();
 }
 
-// Helper to filter TPS list for KPPS or check access to single TPS
+// Helper to filter TPS list for KPPS/KPPS_OPERATOR or check access to single TPS
 const enforceTpsAccess = (req: AuthRequest, tpsId: number): boolean => {
-  if (req.user?.role === "KPPS") {
+  if (req.user?.role === "KPPS" || req.user?.role === "KPPS_OPERATOR") {
     return req.user.assignedTpsId === tpsId;
   }
   return true; // ADMIN can access anything
 };
 
 // GET /tps
-router.get("/", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+router.get("/", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR"]), async (req: AuthRequest, res: Response) => {
   try {
     let tpsList: TPS[] = [];
 
-    if (req.user?.role === "KPPS") {
+    if (req.user?.role === "KPPS" || req.user?.role === "KPPS_OPERATOR") {
       const assignedId = req.user.assignedTpsId;
       if (assignedId) {
         const tps = TpsService.getById(assignedId);
@@ -298,7 +298,7 @@ router.post("/import", authenticateToken, requireRole(["ADMIN"]), upload.single(
 });
 
 // GET /tps/:id
-router.get("/:id", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+router.get("/:id", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR"]), async (req: AuthRequest, res: Response) => {
   try {
     const id = Number(req.params.id);
     if (isNaN(id)) {
