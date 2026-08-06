@@ -48,8 +48,21 @@ export const WitnessService = {
     // 3. Fetch Recap
     const recapData = RecapsService.getByTpsId(tpsId);
 
-    // 4. Fetch Document
+    // 4. Fetch Documents
     const document = DocumentsService.getByTpsId(tpsId);
+
+    // Calculate total DPT for TPS dynamically
+    const dptCount = db.prepare("SELECT COUNT(*) as cnt FROM voters WHERE tps_id = ?").get(tpsId) as any;
+    const totalDpt = Math.max(tps.registered_voters_total || 0, dptCount?.cnt || 0, recapData?.recap.total_registered_voters || 0);
+
+    let c2Doc = DocumentsService.getC2ByTpsId(tpsId);
+    if (!c2Doc) {
+      try {
+        c2Doc = DocumentsService.generateC2Form(tpsId);
+      } catch (err) {
+        console.warn("Auto-generate C2 failed in getRecapForWitness:", err);
+      }
+    }
 
     // 5. Fetch Verification status for this witness user
     const verification = db.prepare(`
@@ -68,6 +81,7 @@ export const WitnessService = {
         village: tps.village,
         address: tps.address,
         status: tps.status,
+        registered_voters_total: totalDpt,
       },
       election: {
         id: election.id,
@@ -79,7 +93,7 @@ export const WitnessService = {
       recap: recapData ? {
         id: recapData.recap.id,
         validationStatus: recapData.recap.validation_status,
-        totalRegisteredVoters: recapData.recap.total_registered_voters,
+        totalRegisteredVoters: totalDpt,
         totalVerifiedVoters: recapData.recap.total_verified_voters,
         totalValidVotes: recapData.recap.total_valid_votes,
         totalInvalidVotes: recapData.recap.total_invalid_votes,
@@ -99,6 +113,21 @@ export const WitnessService = {
         downloadUrl: `/documents/${document.id}/download`,
         signedPreviewUrl: document.uploaded_signed_file_path ? `/documents/${document.id}/signed-preview` : null,
         signedDownloadUrl: document.uploaded_signed_file_path ? `/documents/${document.id}/signed-download` : null,
+        c2Document: c2Doc ? {
+          id: c2Doc.id,
+          status: c2Doc.status,
+          previewUrl: `/documents/tps/${tpsId}/c2/preview`,
+          downloadUrl: `/documents/${c2Doc.id}/download`,
+          signedPreviewUrl: c2Doc.uploaded_signed_file_path ? `/documents/${c2Doc.id}/signed-preview` : null,
+          signedDownloadUrl: c2Doc.uploaded_signed_file_path ? `/documents/${c2Doc.id}/signed-download` : null,
+          signedFile: c2Doc.uploaded_signed_file_path ? {
+            originalName: c2Doc.signed_file_original_name,
+            mimeType: c2Doc.signed_file_mime_type,
+            sizeBytes: c2Doc.signed_file_size_bytes,
+            sha256: c2Doc.signed_file_hash_sha256,
+            uploadedAt: c2Doc.signed_file_uploaded_at,
+          } : null
+        } : null
       } : null,
       verification: verification ? {
         id: verification.id,
@@ -241,6 +270,13 @@ export const WitnessService = {
       `).run(tpsId);
 
       db.exec("COMMIT;");
+
+      // Auto regenerate C2 document upon witness verification update
+      try {
+        DocumentsService.generateC2Form(tpsId);
+      } catch (c2Err) {
+        console.warn("Failed to auto-regenerate C2 on witness verification:", c2Err);
+      }
 
       // Delete old file if new one uploaded
       if (oldFilePath && evidenceFilePath && oldFilePath !== evidenceFilePath) {

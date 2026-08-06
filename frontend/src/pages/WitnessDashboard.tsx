@@ -369,35 +369,46 @@ const WitnessDashboard = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-6">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="p-4 bg-slate-50 border rounded-lg">
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase">DPT Terdaftar</p>
-                      <p className="text-xl font-extrabold text-slate-800 mt-1">{tps.registered_voters_total}</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">Pemilih Fisik</p>
-                    </div>
-                    <div className="p-4 bg-slate-50 border rounded-lg">
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Pemilih Terverifikasi</p>
-                      <p className="text-xl font-extrabold text-slate-800 mt-1">{recap.totalVerifiedVoters}</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">Hadir di TPS</p>
-                    </div>
-                    <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-lg">
-                      <p className="text-[10px] font-bold text-emerald-800 uppercase">Suara Sah</p>
-                      <p className="text-xl font-extrabold text-emerald-900 mt-1">{recap.totalValidVotes}</p>
-                      <p className="text-[10px] text-emerald-800/70 mt-0.5">Total Suara Masuk</p>
-                    </div>
-                    <div className="p-4 bg-slate-50 border rounded-lg">
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Suara Tidak Sah</p>
-                      <p className="text-xl font-extrabold text-slate-800 mt-1">{recap.totalInvalidVotes}</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">Sistem Booth</p>
-                    </div>
-                  </div>
+                  {(() => {
+                    const totalDpt = recap.totalRegisteredVoters || tps.registered_voters_total || 0;
+                    const votersPresent = recap.totalVerifiedVoters || recap.totalValidVotes || 0;
+                    const turnoutPct = totalDpt > 0 ? (votersPresent / totalDpt) * 100 : 0;
+                    const turnoutDisplay = turnoutPct === 0 ? "0%" : turnoutPct % 1 === 0 ? `${turnoutPct.toFixed(0)}%` : `${turnoutPct.toFixed(2)}%`;
 
-                  <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-between text-xs text-blue-900 font-medium">
-                    <span>Tingkat Partisipasi Pemilih:</span>
-                    <span className="font-bold text-sm bg-blue-100/50 px-2 py-0.5 rounded">
-                      {`${tps.registered_voters_total > 0 ? Math.min(Math.round((recap.totalValidVotes / tps.registered_voters_total) * 100), 100) : 0}%`}
-                    </span>
-                  </div>
+                    return (
+                      <>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="p-4 bg-slate-50 border rounded-lg">
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase">DPT Terdaftar</p>
+                            <p className="text-xl font-extrabold text-slate-800 mt-1">{totalDpt > 0 ? totalDpt : '-'}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">Pemilih Fisik</p>
+                          </div>
+                          <div className="p-4 bg-slate-50 border rounded-lg">
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase">Pemilih Terverifikasi</p>
+                            <p className="text-xl font-extrabold text-slate-800 mt-1">{recap.totalVerifiedVoters}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">Hadir di TPS</p>
+                          </div>
+                          <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-lg">
+                            <p className="text-[10px] font-bold text-emerald-800 uppercase">Suara Sah</p>
+                            <p className="text-xl font-extrabold text-emerald-900 mt-1">{recap.totalValidVotes}</p>
+                            <p className="text-[10px] text-emerald-800/70 mt-0.5">Total Suara Masuk</p>
+                          </div>
+                          <div className="p-4 bg-slate-50 border rounded-lg">
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase">Suara Tidak Sah</p>
+                            <p className="text-xl font-extrabold text-slate-800 mt-1">{recap.totalInvalidVotes}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">Sistem Booth</p>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-between text-xs text-blue-900 font-medium">
+                          <span>Tingkat Partisipasi Pemilih:</span>
+                          <span className="font-bold text-sm bg-blue-100/50 px-2 py-0.5 rounded">
+                            {turnoutDisplay}
+                          </span>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </CardContent>
               </Card>
 
