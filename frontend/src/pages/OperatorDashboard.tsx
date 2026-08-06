@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from 'sonner';
 import { Shield, Lock, Unlock, LogOut, CheckCircle, XCircle, RotateCcw, Vote, UserCheck, AlertCircle, RefreshCw } from 'lucide-react';
 import { unlockBooth, checkBoothStatus, resetBoothSession } from '@/services/boothApi';
@@ -31,6 +32,8 @@ export const OperatorDashboard = () => {
   const [isActivateModalOpen, setIsActivateModalOpen] = useState(false);
   const [voterGender, setVoterGender] = useState<'L' | 'P'>('L');
   const [isDisability, setIsDisability] = useState(false);
+  const [selectedVoterId, setSelectedVoterId] = useState<string>('');
+  const [registeredVoters, setRegisteredVoters] = useState<any[]>([]);
   const [isActivating, setIsActivating] = useState(false);
   const [isResetting, setIsResetting] = useState<string | null>(null);
 
@@ -53,6 +56,8 @@ export const OperatorDashboard = () => {
           if (data.user.role !== 'KPPS_OPERATOR' && data.user.role !== 'KPPS' && data.user.role !== 'ADMIN') {
             toast.error('Akses ditolak. Halaman khusus Operator Bilik Suara.');
             navigate('/login');
+          } else {
+            fetchRegisteredVoters(data.user.assignedTpsId);
           }
         } else {
           navigate('/login');
@@ -64,6 +69,24 @@ export const OperatorDashboard = () => {
 
     fetchUser();
   }, [navigate]);
+
+  const fetchRegisteredVoters = async (tpsId?: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      const params = new URLSearchParams({ status: 'REGISTERED' });
+      if (tpsId) params.append('tps_id', tpsId.toString());
+
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/voters?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setRegisteredVoters(data.items || []);
+      }
+    } catch (e) {
+      console.error('Failed to fetch registered voters for booth operator', e);
+    }
+  };
 
   // Poll booth statuses every 3 seconds
   useEffect(() => {
@@ -93,7 +116,21 @@ export const OperatorDashboard = () => {
     setSelectedBooth(booth);
     setVoterGender('L');
     setIsDisability(false);
+    setSelectedVoterId('');
+    if (user?.assignedTpsId) {
+      fetchRegisteredVoters(user.assignedTpsId);
+    }
     setIsActivateModalOpen(true);
+  };
+
+  const handleSelectVoter = (voterIdStr: string) => {
+    setSelectedVoterId(voterIdStr);
+    if (!voterIdStr) return;
+    const found = registeredVoters.find(v => v.id.toString() === voterIdStr);
+    if (found) {
+      setVoterGender(found.gender === 'F' ? 'P' : 'L');
+      setIsDisability(found.is_disability === 1);
+    }
   };
 
   const handleConfirmActivate = async () => {
@@ -102,9 +139,13 @@ export const OperatorDashboard = () => {
     setIsActivating(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await unlockBooth(selectedBooth.id, voterGender, isDisability, token || undefined);
+      const vId = selectedVoterId ? Number(selectedVoterId) : null;
+      const res = await unlockBooth(selectedBooth.id, voterGender, isDisability, token || undefined, vId);
       
-      toast.success(`Berhasil mengaktifkan ${selectedBooth.name}!`, {
+      const matchedVoter = registeredVoters.find(v => v.id === vId);
+      const voterNotice = matchedVoter ? ` Pemilih DPT ${matchedVoter.full_name} otomatis tercentang Sudah Memilih ✅` : '';
+
+      toast.success(`Berhasil mengaktifkan ${selectedBooth.name}!${voterNotice}`, {
         description: `Token Sesi: ${res.token || 'Aktif'}`
       });
 
@@ -112,6 +153,9 @@ export const OperatorDashboard = () => {
       
       // Update local state
       setBooths(prev => prev.map(b => b.id === selectedBooth.id ? { ...b, status: 'UNLOCKED', token: res.token } : b));
+      if (user?.assignedTpsId) {
+        fetchRegisteredVoters(user.assignedTpsId);
+      }
     } catch (error: any) {
       toast.error(error.message || 'Gagal mengaktifkan bilik suara');
     } finally {
@@ -281,6 +325,27 @@ export const OperatorDashboard = () => {
           </DialogHeader>
 
           <div className="space-y-4 py-3">
+            {/* DPT Voter Selection */}
+            <div className="space-y-1.5">
+              <Label className="text-slate-700 font-semibold text-xs flex justify-between items-center">
+                <span>Pilih Pemilih dari DPT TPS:</span>
+                <span className="text-[10px] text-blue-600 font-normal">Auto-Checklist ✅</span>
+              </Label>
+              <Select value={selectedVoterId} onValueChange={handleSelectVoter}>
+                <SelectTrigger className="text-xs">
+                  <SelectValue placeholder="-- Pilih Nama Pemilih (Opsional) --" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  <SelectItem value="">-- Tanpa Memilih Pemilih DPT --</SelectItem>
+                  {registeredVoters.map((v) => (
+                    <SelectItem key={v.id} value={v.id.toString()} className="text-xs">
+                      No. {v.dpt_number || "-"} | {v.full_name} ({v.address || "-"}) | NIK: {v.nik_masked || "-"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Gender Selection */}
             <div className="space-y-2">
               <Label className="text-slate-700 font-semibold text-xs">Jenis Kelamin Pemilih:</Label>

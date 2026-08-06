@@ -4,6 +4,7 @@ import { VotingSessionsService } from "../services/votingSessions";
 import { TpsService } from "../services/tps";
 import { ElectionsService } from "../services/elections";
 import { AuditLogsService } from "../services/auditLogs";
+import { VotersService } from "../services/voters";
 
 const router = Router();
 
@@ -27,7 +28,7 @@ function sanitizeSession(session: any) {
 // 1. POST /voting-sessions/unlock
 router.post("/unlock", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
   try {
-    const { electionId, tpsId, boothId, voterGender, isDisability } = req.body;
+    const { electionId, tpsId, boothId, voterGender, isDisability, voterId } = req.body;
 
     if (electionId === undefined || tpsId === undefined || boothId === undefined) {
       return res.status(400).json({ message: "electionId, tpsId, and boothId are required" });
@@ -74,6 +75,35 @@ router.post("/unlock", authenticateToken, requireRole(["ADMIN", "KPPS"]), async 
       return res.status(403).json({ message: "Access forbidden: KPPS cannot manage voting sessions for this TPS" });
     }
 
+    let finalGender = voterGender || 'L';
+    let finalDisability = isDisability ? 1 : 0;
+    let selectedVoter: any = null;
+
+    // Process DPT Voter if provided
+    if (voterId !== undefined && voterId !== null && voterId !== "") {
+      const vId = Number(voterId);
+      if (!isNaN(vId)) {
+        selectedVoter = VotersService.getById(vId);
+        if (!selectedVoter) {
+          return res.status(404).json({ message: "Pemilih DPT tidak ditemukan." });
+        }
+
+        if (selectedVoter.tps_id !== actualTpsId) {
+          return res.status(400).json({ message: `Pemilih DPT atas nama ${selectedVoter.full_name} terdaftar pada TPS lain (${selectedVoter.tps_code}).` });
+        }
+
+        if (selectedVoter.status === "VOTED") {
+          const votedTime = selectedVoter.voted_at ? new Date(selectedVoter.voted_at).toLocaleTimeString("id-ID") : "";
+          return res.status(400).json({
+            message: `Pemilih atas nama ${selectedVoter.full_name} (No. DPT: ${selectedVoter.dpt_number || "-"}) sudah menggunakan hak pilihnya pada pukul ${votedTime}.`
+          });
+        }
+
+        finalGender = selectedVoter.gender === "F" ? "P" : "L";
+        finalDisability = selectedVoter.is_disability ? 1 : 0;
+      }
+    }
+
     const expiresMinutesVal = process.env.VOTING_SESSION_EXPIRES_MINUTES;
     const expiresMinutes = expiresMinutesVal ? Number(expiresMinutesVal) : 5;
     const createdByUserId = req.user?.sub ? Number(req.user.sub) : null;
@@ -84,9 +114,14 @@ router.post("/unlock", authenticateToken, requireRole(["ADMIN", "KPPS"]), async 
       boothId: String(boothId),
       expiresMinutes,
       createdByUserId,
-      voterGender: voterGender || 'L',
-      isDisability: isDisability ? 1 : 0
+      voterGender: finalGender,
+      isDisability: finalDisability
     });
+
+    // Auto-mark voter as VOTED if selected
+    if (selectedVoter) {
+      VotersService.markAsVoted(selectedVoter.id);
+    }
 
     AuditLogsService.log({
       electionId: session.election_id,

@@ -124,7 +124,7 @@ export async function expireVoteSession(sessionId: number): Promise<void> {
 /**
  * Unlocks / activates a booth session for a voter.
  */
-export async function unlockBooth(boothId: string, voterGender = "L", isDisability = false, tokenAuth?: string): Promise<{ token: string; message: string }> {
+export async function unlockBooth(boothId: string, voterGender = "L", isDisability = false, tokenAuth?: string, voterId?: number | null): Promise<{ token: string; message: string }> {
   const token = tokenAuth || localStorage.getItem("token");
   const res = await fetch(`${API_BASE}/voting-sessions/unlock`, {
     method: "POST",
@@ -136,6 +136,7 @@ export async function unlockBooth(boothId: string, voterGender = "L", isDisabili
       boothId,
       voterGender,
       isDisability,
+      voterId,
     }),
   });
 

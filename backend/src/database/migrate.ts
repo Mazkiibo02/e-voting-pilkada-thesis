@@ -181,6 +181,34 @@ function migrate() {
       console.warn("Could not create kpps_members table:", e);
     }
 
+    // Ensure voters table exists
+    try {
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS voters (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          election_id INTEGER NOT NULL,
+          tps_id INTEGER NOT NULL,
+          dpt_number TEXT,
+          full_name TEXT NOT NULL,
+          address TEXT,
+          gender TEXT DEFAULT 'M',
+          is_disability INTEGER DEFAULT 0,
+          nik_masked TEXT,
+          status TEXT DEFAULT 'REGISTERED',
+          voted_at DATETIME,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (election_id) REFERENCES elections(id) ON DELETE CASCADE,
+          FOREIGN KEY (tps_id) REFERENCES tps(id) ON DELETE CASCADE
+        );
+        CREATE INDEX IF NOT EXISTS idx_voters_tps ON voters(tps_id);
+        CREATE INDEX IF NOT EXISTS idx_voters_status ON voters(tps_id, status);
+      `);
+      console.log("Ensured voters table exists.");
+    } catch (e) {
+      console.warn("Could not create voters table:", e);
+    }
+
     console.log("Database migrated successfully:", DB_PATH);
   } catch (err: any) {
     // If the file exists but is not a valid SQLite DB (corrupted or empty), remove and retry

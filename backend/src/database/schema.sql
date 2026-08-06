@@ -35,6 +35,27 @@ CREATE TABLE IF NOT EXISTS tps (
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_tps_code_nocase ON tps(tps_code COLLATE NOCASE);
 
+CREATE TABLE IF NOT EXISTS voters (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  election_id INTEGER NOT NULL,
+  tps_id INTEGER NOT NULL,
+  dpt_number VARCHAR(50),
+  full_name VARCHAR(50) NOT NULL,
+  address VARCHAR(100),
+  gender VARCHAR(10) DEFAULT 'M',
+  is_disability INTEGER DEFAULT 0,
+  nik_masked VARCHAR(50),
+  status VARCHAR(20) DEFAULT 'REGISTERED',
+  voted_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (election_id) REFERENCES elections(id) ON DELETE CASCADE,
+  FOREIGN KEY (tps_id) REFERENCES tps(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_voters_tps ON voters(tps_id);
+CREATE INDEX IF NOT EXISTS idx_voters_status ON voters(tps_id, status);
+
 CREATE TABLE IF NOT EXISTS candidate_pairs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   election_id INTEGER NOT NULL,
