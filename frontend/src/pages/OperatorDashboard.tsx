@@ -125,7 +125,7 @@ export const OperatorDashboard = () => {
 
   const handleSelectVoter = (voterIdStr: string) => {
     setSelectedVoterId(voterIdStr);
-    if (!voterIdStr) return;
+    if (!voterIdStr || voterIdStr === 'NONE') return;
     const found = registeredVoters.find(v => v.id.toString() === voterIdStr);
     if (found) {
       setVoterGender(found.gender === 'F' ? 'P' : 'L');
@@ -139,7 +139,7 @@ export const OperatorDashboard = () => {
     setIsActivating(true);
     try {
       const token = localStorage.getItem('token');
-      const vId = selectedVoterId ? Number(selectedVoterId) : null;
+      const vId = (selectedVoterId && selectedVoterId !== 'NONE') ? Number(selectedVoterId) : null;
       const res = await unlockBooth(selectedBooth.id, voterGender, isDisability, token || undefined, vId);
       
       const matchedVoter = registeredVoters.find(v => v.id === vId);
@@ -336,7 +336,7 @@ export const OperatorDashboard = () => {
                   <SelectValue placeholder="-- Pilih Nama Pemilih (Opsional) --" />
                 </SelectTrigger>
                 <SelectContent className="max-h-60">
-                  <SelectItem value="">-- Tanpa Memilih Pemilih DPT --</SelectItem>
+                  <SelectItem value="NONE">-- Tanpa Memilih Pemilih DPT --</SelectItem>
                   {registeredVoters.map((v) => (
                     <SelectItem key={v.id} value={v.id.toString()} className="text-xs">
                       No. {v.dpt_number || "-"} | {v.full_name} ({v.address || "-"}) | NIK: {v.nik_masked || "-"}
