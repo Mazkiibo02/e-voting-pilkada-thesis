@@ -451,10 +451,23 @@ const ChasilPreview = () => {
             )}
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button size="sm" onClick={handlePrint} disabled={!recapData} className="font-semibold">
               <FileDown className="mr-2 h-4 w-4" />
-              Cetak / Simpan PDF
+              Cetak Form C.Hasil (C1)
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={!recapData || selectedTpsId === null}
+              onClick={() => {
+                const token = localStorage.getItem('token');
+                window.open(`${import.meta.env.VITE_API_BASE_URL}/documents/tps/${selectedTpsId}/c2/preview?token=${token}`, '_blank');
+              }}
+              className="font-semibold border-amber-300 text-amber-900 bg-amber-50 hover:bg-amber-100"
+            >
+              <FileText className="mr-2 h-4 w-4 text-amber-700" />
+              Preview / Cetak Form C2-KWK (Keberatan Saksi)
             </Button>
           </div>
         </div>

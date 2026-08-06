@@ -170,8 +170,8 @@ router.get("/:documentId/download", authenticateToken, requireRole(["ADMIN", "KP
 
 /**
  * 4. GET /documents/tps/:tpsId
- * Purpose: Return document metadata for a TPS.
- * Allowed roles: ADMIN, KPPS
+ * Purpose: Return document metadata for a TPS (both C1 and C2).
+ * Allowed roles: ADMIN, KPPS, WITNESS, etc.
  */
 router.get("/tps/:tpsId", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR", "WITNESS", "KPPS_WITNESS"]), async (req: AuthRequest, res: Response) => {
   try {
@@ -187,6 +187,15 @@ router.get("/tps/:tpsId", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS
     const doc = DocumentsService.getByTpsId(tpsId);
     if (!doc) {
       return res.status(404).json({ message: "Document metadata not found for this TPS" });
+    }
+
+    let c2Doc = DocumentsService.getC2ByTpsId(tpsId);
+    if (!c2Doc) {
+      try {
+        c2Doc = DocumentsService.generateC2Form(tpsId);
+      } catch (err) {
+        console.warn("Auto-generate C2 failed on fetch:", err);
+      }
     }
 
     const blockchainRecord = db.prepare("SELECT * FROM blockchain_records WHERE tps_id = ?").get(tpsId) as any;
@@ -216,11 +225,67 @@ router.get("/tps/:tpsId", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS
           chainId: blockchainRecord.chain_id,
           finalizedAt: blockchainRecord.finalized_at
         } : null,
+        c2Document: c2Doc ? {
+          id: c2Doc.id,
+          status: c2Doc.status,
+          previewUrl: `/documents/tps/${tpsId}/c2/preview`,
+          downloadUrl: `/documents/${c2Doc.id}/download`,
+          signedDownloadUrl: c2Doc.uploaded_signed_file_path ? `/documents/${c2Doc.id}/signed-preview` : null,
+          signedFile: c2Doc.uploaded_signed_file_path ? {
+            originalName: c2Doc.signed_file_original_name,
+            mimeType: c2Doc.signed_file_mime_type,
+            sizeBytes: c2Doc.signed_file_size_bytes,
+            sha256: c2Doc.signed_file_hash_sha256,
+            uploadedAt: c2Doc.signed_file_uploaded_at,
+          } : null
+        } : null
       },
     });
   } catch (error: any) {
     console.error("Error retrieving document metadata:", error);
     return res.status(500).json({ message: "An unexpected error occurred" });
+  }
+});
+
+/**
+ * 4b. POST /documents/tps/:tpsId/c2/generate
+ */
+router.post("/tps/:tpsId/c2/generate", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR", "WITNESS", "KPPS_WITNESS"]), async (req: AuthRequest, res: Response) => {
+  try {
+    const tpsId = Number(req.params.tpsId);
+    if (isNaN(tpsId)) return res.status(400).json({ message: "Invalid TPS ID" });
+    if (!enforceTpsAccess(req, tpsId)) return res.status(403).json({ message: "Access forbidden" });
+
+    const c2Doc = DocumentsService.generateC2Form(tpsId, req.user?.sub ? Number(req.user.sub) : undefined);
+    return res.json({ message: "Dokumen C2 berhasil digenerate", data: c2Doc });
+  } catch (err: any) {
+    return res.status(500).json({ message: err.message || "Gagal generate Dokumen C2" });
+  }
+});
+
+/**
+ * 4c. GET /documents/tps/:tpsId/c2/preview
+ */
+router.get("/tps/:tpsId/c2/preview", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR", "WITNESS", "KPPS_WITNESS"]), async (req: AuthRequest, res: Response) => {
+  try {
+    const tpsId = Number(req.params.tpsId);
+    if (isNaN(tpsId)) return res.status(400).json({ message: "Invalid TPS ID" });
+    if (!enforceTpsAccess(req, tpsId)) return res.status(403).json({ message: "Access forbidden" });
+
+    let c2Doc = DocumentsService.getC2ByTpsId(tpsId);
+    if (!c2Doc || !c2Doc.generated_pdf_path) {
+      c2Doc = DocumentsService.generateC2Form(tpsId);
+    }
+
+    const absolutePath = path.resolve(__dirname, "../../", c2Doc.generated_pdf_path!);
+    if (!fs.existsSync(absolutePath)) {
+      return res.status(404).json({ message: "File HTML Dokumen C2 tidak ditemukan." });
+    }
+
+    res.setHeader("Content-Type", "text/html");
+    return res.sendFile(absolutePath);
+  } catch (err: any) {
+    return res.status(500).json({ message: "Gagal memuat preview Dokumen C2" });
   }
 });
 

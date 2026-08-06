@@ -1,5 +1,6 @@
 import db from "../database/connection";
 import { generateChasilHtml, ChasilTemplateData } from "./chasilTemplate";
+import { renderC2Template } from "./c2Template";
 import path from "path";
 import fs from "fs";
 import { createHash } from "crypto";
@@ -36,7 +37,12 @@ export class DocumentError extends Error {
 
 export const DocumentsService = {
   getByTpsId(tpsId: number): DocumentRecord | null {
-    const doc = db.prepare("SELECT * FROM documents WHERE tps_id = ? AND document_type = 'CHASIL_KWK_INSPIRED_RESULT_FORM'").get(tpsId) as unknown as DocumentRecord | undefined;
+    const doc = db.prepare("SELECT * FROM documents WHERE tps_id = ? AND (document_type = 'CHASIL_KWK_INSPIRED_RESULT_FORM' OR document_type = 'C1_CHASIL')").get(tpsId) as unknown as DocumentRecord | undefined;
+    return doc ?? null;
+  },
+
+  getC2ByTpsId(tpsId: number): DocumentRecord | null {
+    const doc = db.prepare("SELECT * FROM documents WHERE tps_id = ? AND document_type = 'C2_KEBERATAN'").get(tpsId) as unknown as DocumentRecord | undefined;
     return doc ?? null;
   },
 
@@ -224,6 +230,108 @@ export const DocumentsService = {
         // ignore
       }
       throw error;
+    }
+  },
+
+  generateC2Form(tpsId: number, requestingUserId?: number): DocumentRecord {
+    const tps = db.prepare("SELECT * FROM tps WHERE id = ?").get(tpsId) as any;
+    if (!tps) throw new DocumentError(404, "TPS tidak ditemukan");
+
+    const election = db.prepare("SELECT * FROM elections WHERE id = ?").get(tps.election_id) as any;
+    if (!election) throw new DocumentError(404, "Data Pemilihan tidak ditemukan");
+
+    const rawVerifications = db.prepare(`
+      SELECT wv.*, u.full_name as witness_name, cp.ballot_number, cp.candidate_name, cp.vice_candidate_name
+      FROM witness_verifications wv
+      LEFT JOIN users u ON wv.witness_user_id = u.id
+      LEFT JOIN candidate_pairs cp ON wv.candidate_pair_id = cp.id
+      WHERE wv.tps_id = ?
+      ORDER BY wv.id ASC
+    `).all(tpsId) as any[];
+
+    const objections = rawVerifications
+      .filter(v => v.status === 'REJECTED' || (v.note && v.note.trim() !== ''))
+      .map(v => ({
+        witnessName: v.witness_name || 'Saksi',
+        candidatePairName: v.candidate_name ? `${v.candidate_name} & ${v.vice_candidate_name}` : undefined,
+        ballotNumber: v.ballot_number,
+        status: v.status,
+        note: v.note,
+        timestamp: v.signed_at ? new Date(v.signed_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : undefined,
+        evidenceFileName: v.evidence_file_original_name
+      }));
+
+    const hasObjections = objections.length > 0;
+
+    const kppsOfficer = db.prepare(`
+      SELECT full_name as name, nik FROM users WHERE assigned_tps_id = ? AND role = 'KPPS' LIMIT 1
+    `).get(tpsId) as any;
+
+    const htmlContent = renderC2Template({
+      election: {
+        name: election.name,
+        election_type: election.election_type,
+        region_name: election.region_name,
+        voting_date: election.voting_date || election.created_at
+      },
+      tps: {
+        tps_number: tps.tps_number || String(tps.id),
+        tps_code: tps.tps_code,
+        province: tps.province || 'Jawa Tengah',
+        city_regency: tps.city_regency || 'Kota Tegal',
+        district: tps.district || 'Tegal Timur',
+        village: tps.village || 'Mintaragen',
+        address: tps.address || ''
+      },
+      objections,
+      kppsOfficer,
+      hasObjections
+    });
+
+    const now = new Date().toISOString();
+    const existingDoc = this.getC2ByTpsId(tpsId);
+    let documentId: number;
+
+    try {
+      db.exec("BEGIN TRANSACTION;");
+      if (existingDoc) {
+        documentId = existingDoc.id;
+        db.prepare(`
+          UPDATE documents
+          SET status = ?, generated_at = ?, updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `).run(hasObjections ? 'TERDAPAT_KEBERATAN' : 'NIHIL', now, documentId);
+      } else {
+        const res = db.prepare(`
+          INSERT INTO documents (election_id, tps_id, document_type, status, generated_at)
+          VALUES (?, ?, 'C2_KEBERATAN', ?, ?)
+        `).run(tps.election_id, tpsId, hasObjections ? 'TERDAPAT_KEBERATAN' : 'NIHIL', now);
+        documentId = Number(res.lastInsertRowid);
+      }
+
+      const dirPath = path.resolve(__dirname, "../../generated-documents");
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
+
+      const safeTpsCode = (tps.tps_code || `tps-${tpsId}`).replace(/[^a-zA-Z0-9_-]/g, "");
+      const fileName = `c2-kwk-keberatan-tps-${safeTpsCode}.html`;
+      const filePath = path.join(dirPath, fileName);
+      fs.writeFileSync(filePath, htmlContent, "utf8");
+
+      const relativePath = `generated-documents/${fileName}`;
+      db.prepare(`
+        UPDATE documents
+        SET generated_pdf_path = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(relativePath, documentId);
+
+      db.exec("COMMIT;");
+
+      return this.getById(documentId)!;
+    } catch (err) {
+      try { db.exec("ROLLBACK;"); } catch {}
+      throw err;
     }
   },
 

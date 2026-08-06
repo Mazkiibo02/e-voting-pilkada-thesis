@@ -504,6 +504,66 @@ const WitnessDashboard = () => {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Document C2 Info Card (Model C2-KWK) */}
+              {document && document.c2Document && (
+                <Card className="border-slate-200/80 shadow-sm overflow-hidden mt-6">
+                  <CardHeader className="bg-amber-50/70 border-b border-amber-100 pb-4">
+                    <CardTitle className="text-base text-slate-800 flex items-center justify-between">
+                      <span>Formulir Model C2-KWK (Keberatan Saksi & Catatan Kejadian Khusus)</span>
+                      <Badge variant="outline" className={`text-[10px] font-bold uppercase ${
+                        document.c2Document.status === 'TERDAPAT_KEBERATAN' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      }`}>
+                        {document.c2Document.status === 'TERDAPAT_KEBERATAN' ? 'TERDAPAT KEBERATAN ⚠️' : 'NIHIL (SETUJU) ✅'}
+                      </Badge>
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Formulir resmi catatan kejadian khusus dan/atau pernyataan keberatan saksi pada saat pemungutan & penghitungan suara TPS.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-6 space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border rounded-lg bg-white shadow-2xs">
+                      <div className="flex items-start gap-3">
+                        <div className="bg-amber-500/10 p-2.5 rounded-lg text-amber-700 mt-0.5">
+                          <FileText className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-sm text-slate-800">Dokumen Form C2-KWK Terkini</div>
+                          <div className="text-xs text-slate-500 font-medium mt-0.5">
+                            Status Dokumen: <span className="font-bold text-slate-700">{document.c2Document.status}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <Button variant="outline" size="sm" className="text-xs font-semibold border-slate-300" onClick={() => {
+                          const token = localStorage.getItem('token');
+                          window.open(`${import.meta.env.VITE_API_BASE_URL}${document.c2Document.previewUrl}?token=${token}`, "_blank");
+                        }}>
+                          Preview Form C2 HTML
+                        </Button>
+                        {document.c2Document.signedDownloadUrl && (
+                          <Button size="sm" className="text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => {
+                            const token = localStorage.getItem('token');
+                            window.open(`${import.meta.env.VITE_API_BASE_URL}${document.c2Document.signedDownloadUrl}?token=${token}`, "_blank");
+                          }}>
+                            <Download className="h-3.5 w-3.5 mr-1.5" />
+                            Unduh Pindai Fisik C2
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    {document.c2Document.signedFile && document.c2Document.signedFile.sha256 && (
+                      <div className="p-3 bg-amber-50/50 border border-amber-200/80 rounded-lg">
+                        <div className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">SHA-256 Hash Tamper Detection (Form C2 Fisik)</div>
+                        <div className="text-[11px] font-mono text-slate-800 mt-1 select-all break-all bg-white p-2 rounded border border-amber-200">
+                          {document.c2Document.signedFile.sha256}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             {/* Right Content - Witness Verification Form */}

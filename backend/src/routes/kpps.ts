@@ -347,6 +347,17 @@ router.post("/members", authenticateToken, requireRole(["ADMIN", "KPPS"]), async
       return res.status(400).json({ message: "Nama lengkap, posisi/jabatan, dan TPS wajib diisi." });
     }
 
+    // Check position uniqueness
+    const existingPosition = db.prepare(`
+      SELECT id, full_name FROM kpps_members WHERE tps_id = ? AND position = ?
+    `).get(assignedTpsId, position) as any;
+
+    if (existingPosition) {
+      return res.status(400).json({
+        message: `Posisi "${position}" sudah diisi oleh ${existingPosition.full_name} di TPS ini. Silakan pilih posisi KPPS yang lain.`
+      });
+    }
+
     const result = db.prepare(`
       INSERT INTO kpps_members (tps_id, full_name, nik, position, phone)
       VALUES (?, ?, ?, ?, ?)
@@ -368,6 +379,19 @@ router.put("/members/:id", authenticateToken, requireRole(["ADMIN", "KPPS"]), as
   try {
     const id = req.params.id;
     const { full_name, nik, position, phone } = req.body;
+
+    const currentMember = db.prepare(`SELECT tps_id FROM kpps_members WHERE id = ?`).get(Number(id)) as any;
+    if (currentMember) {
+      const duplicate = db.prepare(`
+        SELECT id, full_name FROM kpps_members WHERE tps_id = ? AND position = ? AND id != ?
+      `).get(currentMember.tps_id, position, Number(id)) as any;
+
+      if (duplicate) {
+        return res.status(400).json({
+          message: `Posisi "${position}" sudah diisi oleh ${duplicate.full_name} di TPS ini. Silakan pilih posisi KPPS yang lain.`
+        });
+      }
+    }
 
     db.prepare(`
       UPDATE kpps_members SET full_name = ?, nik = ?, position = ?, phone = ?, updated_at = CURRENT_TIMESTAMP

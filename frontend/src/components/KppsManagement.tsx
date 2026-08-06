@@ -290,15 +290,29 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
     }
   };
 
+  const KPPS_POSITIONS = [
+    "KPPS 2 (Operator DPT)",
+    "KPPS 3 (Operator Bilik 1)",
+    "KPPS 4 (Operator Bilik 2)",
+    "KPPS 5 (Tinta & Pintu Keluar)"
+  ];
+
   // Member CRUD handlers
   const handleOpenAddMember = () => {
     let defaultTps = selectedTpsId !== "ALL" ? selectedTpsId : (userAssignedTpsId ? userAssignedTpsId.toString() : (tpsList[0]?.id?.toString() || ''));
+    
+    const takenPositions = kppsMembers
+      .filter(m => m.tps_id.toString() === defaultTps)
+      .map(m => m.position);
+
+    const firstAvailable = KPPS_POSITIONS.find(p => !takenPositions.includes(p)) || KPPS_POSITIONS[0];
+
     setMemberForm({
       id: null,
       tps_id: defaultTps,
       full_name: '',
       nik: '',
-      position: 'KPPS 2 (Operator DPT)',
+      position: firstAvailable,
       phone: ''
     });
     setIsMemberModalOpen(true);
@@ -701,10 +715,23 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
                   <SelectValue placeholder="Pilih Jabatan" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="KPPS 2 (Operator DPT)">KPPS 2 (Operator DPT)</SelectItem>
-                  <SelectItem value="KPPS 3 (Operator Bilik 1)">KPPS 3 (Operator Bilik 1)</SelectItem>
-                  <SelectItem value="KPPS 4 (Operator Bilik 2)">KPPS 4 (Operator Bilik 2)</SelectItem>
-                  <SelectItem value="KPPS 5 (Tinta & Pintu Keluar)">KPPS 5 (Tinta & Pintu Keluar)</SelectItem>
+                  {KPPS_POSITIONS.map(pos => {
+                    const isTaken = kppsMembers.some(
+                      m => m.tps_id.toString() === memberForm.tps_id && 
+                           m.position === pos && 
+                           m.id !== memberForm.id
+                    );
+                    return (
+                      <SelectItem 
+                        key={pos} 
+                        value={pos} 
+                        disabled={isTaken}
+                        className={isTaken ? "opacity-50 text-slate-400 font-normal bg-slate-50 cursor-not-allowed" : "font-semibold"}
+                      >
+                        {pos} {isTaken ? " (Sudah Terisi 🚫)" : ""}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
