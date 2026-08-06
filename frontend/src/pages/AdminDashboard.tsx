@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download, Upload, Trash2, Edit, Building, UserCheck, Flag } from 'lucide-react';
 import { WitnessManagement } from '@/components/WitnessManagement';
 import { KppsManagement } from '@/components/KppsManagement';
+import { VoterManagement } from '@/components/VoterManagement';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -970,6 +971,15 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* DPT Voter Management Card */}
+        {(currentUser?.role === 'ADMIN' || currentUser?.role === 'KPPS') && (
+          <VoterManagement
+            selectedTpsCode={selectedTps}
+            userRole={currentUser?.role}
+            userAssignedTpsId={currentUser?.assignedTpsId}
+          />
+        )}
 
         {/* KPPS Account Management Card */}
         {(currentUser?.role === 'ADMIN' || currentUser?.role === 'KPPS') && (

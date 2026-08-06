@@ -76,11 +76,16 @@ const AuditLogs = () => {
         }
       });
 
-      if (logsRes.status === 401 || logsRes.status === 403) {
+      if (logsRes.status === 401) {
         toast.error("Sesi Anda tidak valid atau telah berakhir.");
-        localStorage.removeItem('token');
-        localStorage.removeItem('isAdmin');
+        localStorage.clear();
         navigate('/login');
+        return;
+      }
+
+      if (logsRes.status === 403) {
+        toast.error("Akses ditolak: Peran Anda tidak memiliki izin melihat log aktivitas ini.");
+        setLoading(false);
         return;
       }
 
@@ -89,7 +94,7 @@ const AuditLogs = () => {
       }
 
       const logsData = await logsRes.json();
-      setLogs(logsData.items);
+      setLogs(logsData.items || []);
     } catch (err: any) {
       console.error("Error fetching logs:", err);
       toast.error("Gagal memuat log aktivitas dari backend.");
@@ -99,9 +104,8 @@ const AuditLogs = () => {
   };
 
   useEffect(() => {
-    const isAdmin = localStorage.getItem('isAdmin');
     const token = localStorage.getItem('token');
-    if (!isAdmin || !token) {
+    if (!token) {
       navigate('/login');
       return;
     }

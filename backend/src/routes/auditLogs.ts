@@ -5,13 +5,17 @@ import { AuditLogsService } from "../services/auditLogs";
 const router = Router();
 
 // GET /audit-logs
-// Allowed roles: ADMIN
-router.get("/", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequest, res: Response) => {
+// Allowed roles: ADMIN, KPPS
+router.get("/", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
   try {
     const action = req.query.action ? String(req.query.action) : undefined;
     const entityType = req.query.entityType ? String(req.query.entityType) : undefined;
     const actorRole = req.query.actorRole ? String(req.query.actorRole) : undefined;
-    const tpsId = req.query.tpsId ? Number(req.query.tpsId) : undefined;
+    let tpsId = req.query.tpsId ? Number(req.query.tpsId) : undefined;
+
+    if (req.user?.role === "KPPS" && req.user.assignedTpsId) {
+      tpsId = req.user.assignedTpsId;
+    }
 
     const limit = req.query.limit ? Number(req.query.limit) : 100;
     const offset = req.query.offset ? Number(req.query.offset) : 0;
