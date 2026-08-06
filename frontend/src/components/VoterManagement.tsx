@@ -14,9 +14,11 @@ interface VoterManagementProps {
   selectedTpsCode?: string;
   userRole?: string;
   userAssignedTpsId?: number | null;
+  readOnly?: boolean;
 }
 
-export const VoterManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }: VoterManagementProps) => {
+export const VoterManagement = ({ selectedTpsCode, userRole, userAssignedTpsId, readOnly }: VoterManagementProps) => {
+  const isReadOnly = readOnly || userRole === 'KPPS_OPERATOR';
   const [voters, setVoters] = useState<any[]>([]);
   const [stats, setStats] = useState<any>({ total: 0, voted: 0, registered: 0, percentage: 0 });
   const [tpsList, setTpsList] = useState<any[]>([]);
@@ -47,7 +49,7 @@ export const VoterManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }
   }, []);
 
   useEffect(() => {
-    if (userRole === 'KPPS' && userAssignedTpsId) {
+    if ((userRole === 'KPPS' || userRole === 'KPPS_OPERATOR') && userAssignedTpsId) {
       setSelectedTpsId(userAssignedTpsId.toString());
       return;
     }
@@ -241,29 +243,35 @@ export const VoterManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }
       <CardHeader className="pb-3 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <CardTitle className="text-lg font-bold text-slate-800 flex items-center">
-            <UserCheck className="w-5 h-5 mr-2 text-blue-600" /> Manajemen Daftar Pemilih Tetap (DPT TPS)
+            <UserCheck className="w-5 h-5 mr-2 text-blue-600" /> {isReadOnly ? "Daftar Pemilih Tetap TPS (DPT Viewer)" : "Manajemen Daftar Pemilih Tetap (DPT TPS)"}
           </CardTitle>
           <CardDescription>
-            Kelola data pemilih per TPS, verifikasi kehadiran, dan pantau status *Auto-Checklist* bilik suara.
+            {isReadOnly
+              ? "Pantau status kehadiran dan Auto-Checklist pemilih TPS secara real-time."
+              : "Kelola data pemilih per TPS, verifikasi kehadiran, dan pantau status Auto-Checklist bilik suara."}
           </CardDescription>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button size="sm" variant="outline" className="font-semibold text-blue-600 border-blue-200 hover:bg-blue-50" onClick={handleDownloadTemplate}>
-            <Download className="mr-1.5 h-3.5 w-3.5" /> Template Excel
-          </Button>
-          
-          <div className="relative">
-            <input type="file" accept=".xlsx, .xls" className="hidden" ref={fileInputRef} onChange={handleImportExcel} />
-            <Button size="sm" variant="outline" className="font-semibold text-green-600 border-green-200 hover:bg-green-50" onClick={() => fileInputRef.current?.click()} disabled={isImporting}>
-              {isImporting ? <RotateCcw className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <FileSpreadsheet className="mr-1.5 h-3.5 w-3.5" />}
-              Import Excel DPT
-            </Button>
-          </div>
+          {!isReadOnly && (
+            <>
+              <Button size="sm" variant="outline" className="font-semibold text-blue-600 border-blue-200 hover:bg-blue-50" onClick={handleDownloadTemplate}>
+                <Download className="mr-1.5 h-3.5 w-3.5" /> Template Excel
+              </Button>
+              
+              <div className="relative">
+                <input type="file" accept=".xlsx, .xls" className="hidden" ref={fileInputRef} onChange={handleImportExcel} />
+                <Button size="sm" variant="outline" className="font-semibold text-green-600 border-green-200 hover:bg-green-50" onClick={() => fileInputRef.current?.click()} disabled={isImporting}>
+                  {isImporting ? <RotateCcw className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <FileSpreadsheet className="mr-1.5 h-3.5 w-3.5" />}
+                  Import Excel DPT
+                </Button>
+              </div>
 
-          <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-xs" onClick={handleOpenAdd}>
-            <Plus className="mr-1.5 h-3.5 w-3.5" /> Tambah Pemilih DPT
-          </Button>
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-xs" onClick={handleOpenAdd}>
+                <Plus className="mr-1.5 h-3.5 w-3.5" /> Tambah Pemilih DPT
+              </Button>
+            </>
+          )}
         </div>
       </CardHeader>
 
@@ -369,20 +377,20 @@ export const VoterManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }
                 <TableHead className="w-36 font-bold text-center">NIK (Masked)</TableHead>
                 <TableHead className="w-36 font-bold text-center">TPS</TableHead>
                 <TableHead className="w-36 font-bold text-center">Status Hak Pilih</TableHead>
-                <TableHead className="w-24 font-bold text-center">Aksi</TableHead>
+                {!isReadOnly && <TableHead className="w-24 font-bold text-center">Aksi</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-slate-500">
+                  <TableCell colSpan={isReadOnly ? 8 : 9} className="text-center py-8 text-slate-500">
                     <RotateCcw className="w-5 h-5 animate-spin inline mr-2 text-blue-600" /> Memuat data DPT pemilih...
                   </TableCell>
                 </TableRow>
               ) : voters.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-8 text-slate-500">
-                    Belum ada data DPT pemilih. Klik <span className="font-bold text-blue-600">"Import Excel DPT"</span> atau <span className="font-bold text-blue-600">"Tambah Pemilih DPT"</span>.
+                  <TableCell colSpan={isReadOnly ? 8 : 9} className="text-center py-8 text-slate-500">
+                    Belum ada data DPT pemilih terdaftar.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -435,16 +443,18 @@ export const VoterManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex items-center justify-center space-x-1">
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-slate-600 hover:text-blue-600" onClick={() => handleOpenEdit(voter)}>
-                          <Edit className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-slate-600 hover:text-red-600" onClick={() => handleDelete(voter.id, voter.full_name)}>
-                          <Trash className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                    {!isReadOnly && (
+                      <TableCell className="text-center">
+                        <div className="flex items-center justify-center space-x-1">
+                          <Button size="icon" variant="ghost" className="h-7 w-7 text-slate-600 hover:text-blue-600" onClick={() => handleOpenEdit(voter)}>
+                            <Edit className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-7 w-7 text-slate-600 hover:text-red-600" onClick={() => handleDelete(voter.id, voter.full_name)}>
+                            <Trash className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))
               )}

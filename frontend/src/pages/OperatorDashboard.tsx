@@ -8,8 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from 'sonner';
-import { Shield, Lock, Unlock, LogOut, CheckCircle, XCircle, RotateCcw, Vote, UserCheck, AlertCircle, RefreshCw } from 'lucide-react';
+import { Shield, Lock, Unlock, LogOut, CheckCircle, XCircle, RotateCcw, Vote, UserCheck, AlertCircle, RefreshCw, Search } from 'lucide-react';
 import { unlockBooth, checkBoothStatus, resetBoothSession } from '@/services/boothApi';
+import { VoterManagement } from '@/components/VoterManagement';
 
 interface BoothInfo {
   id: string;
@@ -33,9 +34,21 @@ export const OperatorDashboard = () => {
   const [voterGender, setVoterGender] = useState<'L' | 'P'>('L');
   const [isDisability, setIsDisability] = useState(false);
   const [selectedVoterId, setSelectedVoterId] = useState<string>('');
+  const [voterSearchQuery, setVoterSearchQuery] = useState<string>('');
   const [registeredVoters, setRegisteredVoters] = useState<any[]>([]);
   const [isActivating, setIsActivating] = useState(false);
   const [isResetting, setIsResetting] = useState<string | null>(null);
+
+  const filteredModalVoters = registeredVoters.filter(v => {
+    if (!voterSearchQuery || voterSearchQuery.trim() === '') return true;
+    const q = voterSearchQuery.toLowerCase().trim();
+    return (
+      (v.dpt_number && String(v.dpt_number).toLowerCase().includes(q)) ||
+      (v.full_name && v.full_name.toLowerCase().includes(q)) ||
+      (v.address && v.address.toLowerCase().includes(q)) ||
+      (v.nik_masked && v.nik_masked.toLowerCase().includes(q))
+    );
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -117,6 +130,7 @@ export const OperatorDashboard = () => {
     setVoterGender('L');
     setIsDisability(false);
     setSelectedVoterId('');
+    setVoterSearchQuery('');
     if (user?.assignedTpsId) {
       fetchRegisteredVoters(user.assignedTpsId);
     }
@@ -310,6 +324,15 @@ export const OperatorDashboard = () => {
             );
           })}
         </div>
+
+        {/* DPT Viewer for Operator */}
+        <div className="mt-8">
+          <VoterManagement
+            readOnly={true}
+            userRole={user?.role}
+            userAssignedTpsId={user?.assignedTpsId}
+          />
+        </div>
       </main>
 
       {/* Modal Dialog for Booth Activation */}
@@ -331,17 +354,35 @@ export const OperatorDashboard = () => {
                 <span>Pilih Pemilih dari DPT TPS:</span>
                 <span className="text-[10px] text-blue-600 font-normal">Auto-Checklist ✅</span>
               </Label>
+              
+              {/* Quick Search Input */}
+              <div className="relative mb-1">
+                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+                <Input
+                  placeholder="Cari No. DPT / Nama / Alamat (e.g. 042, Budi)..."
+                  className="pl-8 text-xs h-8 bg-slate-50 border-slate-200"
+                  value={voterSearchQuery}
+                  onChange={(e) => setVoterSearchQuery(e.target.value)}
+                />
+              </div>
+
               <Select value={selectedVoterId} onValueChange={handleSelectVoter}>
                 <SelectTrigger className="text-xs">
                   <SelectValue placeholder="-- Pilih Nama Pemilih (Opsional) --" />
                 </SelectTrigger>
                 <SelectContent className="max-h-60">
                   <SelectItem value="NONE">-- Tanpa Memilih Pemilih DPT --</SelectItem>
-                  {registeredVoters.map((v) => (
-                    <SelectItem key={v.id} value={v.id.toString()} className="text-xs">
-                      No. {v.dpt_number || "-"} | {v.full_name} ({v.address || "-"}) | NIK: {v.nik_masked || "-"}
-                    </SelectItem>
-                  ))}
+                  {filteredModalVoters.length === 0 ? (
+                    <div className="py-3 px-3 text-xs text-slate-500 text-center">
+                      Tidak ditemukan pemilih yang cocok dengan "{voterSearchQuery}"
+                    </div>
+                  ) : (
+                    filteredModalVoters.map((v) => (
+                      <SelectItem key={v.id} value={v.id.toString()} className="text-xs">
+                        No. {v.dpt_number || "-"} | {v.full_name} ({v.address || "-"}) | NIK: {v.nik_masked || "-"}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
