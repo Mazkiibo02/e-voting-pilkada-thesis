@@ -568,7 +568,21 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
 
         {/* TAB 3: OPERATOR BILIK (`KPPS_OPERATOR`) */}
         {activeTab === 'OPERATORS' && (
-          <div className="rounded-md border mt-4 overflow-hidden">
+          <div className="space-y-3 mt-4">
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-3 text-xs">
+              <div>
+                <p className="font-bold text-blue-900 flex items-center">
+                  <Monitor className="w-4 h-4 mr-1.5 text-blue-600" /> Akses Dasbor Operator Bilik Suara (`/operator`)
+                </p>
+                <p className="text-blue-700 mt-0.5">
+                  Operator Bilik Suara dapat langsung login menggunakan Email & Password di bawah untuk masuk ke layar khusus <strong>/operator</strong> (membuka Bilik 1, 2, 3 secara instan).
+                </p>
+              </div>
+              <Button size="sm" onClick={() => window.open('/operator', '_blank')} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shrink-0">
+                <Monitor className="w-3.5 h-3.5 mr-1.5" /> Buka Dasbor Operator (/operator)
+              </Button>
+            </div>
+            <div className="rounded-md border overflow-hidden">
             <Table>
               <TableHeader className="bg-slate-50">
                 <TableRow>
@@ -610,7 +624,8 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
               </TableBody>
             </Table>
           </div>
-        )}
+        </div>
+      )}
       </CardContent>
 
       {/* Edit Ketua KPPS Modal */}

@@ -8,7 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 
 import { toast } from 'sonner';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download, Upload, Trash2, Edit, Building, UserCheck, Flag } from 'lucide-react';
+import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download, Upload, Trash2, Edit, Building, UserCheck, Flag, Monitor } from 'lucide-react';
 import { WitnessManagement } from '@/components/WitnessManagement';
 import { KppsManagement } from '@/components/KppsManagement';
 import { VoterManagement } from '@/components/VoterManagement';
@@ -852,6 +852,11 @@ const AdminDashboard = () => {
                   <Button size="sm" onClick={() => navigate('/admin/chasil-preview')} className="font-semibold">
                 <Shield className="mr-2 h-4 w-4" />
                 Preview C.Hasil
+              </Button>
+              
+              <Button size="sm" variant="outline" onClick={() => window.open('/operator', '_blank')} className="font-semibold text-blue-700 border-blue-200 hover:bg-blue-50">
+                <Monitor className="mr-2 h-4 w-4" />
+                Dasbor Operator
               </Button>
               
               <Dialog open={isUnlockModalOpen} onOpenChange={setIsUnlockModalOpen}>
