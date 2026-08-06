@@ -3,6 +3,7 @@ import { authenticateToken, requireRole, AuthRequest } from "../middleware/auth"
 import { TpsService, TPS } from "../services/tps";
 import { ElectionsService } from "../services/elections";
 import { AuditLogsService } from "../services/auditLogs";
+import { VotersService } from "../services/voters";
 import multer from "multer";
 import * as xlsx from "xlsx";
 import db from "../database/connection";
@@ -471,6 +472,8 @@ router.post("/", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequ
       female_dpt: femaleDpt,
       registered_voters_total: regTotal,
     });
+
+    VotersService.syncPlaceholderVoters(newTps.id);
 
     return res.status(201).json({ data: newTps });
   } catch (error: any) {

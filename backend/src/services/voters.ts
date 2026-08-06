@@ -30,7 +30,64 @@ export function maskNik(nik: any): string {
 }
 
 export const VotersService = {
+  syncPlaceholderVoters(tpsId: number): void {
+    try {
+      const tpsStmt = db.prepare("SELECT * FROM tps WHERE id = ?");
+      const tps = tpsStmt.get(tpsId) as any;
+      if (!tps || !tps.dpt_count || tps.dpt_count <= 0) return;
+
+      const countStmt = db.prepare("SELECT COUNT(*) as count FROM voters WHERE tps_id = ?");
+      const currentCount = (countStmt.get(tpsId) as any)?.count || 0;
+
+      // If voters already exist for this TPS, no need to auto-generate placeholders
+      if (currentCount > 0) return;
+
+      const totalTarget = Number(tps.dpt_count);
+      const maleTarget = tps.male_count && Number(tps.male_count) > 0 ? Number(tps.male_count) : Math.ceil(totalTarget * 0.5);
+      const electionId = tps.election_id || 1;
+      const disabilityCount = tps.disability_count ? Number(tps.disability_count) : 0;
+
+      const insertStmt = db.prepare(`
+        INSERT INTO voters (election_id, tps_id, dpt_number, full_name, address, gender, is_disability, nik_masked, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'REGISTERED')
+      `);
+
+      db.exec("BEGIN TRANSACTION");
+      try {
+        for (let i = 1; i <= totalTarget; i++) {
+          const dptNum = String(i).padStart(3, "0");
+          const isMale = i <= maleTarget;
+          const gender = isMale ? "M" : "F";
+          const genderLabel = isMale ? "L" : "P";
+          const fullName = `Pemilih DPT ${dptNum} (${genderLabel})`;
+          const address = tps.address ? `${tps.address}` : `${tps.village || tps.district || 'Kelurahan'}`;
+          const nikSimulated = `3328${String(tpsId).padStart(2, "0")}${String(i).padStart(6, "0")}0001`;
+          const nikMasked = maskNik(nikSimulated);
+          const isDisability = (disabilityCount > 0 && i <= disabilityCount) ? 1 : 0;
+
+          insertStmt.run(electionId, tpsId, dptNum, fullName, address, gender, isDisability, nikMasked);
+        }
+        db.exec("COMMIT");
+      } catch (err) {
+        db.exec("ROLLBACK");
+        throw err;
+      }
+    } catch (e) {
+      console.error(`Failed to sync placeholder voters for TPS ${tpsId}:`, e);
+    }
+  },
+
   getAll(tpsId?: number, search?: string, status?: string): Voter[] {
+    if (tpsId) {
+      this.syncPlaceholderVoters(tpsId);
+    } else {
+      // Sync all open TPS that have dpt_count > 0 but empty voters table
+      try {
+        const allTps = db.prepare("SELECT id FROM tps WHERE dpt_count > 0").all() as any[];
+        allTps.forEach(t => this.syncPlaceholderVoters(t.id));
+      } catch (e) {}
+    }
+
     let query = `
       SELECT v.*, t.tps_code, t.address as tps_address 
       FROM voters v
@@ -169,6 +226,15 @@ export const VotersService = {
   },
 
   getStats(tpsId?: number) {
+    if (tpsId) {
+      this.syncPlaceholderVoters(tpsId);
+    } else {
+      try {
+        const allTps = db.prepare("SELECT id FROM tps WHERE dpt_count > 0").all() as any[];
+        allTps.forEach(t => this.syncPlaceholderVoters(t.id));
+      } catch (e) {}
+    }
+
     let query = "SELECT COUNT(*) as total, SUM(CASE WHEN status = 'VOTED' THEN 1 ELSE 0 END) as voted FROM voters WHERE 1=1";
     const params: any[] = [];
 
