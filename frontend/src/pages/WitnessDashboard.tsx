@@ -472,11 +472,17 @@ const WitnessDashboard = () => {
                         </div>
                       </div>
                       <div className="flex gap-2 shrink-0">
-                        <Button variant="outline" size="sm" className="text-xs font-semibold" onClick={() => window.open(`${import.meta.env.VITE_API_BASE_URL}${document.previewUrl}`, "_blank")}>
+                        <Button variant="outline" size="sm" className="text-xs font-semibold" onClick={() => {
+                          const token = localStorage.getItem('token');
+                          window.open(`${import.meta.env.VITE_API_BASE_URL}${document.previewUrl}?token=${token}`, "_blank");
+                        }}>
                           Preview Form HTML
                         </Button>
                         {document.signedDownloadUrl && (
-                          <Button size="sm" className="text-xs font-semibold bg-primary hover:bg-primary/90" onClick={() => window.open(`${import.meta.env.VITE_API_BASE_URL}${document.signedDownloadUrl}`, "_blank")}>
+                          <Button size="sm" className="text-xs font-semibold bg-primary hover:bg-primary/90" onClick={() => {
+                            const token = localStorage.getItem('token');
+                            window.open(`${import.meta.env.VITE_API_BASE_URL}${document.signedDownloadUrl}?token=${token}`, "_blank");
+                          }}>
                             <Download className="h-3.5 w-3.5 mr-1.5" />
                             Unduh Pindai Fisik
                           </Button>
@@ -551,7 +557,10 @@ const WitnessDashboard = () => {
                               {verification.evidenceFileOriginalName || "evidence.pdf"}
                             </span>
                           </div>
-                          <Button size="sm" variant="ghost" className="h-8 text-primary hover:text-primary-foreground text-xs font-bold" onClick={() => window.open(`${import.meta.env.VITE_API_BASE_URL}/witness/evidence/${verification.id}`, "_blank")}>
+                          <Button size="sm" variant="ghost" className="h-8 text-primary hover:text-primary-foreground text-xs font-bold" onClick={() => {
+                            const token = localStorage.getItem('token');
+                            window.open(`${import.meta.env.VITE_API_BASE_URL}/witness/evidence/${verification.id}?token=${token}`, "_blank");
+                          }}>
                             <Download className="h-3.5 w-3.5 mr-1" />
                             Unduh
                           </Button>

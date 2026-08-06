@@ -9,9 +9,9 @@ import { AuditLogsService } from "../services/auditLogs";
 
 const router = Router();
 
-// Helper to check if KPPS user has access to a specific TPS ID
+// Helper to check if user has access to a specific TPS ID
 const enforceTpsAccess = (req: AuthRequest, tpsId: number): boolean => {
-  if (req.user?.role === "KPPS") {
+  if (req.user?.role === "KPPS" || req.user?.role === "KPPS_OPERATOR" || req.user?.role === "WITNESS" || req.user?.role === "KPPS_WITNESS") {
     return req.user.assignedTpsId === tpsId;
   }
   return true; // ADMIN can access any TPS
@@ -80,7 +80,7 @@ router.post("/tps/:tpsId/chasil/generate", authenticateToken, requireRole(["ADMI
  * Purpose: Return a print-ready HTML preview of the generated C.Hasil-KWK-inspired form.
  * Allowed roles: ADMIN, KPPS
  */
-router.get("/tps/:tpsId/chasil/preview", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+router.get("/tps/:tpsId/chasil/preview", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR", "WITNESS", "KPPS_WITNESS"]), async (req: AuthRequest, res: Response) => {
   try {
     const tpsId = Number(req.params.tpsId);
     if (isNaN(tpsId)) {
@@ -119,7 +119,7 @@ router.get("/tps/:tpsId/chasil/preview", authenticateToken, requireRole(["ADMIN"
  * Purpose: Download the generated print-ready document.
  * Allowed roles: ADMIN, KPPS
  */
-router.get("/:documentId/download", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+router.get("/:documentId/download", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR", "WITNESS", "KPPS_WITNESS"]), async (req: AuthRequest, res: Response) => {
   try {
     const docId = Number(req.params.documentId);
     if (isNaN(docId)) {
@@ -173,7 +173,7 @@ router.get("/:documentId/download", authenticateToken, requireRole(["ADMIN", "KP
  * Purpose: Return document metadata for a TPS.
  * Allowed roles: ADMIN, KPPS
  */
-router.get("/tps/:tpsId", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+router.get("/tps/:tpsId", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR", "WITNESS", "KPPS_WITNESS"]), async (req: AuthRequest, res: Response) => {
   try {
     const tpsId = Number(req.params.tpsId);
     if (isNaN(tpsId)) {
@@ -332,7 +332,7 @@ router.post("/:documentId/signed-upload", authenticateToken, requireRole(["ADMIN
  * Purpose: Download the uploaded signed result document.
  * Allowed roles: ADMIN, KPPS
  */
-router.get("/:documentId/signed-download", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+router.get("/:documentId/signed-download", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR", "WITNESS", "KPPS_WITNESS"]), async (req: AuthRequest, res: Response) => {
   try {
     const docId = Number(req.params.documentId);
     if (isNaN(docId)) {
@@ -380,7 +380,7 @@ router.get("/:documentId/signed-download", authenticateToken, requireRole(["ADMI
  * Purpose: Preview the uploaded signed result document.
  * Allowed roles: ADMIN, KPPS
  */
-router.get("/:documentId/signed-preview", authenticateToken, requireRole(["ADMIN", "KPPS"]), async (req: AuthRequest, res: Response) => {
+router.get("/:documentId/signed-preview", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR", "WITNESS", "KPPS_WITNESS"]), async (req: AuthRequest, res: Response) => {
   try {
     const docId = Number(req.params.documentId);
     if (isNaN(docId)) {

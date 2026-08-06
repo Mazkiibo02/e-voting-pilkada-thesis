@@ -29,13 +29,14 @@ export const authenticateToken = (
   res: Response,
   next: NextFunction
 ) => {
+  let token: string | undefined;
+
   const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    return res.status(401).json({ message: "Authentication token is required" });
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+  } else if (req.query.token && typeof req.query.token === "string") {
+    token = req.query.token;
   }
-
-  const token = authHeader.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "Authentication token is required" });
