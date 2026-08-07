@@ -375,7 +375,7 @@ const ChasilPreview = () => {
       })),
       officerList: tpsDetails.officers && tpsDetails.officers.length > 0 
         ? tpsDetails.officers 
-        : [{ name: activeKppsName, nik: activeKppsNik, phone: "-", role: "Ketua KPPS" }],
+        : [{ name: activeKppsName || `Ketua KPPS ${tpsDetails.tps_code || ''}`, nik: activeKppsNik || "-", phone: "-", role: "KPPS 1 (Ketua TPS)" }],
       digitalSignatures: [
         {
           file: `crop_pilkada-${tpsDetails.tps_code}_R_2024-11-27_16-46-34_4668646648330051681.jpg`,

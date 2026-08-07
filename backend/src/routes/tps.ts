@@ -314,20 +314,59 @@ router.get("/:id", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERAT
       return res.status(404).json({ message: "TPS not found" });
     }
 
-    const kppsUser = db.prepare("SELECT full_name, name, nik, device_id, public_key FROM users WHERE role = 'KPPS' AND assigned_tps_id = ?").get(id) as any;
+    const kppsUser = db.prepare("SELECT full_name, name, nik, phone, device_id, public_key FROM users WHERE role = 'KPPS' AND assigned_tps_id = ?").get(id) as any;
     tps.kppsOfficer = {
-      name: kppsUser?.full_name || kppsUser?.name || "ANDZANI FARISAH ZATIL H.",
-      nik: kppsUser?.nik || "3328185310960003",
-      device_id: kppsUser?.device_id || "e533af4304cb53ad",
-      public_key: kppsUser?.public_key || "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEeRV1c20/qPBAnsHtw3hreBOWyDOq4ys4SG5fMY97lL69N8ofLM3QMEWjRra748ZARscAqjvCM+gQ6ux7DSIkPw=="
+      name: kppsUser?.full_name || kppsUser?.name || `Ketua KPPS ${tps.tps_code || ''}`.trim(),
+      nik: kppsUser?.nik || "-",
+      phone: kppsUser?.phone || "-",
+      device_id: kppsUser?.device_id || `DEV-KPPS-${id}`,
+      public_key: kppsUser?.public_key || "-"
     };
 
-    const officers = db.prepare("SELECT full_name, name, nik, role, affiliation FROM users WHERE assigned_tps_id = ? AND role IN ('KPPS', 'WITNESS', 'PANWAS')").all(id) as any[];
-    tps.officers = officers.map(o => ({
-      name: o.full_name || o.name,
-      nik: o.nik,
-      role: o.affiliation || o.role
-    }));
+    // Build real list of officers & witnesses for TPS
+    const officersList: Array<{ name: string; nik: string; phone: string; role: string }> = [
+      {
+        name: tps.kppsOfficer.name,
+        nik: tps.kppsOfficer.nik,
+        phone: tps.kppsOfficer.phone,
+        role: "KPPS 1 (Ketua TPS)"
+      }
+    ];
+
+    // Fetch Anggota KPPS (2-5)
+    const members = db.prepare("SELECT full_name as name, nik, phone, position as role FROM kpps_members WHERE tps_id = ? ORDER BY id ASC").all(id) as any[];
+    members.forEach(m => {
+      officersList.push({
+        name: m.name,
+        nik: m.nik || "-",
+        phone: m.phone || "-",
+        role: m.role || "Anggota KPPS"
+      });
+    });
+
+    // Fetch Real Witnesses
+    const witnesses = db.prepare(`
+      SELECT 
+        COALESCE(u.full_name, u.name) as name, 
+        u.nik, 
+        u.phone, 
+        cp.ballot_number
+      FROM users u
+      LEFT JOIN candidate_pairs cp ON u.candidate_pair_id = cp.id
+      WHERE u.assigned_tps_id = ? AND u.role IN ('WITNESS', 'KPPS_WITNESS')
+      ORDER BY cp.ballot_number ASC, u.id ASC
+    `).all(id) as any[];
+
+    witnesses.forEach(w => {
+      officersList.push({
+        name: w.name || 'Saksi Paslon',
+        nik: w.nik || '-',
+        phone: w.phone || '-',
+        role: w.ballot_number ? `Saksi Paslon ${w.ballot_number}` : 'Saksi Paslon'
+      });
+    });
+
+    tps.officers = officersList;
 
     return res.json({ data: tps });
   } catch (error: any) {

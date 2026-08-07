@@ -35,12 +35,19 @@ export interface ChasilTemplateData {
   kppsOfficer?: {
     name: string;
     nik: string;
+    phone?: string;
   };
   kppsMembers?: Array<{
     fullName: string;
     nik?: string;
     position: string;
     phone?: string;
+  }>;
+  witnesses?: Array<{
+    name: string;
+    nik?: string;
+    phone?: string;
+    role: string;
   }>;
   voterGenderBreakdown?: {
     maleCount: number;
@@ -54,29 +61,26 @@ export interface ChasilTemplateData {
 }
 
 export function generateChasilHtml(data: ChasilTemplateData): string {
-  const { election, tps, recap, candidateTotals, kppsOfficer, kppsMembers, voterGenderBreakdown, documentId, status, generatedAt } = data;
+  const { election, tps, recap, candidateTotals, kppsOfficer, kppsMembers, witnesses, voterGenderBreakdown, documentId, status, generatedAt } = data;
 
   const totalReg = recap.total_registered_voters || 100;
   const totalVer = recap.total_verified_voters || 0;
   
-  const verL = voterGenderBreakdown ? voterGenderBreakdown.maleCount : Math.floor(totalVer * 0.5);
-  const verP = voterGenderBreakdown ? voterGenderBreakdown.femaleCount : totalVer - verL;
+  const verL = voterGenderBreakdown ? voterGenderBreakdown.maleCount : Math.ceil(totalVer / 2);
+  const verP = voterGenderBreakdown ? voterGenderBreakdown.femaleCount : Math.floor(totalVer / 2);
 
-  const regL = Math.floor(totalReg * 0.49);
-  const regP = totalReg - regL;
+  const regL = Math.max(verL, Math.ceil(totalReg / 2));
+  const regP = Math.max(verP, Math.floor(totalReg / 2));
 
-  const disL = voterGenderBreakdown ? voterGenderBreakdown.disabilityMale : 0;
-  const disP = voterGenderBreakdown ? voterGenderBreakdown.disabilityFemale : 0;
-
-  const receivedBallots = Math.ceil(totalReg * 1.025);
   const usedBallots = recap.total_valid_votes + recap.total_invalid_votes;
+  const receivedBallots = Math.ceil(totalReg * 1.02);
   const remainingBallots = Math.max(0, receivedBallots - usedBallots);
 
   const candidateRowsHtml = candidateTotals
     .map(
       (c) => `
     <tr>
-      <td style="text-align: center; font-weight: bold; font-family: monospace; font-size: 1.1em;">${escapeHtml(c.ballotNumber)}</td>
+      <td style="text-align: center; font-weight: bold; font-family: monospace;">${c.ballotNumber}</td>
       <td>
         <div style="font-weight: bold; font-size: 1.05em;">${escapeHtml(c.candidateName)} & ${escapeHtml(c.viceCandidateName)}</div>
         <div style="font-size: 0.85em; color: #555;">${escapeHtml(c.coalitionName || 'Jalur Independen')}</div>
@@ -92,12 +96,13 @@ export function generateChasilHtml(data: ChasilTemplateData): string {
     )
     .join("");
 
-  const activeKppsName = kppsOfficer?.name || "ANDZANI FARISAH ZATIL H.";
-  const activeKppsNik = kppsOfficer?.nik || "3328185310960003";
+  const activeKppsName = kppsOfficer?.name || `Ketua KPPS ${tps.tps_code || ''}`.trim();
+  const activeKppsNik = kppsOfficer?.nik || "-";
+  const activeKppsPhone = kppsOfficer?.phone || "-";
 
-  // Build complete list of 5 KPPS officers + Witnesses
+  // Build complete list of KPPS officers + Witnesses dynamically from real data
   const officers: Array<{ name: string; nik: string; phone: string; role: string }> = [
-    { name: activeKppsName, nik: activeKppsNik, phone: "085878276954", role: "KPPS 1 (Ketua TPS)" }
+    { name: activeKppsName, nik: activeKppsNik, phone: activeKppsPhone, role: "KPPS 1 (Ketua TPS)" }
   ];
 
   if (kppsMembers && kppsMembers.length > 0) {
@@ -106,25 +111,21 @@ export function generateChasilHtml(data: ChasilTemplateData): string {
         name: m.fullName,
         nik: m.nik || "-",
         phone: m.phone || "-",
-        role: m.position
+        role: m.position || "Anggota KPPS"
       });
     });
-  } else {
-    // Default fallback 4 KPPS members if not explicitly registered in database
-    officers.push(
-      { name: "SITI PUTRI NURKHOLIFAH", nik: "3328186101840001", phone: "087722578390", role: "KPPS 2 (Operator DPT)" },
-      { name: "TRI AGUNG SANTOSO", nik: "3328180405890002", phone: "085640123984", role: "KPPS 3 (Operator Bilik 1)" },
-      { name: "DWI NURHAYATI", nik: "3328184512910005", phone: "089678123412", role: "KPPS 4 (Operator Bilik 2)" },
-      { name: "EKO WAHYUDI", nik: "3328181203870003", phone: "081234567890", role: "KPPS 5 (Tinta & Pintu Keluar)" }
-    );
   }
 
-  // Add default Paslon witnesses
-  officers.push(
-    { name: "TRESNO JUNIAWAN", nik: "3328180606880006", phone: "0895384252998", role: "Saksi Paslon 1" },
-    { name: "FARAH AHDHIATHIN FAUZIAH", nik: "3328185310960003", phone: "085878276954", role: "Saksi Paslon 2" },
-    { name: "YAYAN KARSENO", nik: "3328180501850001", phone: "085742077121", role: "Saksi Paslon 3" }
-  );
+  if (witnesses && witnesses.length > 0) {
+    witnesses.forEach((w) => {
+      officers.push({
+        name: w.name,
+        nik: w.nik || "-",
+        phone: w.phone || "-",
+        role: w.role || "Saksi Paslon"
+      });
+    });
+  }
 
   const officerRowsHtml = officers
     .map(
