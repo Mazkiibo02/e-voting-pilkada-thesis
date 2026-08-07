@@ -147,6 +147,18 @@ export const OperatorDashboard = () => {
     }
   };
 
+  const handleSelectVoterFromSearch = (voter: any) => {
+    setSelectedVoterId(voter.id.toString());
+    setVoterGender(voter.gender === 'F' ? 'P' : 'L');
+    setIsDisability(voter.is_disability === 1);
+    setVoterSearchQuery('');
+  };
+
+  const handleClearSelectedVoter = () => {
+    setSelectedVoterId('');
+    setVoterSearchQuery('');
+  };
+
   const handleConfirmActivate = async () => {
     if (!selectedBooth) return;
 
@@ -349,42 +361,100 @@ export const OperatorDashboard = () => {
 
           <div className="space-y-4 py-3">
             {/* DPT Voter Selection */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <Label className="text-slate-700 font-semibold text-xs flex justify-between items-center">
                 <span>Pilih Pemilih dari DPT TPS:</span>
-                <span className="text-[10px] text-blue-600 font-normal">Auto-Checklist ✅</span>
+                <span className="text-[10px] text-blue-600 font-medium">Auto-Checklist ✅</span>
               </Label>
-              
-              {/* Quick Search Input */}
-              <div className="relative mb-1">
-                <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
-                <Input
-                  placeholder="Cari No. DPT / Nama / Alamat (e.g. 042, Budi)..."
-                  className="pl-8 text-xs h-8 bg-slate-50 border-slate-200"
-                  value={voterSearchQuery}
-                  onChange={(e) => setVoterSearchQuery(e.target.value)}
-                />
-              </div>
 
-              <Select value={selectedVoterId} onValueChange={handleSelectVoter}>
-                <SelectTrigger className="text-xs">
-                  <SelectValue placeholder="-- Pilih Nama Pemilih (Opsional) --" />
-                </SelectTrigger>
-                <SelectContent className="max-h-60">
-                  <SelectItem value="NONE">-- Tanpa Memilih Pemilih DPT --</SelectItem>
-                  {filteredModalVoters.length === 0 ? (
-                    <div className="py-3 px-3 text-xs text-slate-500 text-center">
-                      Tidak ditemukan pemilih yang cocok dengan "{voterSearchQuery}"
+              {/* Selected Voter Info Card */}
+              {selectedVoterId && selectedVoterId !== 'NONE' ? (() => {
+                const selectedVoter = registeredVoters.find(v => v.id.toString() === selectedVoterId);
+                if (!selectedVoter) return null;
+                return (
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-between shadow-2xs">
+                    <div>
+                      <p className="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+                        <CheckCircle className="h-4 w-4 text-emerald-600 shrink-0" />
+                        {selectedVoter.full_name} <span className="text-[11px] font-semibold text-emerald-700">(No. DPT {selectedVoter.dpt_number || '-'})</span>
+                      </p>
+                      <p className="text-[10px] text-emerald-700 font-mono mt-0.5">
+                        NIK: {selectedVoter.nik_masked || '-'} • JK: {selectedVoter.gender === 'F' ? 'Perempuan (P)' : 'Laki-Laki (L)'}
+                      </p>
                     </div>
-                  ) : (
-                    filteredModalVoters.map((v) => (
-                      <SelectItem key={v.id} value={v.id.toString()} className="text-xs">
-                        No. {v.dpt_number || "-"} | {v.full_name} ({v.address || "-"}) | NIK: {v.nik_masked || "-"}
-                      </SelectItem>
-                    ))
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 font-semibold px-2 shrink-0"
+                      onClick={handleClearSelectedVoter}
+                    >
+                      Ganti
+                    </Button>
+                  </div>
+                );
+              })() : (
+                <div className="space-y-1.5 relative">
+                  {/* Quick Search Input with Live Suggestions */}
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+                    <Input
+                      placeholder="Ketik nama pemilih (contoh: kartika, budi, 017)..."
+                      className="pl-8 text-xs h-9 bg-slate-50 border-slate-200 focus:bg-white"
+                      value={voterSearchQuery}
+                      onChange={(e) => setVoterSearchQuery(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Instant Search Suggestions Box */}
+                  {voterSearchQuery.trim() !== '' && (
+                    <div className="border border-blue-200 rounded-lg bg-white shadow-lg max-h-52 overflow-y-auto divide-y divide-slate-100 mt-1 z-30">
+                      {filteredModalVoters.length === 0 ? (
+                        <div className="p-3 text-xs text-slate-500 text-center font-medium">
+                          Tidak ditemukan pemilih yang cocok dengan "{voterSearchQuery}"
+                        </div>
+                      ) : (
+                        filteredModalVoters.map((v) => (
+                          <div
+                            key={v.id}
+                            onClick={() => handleSelectVoterFromSearch(v)}
+                            className="p-2.5 hover:bg-blue-50 cursor-pointer text-xs transition-colors flex items-center justify-between group"
+                          >
+                            <div>
+                              <p className="font-bold text-slate-900 group-hover:text-blue-700">
+                                {v.full_name} <span className="font-semibold text-slate-500 text-[11px]">(DPT No. {v.dpt_number || '-'})</span>
+                              </p>
+                              <p className="text-[10px] text-slate-500 font-mono mt-0.5">
+                                NIK: {v.nik_masked || '-'} • Alamat: {v.address || '-'}
+                              </p>
+                            </div>
+                            <Badge className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] shrink-0 ml-2">
+                              Pilih
+                            </Badge>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   )}
-                </SelectContent>
-              </Select>
+
+                  {/* Standard Fallback Select Dropdown */}
+                  {voterSearchQuery.trim() === '' && (
+                    <Select value={selectedVoterId} onValueChange={handleSelectVoter}>
+                      <SelectTrigger className="text-xs h-9">
+                        <SelectValue placeholder="-- Atau Klik Untuk Pilih Dari Daftar Pemilih (Opsional) --" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        <SelectItem value="NONE">-- Tanpa Memilih Pemilih DPT --</SelectItem>
+                        {filteredModalVoters.map((v) => (
+                          <SelectItem key={v.id} value={v.id.toString()} className="text-xs">
+                            No. {v.dpt_number || "-"} | {v.full_name} ({v.address || "-"}) | NIK: {v.nik_masked || "-"}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Gender Selection */}
