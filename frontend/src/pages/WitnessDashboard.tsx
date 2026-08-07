@@ -171,6 +171,22 @@ const WitnessDashboard = () => {
     navigate("/login");
   };
 
+  const handleOpenSecureUrl = (relativeUrl: string) => {
+    const token = localStorage.getItem('token');
+    if (!token || token === 'null' || token === 'undefined' || !token.trim()) {
+      toast.error("Token autentikasi tidak ditemukan. Silakan login kembali.");
+      navigate("/login");
+      return;
+    }
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+    const separator = relativeUrl.includes('?') ? '&' : '?';
+    const fullUrl = relativeUrl.startsWith('http')
+      ? `${relativeUrl}${separator}token=${token}`
+      : `${baseUrl}${relativeUrl.startsWith('/') ? relativeUrl : '/' + relativeUrl}${separator}token=${token}`;
+
+    window.open(fullUrl, "_blank");
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -483,17 +499,11 @@ const WitnessDashboard = () => {
                         </div>
                       </div>
                       <div className="flex gap-2 shrink-0">
-                        <Button variant="outline" size="sm" className="text-xs font-semibold" onClick={() => {
-                          const token = localStorage.getItem('token');
-                          window.open(`${import.meta.env.VITE_API_BASE_URL}${document.previewUrl}?token=${token}`, "_blank");
-                        }}>
+                        <Button variant="outline" size="sm" className="text-xs font-semibold" onClick={() => handleOpenSecureUrl(document.previewUrl)}>
                           Preview Form HTML
                         </Button>
                         {document.signedDownloadUrl && (
-                          <Button size="sm" className="text-xs font-semibold bg-primary hover:bg-primary/90" onClick={() => {
-                            const token = localStorage.getItem('token');
-                            window.open(`${import.meta.env.VITE_API_BASE_URL}${document.signedDownloadUrl}?token=${token}`, "_blank");
-                          }}>
+                          <Button size="sm" className="text-xs font-semibold bg-primary hover:bg-primary/90" onClick={() => handleOpenSecureUrl(document.signedDownloadUrl)}>
                             <Download className="h-3.5 w-3.5 mr-1.5" />
                             Unduh Pindai Fisik
                           </Button>
@@ -546,17 +556,11 @@ const WitnessDashboard = () => {
                         </div>
                       </div>
                       <div className="flex gap-2 shrink-0">
-                        <Button variant="outline" size="sm" className="text-xs font-semibold border-slate-300" onClick={() => {
-                          const token = localStorage.getItem('token');
-                          window.open(`${import.meta.env.VITE_API_BASE_URL}${document.c2Document.previewUrl}?token=${token}`, "_blank");
-                        }}>
+                        <Button variant="outline" size="sm" className="text-xs font-semibold border-slate-300" onClick={() => handleOpenSecureUrl(document.c2Document.previewUrl)}>
                           Preview Form C2 HTML
                         </Button>
                         {document.c2Document.signedDownloadUrl && (
-                          <Button size="sm" className="text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => {
-                            const token = localStorage.getItem('token');
-                            window.open(`${import.meta.env.VITE_API_BASE_URL}${document.c2Document.signedDownloadUrl}?token=${token}`, "_blank");
-                          }}>
+                          <Button size="sm" className="text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => handleOpenSecureUrl(document.c2Document.signedDownloadUrl)}>
                             <Download className="h-3.5 w-3.5 mr-1.5" />
                             Unduh Pindai Fisik C2
                           </Button>

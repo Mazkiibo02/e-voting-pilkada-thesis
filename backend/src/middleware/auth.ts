@@ -34,8 +34,14 @@ export const authenticateToken = (
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith("Bearer ")) {
     token = authHeader.split(" ")[1];
-  } else if (req.query.token && typeof req.query.token === "string") {
-    token = req.query.token;
+  } else {
+    const queryToken = req.query.token || req.query.access_token || req.query.jwt;
+    if (queryToken) {
+      const candidate = Array.isArray(queryToken) ? String(queryToken[0]) : String(queryToken);
+      if (candidate && candidate !== "null" && candidate !== "undefined" && candidate.trim() !== "") {
+        token = candidate.replace(/^["']|["']$/g, "").trim();
+      }
+    }
   }
 
   if (!token) {
