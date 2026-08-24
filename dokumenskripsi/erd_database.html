@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>ERD Database Sistem E-Voting Pilkada</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #fff;
+      color: #1a1a2e;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 10mm 10mm 10mm 40mm;
+      }
+      body { background: #fff; }
+      .no-print { display: none; }
+    }
+
+    .page {
+      width: 160mm;
+      min-height: 277mm;
+      margin: 0 auto;
+      position: relative;
+      background: #fff;
+      padding: 4mm 0;
+    }
+
+    h2.diagram-title {
+      text-align: center;
+      font-size: 11pt;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin-bottom: 4mm;
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── TABLE CARD ─────────────────── */
+    .tbl {
+      position: absolute;
+      width: 145px;
+      border: 1.5px solid #b0bec5;
+      border-radius: 5px;
+      overflow: hidden;
+      font-size: 7.2pt;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      background: #fff;
+    }
+    .tbl-header {
+      background: #1e3a5f;
+      color: #fff;
+      font-weight: 700;
+      font-size: 7.5pt;
+      padding: 4px 7px;
+      letter-spacing: 0.3px;
+    }
+    .tbl-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 7px;
+      border-top: 1px solid #e8ecf0;
+      background: #fff;
+      line-height: 1.4;
+    }
+    .tbl-row:nth-child(even) { background: #f5f7fa; }
+    .tbl-col { color: #333; font-size: 6.8pt; }
+    .tbl-type { color: #78909c; font-size: 6pt; font-style: italic; }
+    .badge {
+      font-size: 5.5pt;
+      font-weight: 700;
+      padding: 0px 3px;
+      border-radius: 2px;
+      margin-right: 3px;
+      flex-shrink: 0;
+    }
+    .pk { background: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+    .fk { background: #cfe2ff; color: #0a58ca; border: 1px solid #9ec5fe; }
+
+    /* ─── SVG CANVAS ─────────────────── */
+    .svg-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .rel-line {
+      stroke: #607d8b;
+      stroke-width: 1.2px;
+      fill: none;
+    }
+    .rel-line-main {
+      stroke: #1e3a5f;
+      stroke-width: 1.5px;
+      fill: none;
+    }
+
+    /* ─── LEGEND ─────────────────────── */
+    .legend {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 5px 8px;
+      font-size: 6.5pt;
+      background: #f9f9f9;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+    .legend-line { width: 20px; height: 0; border-top: 1.5px solid #1e3a5f; }
+    .legend-line-gray { width: 20px; height: 0; border-top: 1.2px solid #607d8b; }
+
+    /* print button */
+    .no-print {
+      text-align: center;
+      padding: 12px;
+      font-family: Arial;
+      font-size: 13px;
+    }
+    .btn-print {
+      background: #1e3a5f;
+      color: white;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .btn-print:hover { background: #2d5a9e; }
+
+    .diagram-wrapper {
+      position: relative;
+      width: 160mm;
+      height: 272mm;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+<div class="no-print">
+  <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF (A4)</button>
+  <p style="margin-top:6px;color:#666;font-size:11px">Pastikan pilih ukuran kertas A4, margin: Kiri 4cm, Atas 1cm, Kanan 1cm, Bawah 1cm</p>
+</div>
+
+<div class="page">
+  <h2 class="diagram-title">Relasi Database Sistem E-Voting Pilkada Berbasis Blockchain</h2>
+
+  <div class="diagram-wrapper" id="diagram">
+
+    <!-- SVG untuk garis relasi -->
+    <svg class="svg-canvas" id="svgCanvas"></svg>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- ROW 1: elections (center top) -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="tbl" id="elections" style="left:230px; top:0px;">
+      <div class="tbl-header">elections</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">name</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">election_type</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">region_name</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">voting_date</span><span class="tbl-type">varchar(10)</span></div>
+      <div class="tbl-row"><span class="tbl-col">status</span><span class="tbl-type">varchar(20)</span></div>
+      <div class="tbl-row"><span class="tbl-col">created_at</span><span class="tbl-type">datetime</span></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- ROW 2: tps (left) | candidate_pairs (right) -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="tbl" id="tps" style="left:30px; top:130px;">
+      <div class="tbl-header">tps</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">election_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">tps_number</span><span class="tbl-type">varchar(20)</span></div>
+      <div class="tbl-row"><span class="tbl-col">tps_code</span><span class="tbl-type">varchar(30)</span></div>
+      <div class="tbl-row"><span class="tbl-col">province</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">city_regency</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">district</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">village</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">status</span><span class="tbl-type">varchar(20)</span></div>
+      <div class="tbl-row"><span class="tbl-col">male_dpt</span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">female_dpt</span><span class="tbl-type">integer</span></div>
+    </div>
+
+    <div class="tbl" id="candidate_pairs" style="left:430px; top:130px;">
+      <div class="tbl-header">candidate_pairs</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">election_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">ballot_number</span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">candidate_name</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">vice_candidate_name</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">coalition_name</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">photo_url</span><span class="tbl-type">varchar(100)</span></div>
+      <div class="tbl-row"><span class="tbl-col">status</span><span class="tbl-type">varchar(20)</span></div>
+      <div class="tbl-row"><span class="tbl-col">is_deleted</span><span class="tbl-type">integer</span></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- ROW 3: parties | paslon_parties | voters | kpps_members | users -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="tbl" id="parties" style="left:430px; top:320px;">
+      <div class="tbl-header">parties</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">name</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">acronym</span><span class="tbl-type">varchar(20)</span></div>
+      <div class="tbl-row"><span class="tbl-col">logo_url</span><span class="tbl-type">varchar(100)</span></div>
+    </div>
+
+    <div class="tbl" id="paslon_parties" style="left:590px; top:320px;">
+      <div class="tbl-header">paslon_parties</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">paslon_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">party_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">election_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">created_at</span><span class="tbl-type">datetime</span></div>
+    </div>
+
+    <div class="tbl" id="voters" style="left:30px; top:320px;">
+      <div class="tbl-header">voters</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">election_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">tps_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">dpt_number</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">full_name</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">gender</span><span class="tbl-type">varchar(10)</span></div>
+      <div class="tbl-row"><span class="tbl-col">nik_masked</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">status</span><span class="tbl-type">varchar(20)</span></div>
+      <div class="tbl-row"><span class="tbl-col">voted_at</span><span class="tbl-type">timestamp</span></div>
+    </div>
+
+    <div class="tbl" id="kpps_members" style="left:190px; top:320px;">
+      <div class="tbl-header">kpps_members</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">tps_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">full_name</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">nik</span><span class="tbl-type">varchar(16)</span></div>
+      <div class="tbl-row"><span class="tbl-col">position</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">phone</span><span class="tbl-type">varchar(20)</span></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- ROW 4: users | voting_sessions | tps_recaps -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="tbl" id="users" style="left:30px; top:500px;">
+      <div class="tbl-header">users</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">assigned_tps_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">name</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">email</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">password_hash</span><span class="tbl-type">varchar(60)</span></div>
+      <div class="tbl-row"><span class="tbl-col">role</span><span class="tbl-type">varchar(30)</span></div>
+      <div class="tbl-row"><span class="tbl-col">affiliation</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">device_id</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">status</span><span class="tbl-type">varchar(20)</span></div>
+    </div>
+
+    <div class="tbl" id="voting_sessions" style="left:220px; top:490px;">
+      <div class="tbl-header">voting_sessions</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">election_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">tps_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">created_by_user_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">token</span><span class="tbl-type">varchar(32)</span></div>
+      <div class="tbl-row"><span class="tbl-col">booth_id</span><span class="tbl-type">varchar(20)</span></div>
+      <div class="tbl-row"><span class="tbl-col">voter_gender</span><span class="tbl-type">varchar(10)</span></div>
+      <div class="tbl-row"><span class="tbl-col">status</span><span class="tbl-type">varchar(20)</span></div>
+      <div class="tbl-row"><span class="tbl-col">expires_at</span><span class="tbl-type">datetime</span></div>
+      <div class="tbl-row"><span class="tbl-col">used_at</span><span class="tbl-type">datetime</span></div>
+    </div>
+
+    <div class="tbl" id="tps_recaps" style="left:430px; top:490px;">
+      <div class="tbl-header">tps_recaps</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">election_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">tps_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">generated_by_user_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">total_registered_voters</span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">total_valid_votes</span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">total_invalid_votes</span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">validation_status</span><span class="tbl-type">varchar(30)</span></div>
+      <div class="tbl-row"><span class="tbl-col">generated_at</span><span class="tbl-type">datetime</span></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- ROW 5: votes | tps_recap_candidate_totals | witness_verifications -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="tbl" id="votes" style="left:220px; top:690px;">
+      <div class="tbl-header">votes</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">election_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">tps_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">candidate_pair_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">session_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">created_at</span><span class="tbl-type">datetime</span></div>
+    </div>
+
+    <div class="tbl" id="tps_recap_candidate_totals" style="left:430px; top:690px;">
+      <div class="tbl-header">tps_recap_candidate_totals</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">recap_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">candidate_pair_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">vote_total</span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">vote_total_in_words</span><span class="tbl-type">varchar(50)</span></div>
+    </div>
+
+    <div class="tbl" id="witness_verifications" style="left:590px; top:490px;">
+      <div class="tbl-header">witness_verifications</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">election_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">tps_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">witness_user_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">candidate_pair_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">status</span><span class="tbl-type">varchar(30)</span></div>
+      <div class="tbl-row"><span class="tbl-col">note</span><span class="tbl-type">text</span></div>
+      <div class="tbl-row"><span class="tbl-col">evidence_file_path</span><span class="tbl-type">varchar(100)</span></div>
+      <div class="tbl-row"><span class="tbl-col">signed_at</span><span class="tbl-type">datetime</span></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- ROW 6: documents | blockchain_records | audit_logs -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="tbl" id="documents" style="left:30px; top:790px;">
+      <div class="tbl-header">documents</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">election_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">tps_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">recap_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">document_type</span><span class="tbl-type">varchar(30)</span></div>
+      <div class="tbl-row"><span class="tbl-col">generated_pdf_path</span><span class="tbl-type">varchar(100)</span></div>
+      <div class="tbl-row"><span class="tbl-col">signed_file_hash_sha256</span><span class="tbl-type">varchar(64)</span></div>
+      <div class="tbl-row"><span class="tbl-col">status</span><span class="tbl-type">varchar(30)</span></div>
+      <div class="tbl-row"><span class="tbl-col">generated_at</span><span class="tbl-type">datetime</span></div>
+      <div class="tbl-row"><span class="tbl-col">signed_file_uploaded_at</span><span class="tbl-type">datetime</span></div>
+    </div>
+
+    <div class="tbl" id="blockchain_records" style="left:220px; top:795px;">
+      <div class="tbl-header">blockchain_records</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">election_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">tps_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">recap_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">document_hash</span><span class="tbl-type">varchar(64)</span></div>
+      <div class="tbl-row"><span class="tbl-col">audit_log_hash</span><span class="tbl-type">varchar(64)</span></div>
+      <div class="tbl-row"><span class="tbl-col">transaction_hash</span><span class="tbl-type">varchar(66)</span></div>
+      <div class="tbl-row"><span class="tbl-col">contract_address</span><span class="tbl-type">varchar(42)</span></div>
+      <div class="tbl-row"><span class="tbl-col">finalized_at</span><span class="tbl-type">datetime</span></div>
+    </div>
+
+    <div class="tbl" id="audit_logs" style="left:430px; top:795px;">
+      <div class="tbl-header">audit_logs</div>
+      <div class="tbl-row"><span><span class="badge pk">PK</span><span class="tbl-col">id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">election_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">tps_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span><span class="badge fk">FK</span><span class="tbl-col">actor_user_id</span></span><span class="tbl-type">integer</span></div>
+      <div class="tbl-row"><span class="tbl-col">actor_email</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">actor_role</span><span class="tbl-type">varchar(30)</span></div>
+      <div class="tbl-row"><span class="tbl-col">action</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">entity_type</span><span class="tbl-type">varchar(50)</span></div>
+      <div class="tbl-row"><span class="tbl-col">description</span><span class="tbl-type">text</span></div>
+      <div class="tbl-row"><span class="tbl-col">created_at</span><span class="tbl-type">datetime</span></div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item"><div class="legend-line"></div><span>Relasi Utama (PK→FK)</span></div>
+      <div class="legend-item"><span class="badge pk" style="font-size:6pt">PK</span><span>Primary Key</span></div>
+      <div class="legend-item"><span class="badge fk" style="font-size:6pt">FK</span><span>Foreign Key</span></div>
+    </div>
+
+  </div><!-- /diagram-wrapper -->
+</div><!-- /page -->
+
+<script>
+// Auto-draw relationship lines between tables using SVG
+const diagram = document.getElementById('diagram');
+const svg = document.getElementById('svgCanvas');
+
+function getCenter(el) {
+  return {
+    x: el.offsetLeft + el.offsetWidth / 2,
+    y: el.offsetTop + el.offsetHeight / 2,
+    top: el.offsetTop,
+    bottom: el.offsetTop + el.offsetHeight,
+    left: el.offsetLeft,
+    right: el.offsetLeft + el.offsetWidth,
+    midLeft: el.offsetLeft,
+    midRight: el.offsetLeft + el.offsetWidth,
+    midTop: el.offsetTop,
+    midBottom: el.offsetTop + el.offsetHeight,
+  };
+}
+
+function drawLine(svg, x1, y1, x2, y2, cls = 'rel-line') {
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  // Use orthogonal elbow routing
+  const midX = (x1 + x2) / 2;
+  const midY = (y1 + y2) / 2;
+  let d;
+  if (Math.abs(y2 - y1) > Math.abs(x2 - x1)) {
+    // Vertical dominant: go down then across
+    d = `M ${x1} ${y1} L ${x1} ${midY} L ${x2} ${midY} L ${x2} ${y2}`;
+  } else {
+    // Horizontal dominant
+    d = `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
+  }
+  path.setAttribute('d', d);
+  path.setAttribute('class', cls);
+  path.setAttribute('stroke-dasharray', cls === 'rel-line' ? 'none' : 'none');
+  svg.appendChild(path);
+
+  // Arrow at end
+  const marker = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  marker.setAttribute('cx', x2);
+  marker.setAttribute('cy', y2);
+  marker.setAttribute('r', '2.5');
+  marker.setAttribute('fill', cls === 'rel-line-main' ? '#1e3a5f' : '#607d8b');
+  svg.appendChild(marker);
+}
+
+function connect(fromId, toId, cls = 'rel-line') {
+  const from = document.getElementById(fromId);
+  const to = document.getElementById(toId);
+  if (!from || !to) return;
+  const f = getCenter(from);
+  const t = getCenter(to);
+
+  // Pick best exit/entry points to minimize crossings
+  let x1, y1, x2, y2;
+
+  // If target is below source
+  if (t.top > f.bottom - 10) {
+    x1 = f.x; y1 = f.bottom;
+    x2 = t.x; y2 = t.top;
+  } else if (t.bottom < f.top + 10) {
+    x1 = f.x; y1 = f.top;
+    x2 = t.x; y2 = t.bottom;
+  } else if (t.left > f.right) {
+    x1 = f.right; y1 = f.y;
+    x2 = t.left; y2 = t.y;
+  } else {
+    x1 = f.left; y1 = f.y;
+    x2 = t.right; y2 = t.y;
+  }
+  drawLine(svg, x1, y1, x2, y2, cls);
+}
+
+window.addEventListener('load', () => {
+  // Set SVG size
+  svg.setAttribute('width', diagram.offsetWidth);
+  svg.setAttribute('height', diagram.offsetHeight);
+
+  // Main relations (dark blue)
+  connect('elections', 'tps', 'rel-line-main');
+  connect('elections', 'candidate_pairs', 'rel-line-main');
+
+  // elections → other
+  connect('elections', 'voters', 'rel-line');
+  connect('elections', 'paslon_parties', 'rel-line');
+
+  // tps children
+  connect('tps', 'voters', 'rel-line-main');
+  connect('tps', 'kpps_members', 'rel-line-main');
+  connect('tps', 'voting_sessions', 'rel-line-main');
+  connect('tps', 'tps_recaps', 'rel-line-main');
+  connect('tps', 'blockchain_records', 'rel-line');
+
+  // candidate_pairs children
+  connect('candidate_pairs', 'paslon_parties', 'rel-line-main');
+  connect('candidate_pairs', 'votes', 'rel-line');
+  connect('candidate_pairs', 'tps_recap_candidate_totals', 'rel-line');
+  connect('candidate_pairs', 'witness_verifications', 'rel-line');
+
+  // parties → paslon_parties
+  connect('parties', 'paslon_parties', 'rel-line-main');
+
+  // users
+  connect('users', 'voting_sessions', 'rel-line-main');
+  connect('users', 'tps_recaps', 'rel-line');
+  connect('users', 'witness_verifications', 'rel-line');
+  connect('users', 'audit_logs', 'rel-line');
+
+  // voting_sessions → votes
+  connect('voting_sessions', 'votes', 'rel-line-main');
+
+  // tps_recaps children
+  connect('tps_recaps', 'tps_recap_candidate_totals', 'rel-line-main');
+  connect('tps_recaps', 'documents', 'rel-line-main');
+  connect('tps_recaps', 'blockchain_records', 'rel-line-main');
+});
+</script>
+</body>
+</html>

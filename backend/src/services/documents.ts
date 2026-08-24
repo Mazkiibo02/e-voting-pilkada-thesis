@@ -146,27 +146,37 @@ export const DocumentsService = {
       `).get(tpsId) as any;
 
       // Fetch KPPS members for this TPS
-      const dbKppsMembers = db.prepare("SELECT full_name as fullName, nik, position, phone FROM kpps_members WHERE tps_id = ? ORDER BY id ASC").all(tpsId) as any[];
+      let dbKppsMembers: any[] = [];
+      try {
+        dbKppsMembers = db.prepare("SELECT full_name as fullName, nik, position, phone FROM kpps_members WHERE tps_id = ? ORDER BY id ASC").all(tpsId) as any[];
+      } catch (eMembers) {
+        console.warn("Could not query kpps_members in documents.ts:", eMembers);
+      }
 
       // Fetch Real Witnesses for this TPS
-      const dbWitnesses = db.prepare(`
-        SELECT 
-          COALESCE(u.full_name, u.name) as name, 
-          u.nik, 
-          u.phone, 
-          cp.ballot_number
-        FROM users u
-        LEFT JOIN candidate_pairs cp ON u.candidate_pair_id = cp.id
-        WHERE u.assigned_tps_id = ? AND (u.role = 'WITNESS' OR u.role = 'KPPS_WITNESS')
-        ORDER BY cp.ballot_number ASC, u.id ASC
-      `).all(tpsId) as any[];
+      let witnessesList: any[] = [];
+      try {
+        const dbWitnesses = db.prepare(`
+          SELECT 
+            COALESCE(u.full_name, u.name) as name, 
+            u.nik, 
+            u.phone, 
+            cp.ballot_number
+          FROM users u
+          LEFT JOIN candidate_pairs cp ON u.candidate_pair_id = cp.id
+          WHERE u.assigned_tps_id = ? AND (u.role = 'WITNESS' OR u.role = 'KPPS_WITNESS')
+          ORDER BY cp.ballot_number ASC, u.id ASC
+        `).all(tpsId) as any[];
 
-      const witnessesList = dbWitnesses.map(w => ({
-        name: w.name || 'Saksi Paslon',
-        nik: w.nik || '-',
-        phone: w.phone || '-',
-        role: w.ballot_number ? `Saksi Paslon ${w.ballot_number}` : 'Saksi Paslon'
-      }));
+        witnessesList = dbWitnesses.map(w => ({
+          name: w.name || 'Saksi Paslon',
+          nik: w.nik || '-',
+          phone: w.phone || '-',
+          role: w.ballot_number ? `Saksi Paslon ${w.ballot_number}` : 'Saksi Paslon'
+        }));
+      } catch (eWitnesses) {
+        console.warn("Could not query witnesses in documents.ts:", eWitnesses);
+      }
 
       // Generate HTML string
       const templateData: ChasilTemplateData = {

@@ -314,59 +314,71 @@ router.get("/:id", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERAT
       return res.status(404).json({ message: "TPS not found" });
     }
 
-    const kppsUser = db.prepare("SELECT full_name, name, nik, phone, device_id, public_key FROM users WHERE role = 'KPPS' AND assigned_tps_id = ?").get(id) as any;
-    tps.kppsOfficer = {
-      name: kppsUser?.full_name || kppsUser?.name || `Ketua KPPS ${tps.tps_code || ''}`.trim(),
-      nik: kppsUser?.nik || "-",
-      phone: kppsUser?.phone || "-",
-      device_id: kppsUser?.device_id || `DEV-KPPS-${id}`,
-      public_key: kppsUser?.public_key || "-"
-    };
+    try {
+      const kppsUser = db.prepare("SELECT full_name, name, nik, device_id, public_key FROM users WHERE role = 'KPPS' AND assigned_tps_id = ?").get(id) as any;
+      tps.kppsOfficer = {
+        name: kppsUser?.full_name || kppsUser?.name || `Ketua KPPS ${tps.tps_code || ''}`.trim(),
+        nik: kppsUser?.nik || "-",
+        phone: "-",
+        device_id: kppsUser?.device_id || `DEV-KPPS-${id}`,
+        public_key: kppsUser?.public_key || "-"
+      };
 
-    // Build real list of officers & witnesses for TPS
-    const officersList: Array<{ name: string; nik: string; phone: string; role: string }> = [
-      {
-        name: tps.kppsOfficer.name,
-        nik: tps.kppsOfficer.nik,
-        phone: tps.kppsOfficer.phone,
-        role: "KPPS 1 (Ketua TPS)"
+      // Build real list of officers & witnesses for TPS
+      const officersList: Array<{ name: string; nik: string; phone: string; role: string }> = [
+        {
+          name: tps.kppsOfficer.name,
+          nik: tps.kppsOfficer.nik,
+          phone: tps.kppsOfficer.phone,
+          role: "KPPS 1 (Ketua TPS)"
+        }
+      ];
+
+      // Fetch Anggota KPPS (2-5)
+      try {
+        const members = db.prepare("SELECT full_name as name, nik, phone, position as role FROM kpps_members WHERE tps_id = ? ORDER BY id ASC").all(id) as any[];
+        members.forEach(m => {
+          officersList.push({
+            name: m.name,
+            nik: m.nik || "-",
+            phone: m.phone || "-",
+            role: m.role || "Anggota KPPS"
+          });
+        });
+      } catch (errMembers) {
+        console.warn("Could not query kpps_members:", errMembers);
       }
-    ];
 
-    // Fetch Anggota KPPS (2-5)
-    const members = db.prepare("SELECT full_name as name, nik, phone, position as role FROM kpps_members WHERE tps_id = ? ORDER BY id ASC").all(id) as any[];
-    members.forEach(m => {
-      officersList.push({
-        name: m.name,
-        nik: m.nik || "-",
-        phone: m.phone || "-",
-        role: m.role || "Anggota KPPS"
-      });
-    });
+      // Fetch Real Witnesses
+      try {
+        const witnesses = db.prepare(`
+          SELECT 
+            COALESCE(u.full_name, u.name) as name, 
+            u.nik, 
+            cp.ballot_number
+          FROM users u
+          LEFT JOIN candidate_pairs cp ON u.candidate_pair_id = cp.id
+          WHERE u.assigned_tps_id = ? AND u.role IN ('WITNESS', 'KPPS_WITNESS')
+          ORDER BY cp.ballot_number ASC, u.id ASC
+        `).all(id) as any[];
 
-    // Fetch Real Witnesses
-    const witnesses = db.prepare(`
-      SELECT 
-        COALESCE(u.full_name, u.name) as name, 
-        u.nik, 
-        u.phone, 
-        cp.ballot_number
-      FROM users u
-      LEFT JOIN candidate_pairs cp ON u.candidate_pair_id = cp.id
-      WHERE u.assigned_tps_id = ? AND u.role IN ('WITNESS', 'KPPS_WITNESS')
-      ORDER BY cp.ballot_number ASC, u.id ASC
-    `).all(id) as any[];
+        witnesses.forEach(w => {
+          officersList.push({
+            name: w.name || 'Saksi Paslon',
+            nik: w.nik || '-',
+            phone: '-',
+            role: w.ballot_number ? `Saksi Paslon ${w.ballot_number}` : 'Saksi Paslon'
+          });
+        });
+      } catch (errWitnesses) {
+        console.warn("Could not query witnesses:", errWitnesses);
+      }
 
-    witnesses.forEach(w => {
-      officersList.push({
-        name: w.name || 'Saksi Paslon',
-        nik: w.nik || '-',
-        phone: w.phone || '-',
-        role: w.ballot_number ? `Saksi Paslon ${w.ballot_number}` : 'Saksi Paslon'
-      });
-    });
-
-    tps.officers = officersList;
+      tps.officers = officersList;
+    } catch (errOfficers) {
+      console.warn("Error resolving officers for TPS:", errOfficers);
+      tps.officers = [{ name: `Ketua KPPS ${tps.tps_code || ''}`, nik: "-", phone: "-", role: "KPPS 1 (Ketua TPS)" }];
+    }
 
     return res.json({ data: tps });
   } catch (error: any) {

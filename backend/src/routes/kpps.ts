@@ -251,7 +251,7 @@ router.get("/export", authenticateToken, requireRole(["ADMIN"]), async (req: Aut
  * 4. GET /kpps
  * Purpose: Fetch all KPPS accounts
  */
-router.get("/", authenticateToken, requireRole(["ADMIN"]), async (req: AuthRequest, res: Response) => {
+router.get("/", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR"]), async (req: AuthRequest, res: Response) => {
   try {
     const kppsUsers = db.prepare(`
       SELECT u.id, u.name, u.full_name, u.email, u.role, u.assigned_tps_id, u.nik, u.status, t.tps_code, t.address

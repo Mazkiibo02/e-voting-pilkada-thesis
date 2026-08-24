@@ -49,7 +49,9 @@ function migrate() {
     const usersColumns = [
       { name: "full_name", type: "TEXT" },
       { name: "affiliation", type: "TEXT" },
-      { name: "nik", type: "TEXT" }
+      { name: "nik", type: "TEXT" },
+      { name: "phone", type: "TEXT" },
+      { name: "candidate_pair_id", type: "INTEGER" }
     ];
     for (const col of usersColumns) {
       try {
