@@ -228,18 +228,35 @@ const ChasilPreview = () => {
       return;
     }
 
-    if (!documentData) {
-      toast.error('Data dokumen tidak ditemukan. Silakan generate form terlebih dahulu.');
-      return;
-    }
-
     setUploading(true);
+    let activeDocData = documentData;
+
     try {
       const token = localStorage.getItem('token');
+
+      if (!activeDocData && selectedTpsId !== null) {
+        // Auto-generate document if not created yet
+        const genRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/documents/tps/${selectedTpsId}/chasil/generate`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (genRes.ok) {
+          const genJson = await genRes.json();
+          activeDocData = genJson.data;
+          setDocumentData(genJson.data);
+        }
+      }
+
+      if (!activeDocData) {
+        toast.error('Data dokumen belum tersedia. Pastikan pemungutan suara di TPS telah ditutup dan rekapitulasi dihasilkan terlebih dahulu.');
+        setUploading(false);
+        return;
+      }
+
       const formData = new FormData();
       formData.append('signedForm', selectedFile);
 
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/documents/${documentData.id}/signed-upload`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/documents/${activeDocData.id}/signed-upload`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`

@@ -184,9 +184,13 @@ router.get("/tps/:tpsId", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS
       return res.status(403).json({ message: "Access forbidden: KPPS cannot access metadata for other TPS" });
     }
 
-    const doc = DocumentsService.getByTpsId(tpsId);
+    let doc = DocumentsService.getByTpsId(tpsId);
     if (!doc) {
-      return res.status(404).json({ message: "Document metadata not found for this TPS" });
+      try {
+        doc = DocumentsService.generateForm(tpsId, req.user?.sub ? Number(req.user.sub) : undefined);
+      } catch (errGen) {
+        return res.status(404).json({ message: "Document metadata not found for this TPS. Please generate form first." });
+      }
     }
 
     let c2Doc = DocumentsService.getC2ByTpsId(tpsId);
