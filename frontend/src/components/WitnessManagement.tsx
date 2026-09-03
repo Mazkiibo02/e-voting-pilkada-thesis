@@ -175,6 +175,26 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/witnesses/export', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error("Gagal export akun Saksi");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "Data_Akun_Saksi_TPS.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      toast.error("Gagal mendownload data Saksi");
+    }
+  };
+
   const filteredWitnesses = witnesses.filter(w => {
     if (!selectedTpsId || selectedTpsId === "ALL") return true;
     const selectedTpsObj = tpsList.find(t => t.id.toString() === selectedTpsId || t.tps_code === selectedTpsId);
