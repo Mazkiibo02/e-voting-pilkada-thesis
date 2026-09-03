@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
-import { Users, RotateCcw, Shield, Download, Upload, Trash, Edit, FileSpreadsheet, UserPlus, Monitor } from 'lucide-react';
+import { Users, RotateCcw, Shield, Download, Upload, Trash, Edit, FileSpreadsheet, UserPlus, Monitor, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { formatTpsLabel } from '@/utils/tpsFormatter';
 
 interface KppsManagementProps {
@@ -27,6 +27,10 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
   const [operatorUsers, setOperatorUsers] = useState<any[]>([]);
   const [tpsList, setTpsList] = useState<any[]>([]);
   const [selectedTpsId, setSelectedTpsId] = useState<string>("ALL");
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   // Loading states
   const [isGenerating, setIsGenerating] = useState(false);
@@ -385,6 +389,19 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
     return u.assigned_tps_id?.toString() === selectedTpsId || u.tps_code === selectedTpsId;
   });
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedTpsId, activeTab, pageSize]);
+
+  const activeList = activeTab === 'KETUA' ? filteredKpps : activeTab === 'MEMBERS' ? filteredMembers : filteredOperators;
+  const totalPages = Math.max(1, Math.ceil(activeList.length / pageSize));
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, activeList.length);
+
+  const paginatedKpps = filteredKpps.slice(startIndex, endIndex);
+  const paginatedMembers = filteredMembers.slice(startIndex, endIndex);
+  const paginatedOperators = filteredOperators.slice(startIndex, endIndex);
+
   return (
     <Card className="bg-white border-gray-200 shadow-sm mb-8">
       <CardHeader className="pb-3 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -504,7 +521,7 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredKpps.map((u, idx) => (
+                  paginatedKpps.map((u, idx) => (
                     <TableRow key={u.id}>
                       <TableCell className="font-bold text-slate-900">{u.full_name || u.name}</TableCell>
                       <TableCell className="font-mono text-slate-600">{u.email}</TableCell>
@@ -553,7 +570,7 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredMembers.map((m, idx) => (
+                  paginatedMembers.map((m, idx) => (
                     <TableRow key={m.id}>
                       <TableCell className="font-bold text-slate-900">{m.full_name}</TableCell>
                       <TableCell>
@@ -626,7 +643,7 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredOperators.map((op, idx) => (
+                  paginatedOperators.map((op, idx) => (
                     <TableRow key={op.id}>
                       <TableCell className="font-bold text-slate-900">{op.full_name || op.name}</TableCell>
                       <TableCell className="font-mono text-blue-700 font-semibold">{op.email}</TableCell>
@@ -650,6 +667,72 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
           </div>
         </div>
       )}
+
+        {/* Pagination Footer Controls */}
+        {activeList.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 text-xs text-slate-600">
+            <div className="flex items-center gap-2">
+              <span>Tampilkan:</span>
+              <Select value={pageSize.toString()} onValueChange={(v) => setPageSize(Number(v))}>
+                <SelectTrigger className="h-8 w-20 text-xs font-semibold bg-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+              <span>baris • Menampilkan <strong>{activeList.length > 0 ? startIndex + 1 : 0}</strong> - <strong>{endIndex}</strong> dari <strong>{activeList.length}</strong> Akun Penyelenggara</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2 text-xs font-semibold"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                title="Halaman Pertama"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2.5 text-xs font-semibold"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" /> Sebelum
+              </Button>
+
+              <span className="px-3 py-1 font-bold text-slate-800 bg-slate-100 rounded border border-slate-200">
+                Halaman {currentPage} dari {totalPages}
+              </span>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2.5 text-xs font-semibold"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                Berikut <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2 text-xs font-semibold"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                title="Halaman Terakhir"
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
 
       {/* Edit Ketua KPPS Modal */}

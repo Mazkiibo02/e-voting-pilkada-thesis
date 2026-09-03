@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
-import { Users, RotateCcw, Shield, Upload, Download, Trash, Edit } from 'lucide-react';
+import { Users, RotateCcw, Shield, Upload, Download, Trash, Edit, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { formatTpsLabel } from '@/utils/tpsFormatter';
 
 interface WitnessManagementProps {
@@ -25,6 +25,10 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
 
   const [editUser, setEditUser] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   useEffect(() => {
     fetchTps();
@@ -180,6 +184,15 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
     return w.assigned_tps_id === selectedTpsObj.id || w.tps_code === selectedTpsObj.tps_code;
   });
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedTpsId, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredWitnesses.length / pageSize));
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, filteredWitnesses.length);
+  const paginatedWitnesses = filteredWitnesses.slice(startIndex, endIndex);
+
   return (
     <Card className="bg-white border-gray-200 shadow-sm mb-8">
       <CardHeader className="pb-3 border-b border-gray-100">
@@ -249,7 +262,7 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredWitnesses.map((w, idx) => (
+                paginatedWitnesses.map((w, idx) => (
                   <TableRow key={w.id}>
                     <TableCell>{w.full_name}</TableCell>
                     <TableCell>{w.email}</TableCell>
@@ -274,6 +287,72 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
             </TableBody>
           </Table>
         </div>
+
+        {/* Pagination Footer Controls */}
+        {filteredWitnesses.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 text-xs text-slate-600">
+            <div className="flex items-center gap-2">
+              <span>Tampilkan:</span>
+              <Select value={pageSize.toString()} onValueChange={(v) => setPageSize(Number(v))}>
+                <SelectTrigger className="h-8 w-20 text-xs font-semibold bg-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+              <span>baris • Menampilkan <strong>{filteredWitnesses.length > 0 ? startIndex + 1 : 0}</strong> - <strong>{endIndex}</strong> dari <strong>{filteredWitnesses.length}</strong> Akun Saksi</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2 text-xs font-semibold"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                title="Halaman Pertama"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2.5 text-xs font-semibold"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" /> Sebelum
+              </Button>
+
+              <span className="px-3 py-1 font-bold text-slate-800 bg-slate-100 rounded border border-slate-200">
+                Halaman {currentPage} dari {totalPages}
+              </span>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2.5 text-xs font-semibold"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                Berikut <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2 text-xs font-semibold"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                title="Halaman Terakhir"
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
