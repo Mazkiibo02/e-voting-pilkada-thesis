@@ -8,7 +8,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 
 import { toast } from 'sonner';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download, Upload, Trash2, Edit, Building, UserCheck, Flag, Monitor } from 'lucide-react';
+import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download, Upload, Trash2, Edit, Building, UserCheck, Flag, Monitor, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { WitnessManagement } from '@/components/WitnessManagement';
 import { KppsManagement } from '@/components/KppsManagement';
 import { VoterManagement } from '@/components/VoterManagement';
@@ -138,6 +139,19 @@ const AdminDashboard = () => {
   const [isDisability, setIsDisability] = useState<boolean>(false);
   const [isGeneratingToken, setIsGeneratingToken] = useState(false);
   const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false);
+
+  // TPS Pagination state
+  const [tpsCurrentPage, setTpsCurrentPage] = useState<number>(1);
+  const [tpsPageSize, setTpsPageSize] = useState<number>(10);
+
+  useEffect(() => {
+    setTpsCurrentPage(1);
+  }, [fullTpsList.length, tpsPageSize]);
+
+  const tpsTotalPages = Math.max(1, Math.ceil(fullTpsList.length / tpsPageSize));
+  const tpsStartIndex = (tpsCurrentPage - 1) * tpsPageSize;
+  const tpsEndIndex = Math.min(tpsStartIndex + tpsPageSize, fullTpsList.length);
+  const paginatedTpsList = fullTpsList.slice(tpsStartIndex, tpsEndIndex);
 
   // Form states
   const [isTpsModalOpen, setIsTpsModalOpen] = useState(false);
@@ -1144,9 +1158,9 @@ const AdminDashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {fullTpsList.map((tps, idx) => (
+                    {paginatedTpsList.map((tps, idx) => (
                       <TableRow key={tps.id}>
-                        <TableCell className="font-bold text-blue-600">{formatTpsLabel(tps.tps_number, tps.tps_code, undefined, idx)}</TableCell>
+                        <TableCell className="font-bold text-blue-600">{formatTpsLabel(tps.tps_number, tps.tps_code, undefined, tpsStartIndex + idx)}</TableCell>
                         <TableCell>{tps.address || '-'}</TableCell>
                         <TableCell className="font-semibold">{tps.registered_voters_total ?? 100} Pemilih</TableCell>
                         <TableCell>
@@ -1184,6 +1198,73 @@ const AdminDashboard = () => {
                     ))}
                   </TableBody>
                 </Table>
+              )}
+
+              {/* TPS Pagination Footer Controls */}
+              {fullTpsList.length > 0 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-4 border-t border-slate-200 text-xs text-slate-600">
+                  <div className="flex items-center gap-2">
+                    <span>Tampilkan:</span>
+                    <Select value={tpsPageSize.toString()} onValueChange={(v) => setTpsPageSize(Number(v))}>
+                      <SelectTrigger className="h-8 w-20 text-xs font-semibold bg-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="10">10</SelectItem>
+                        <SelectItem value="25">25</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span>baris • Menampilkan <strong>{fullTpsList.length > 0 ? tpsStartIndex + 1 : 0}</strong> - <strong>{tpsEndIndex}</strong> dari <strong>{fullTpsList.length}</strong> TPS Kota Tegal</span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-2 text-xs font-semibold"
+                      onClick={() => setTpsCurrentPage(1)}
+                      disabled={tpsCurrentPage === 1}
+                      title="Halaman Pertama"
+                    >
+                      <ChevronsLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-2.5 text-xs font-semibold"
+                      onClick={() => setTpsCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={tpsCurrentPage === 1}
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" /> Sebelum
+                    </Button>
+
+                    <span className="px-3 py-1 font-bold text-slate-800 bg-slate-100 rounded border border-slate-200">
+                      Halaman {tpsCurrentPage} dari {tpsTotalPages}
+                    </span>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-2.5 text-xs font-semibold"
+                      onClick={() => setTpsCurrentPage(prev => Math.min(prev + 1, tpsTotalPages))}
+                      disabled={tpsCurrentPage === tpsTotalPages}
+                    >
+                      Berikut <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-2 text-xs font-semibold"
+                      onClick={() => setTpsCurrentPage(tpsTotalPages)}
+                      disabled={tpsCurrentPage === tpsTotalPages}
+                      title="Halaman Terakhir"
+                    >
+                      <ChevronsRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
               )}
             </CardContent>
           </Card>

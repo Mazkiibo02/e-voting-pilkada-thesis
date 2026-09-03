@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Shield, ArrowLeft, RefreshCw, Filter } from 'lucide-react';
+import { Shield, ArrowLeft, RefreshCw, Filter, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from 'sonner';
 
 interface AuditLog {
@@ -116,6 +117,19 @@ const AuditLogs = () => {
     ? logs 
     : logs.filter(log => log.action === filterAction);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(15);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterAction, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredLogs.length / pageSize));
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, filteredLogs.length);
+  const paginatedLogs = filteredLogs.slice(startIndex, endIndex);
+
   // Extract unique actions for filters
   const uniqueActions = ['ALL', ...Array.from(new Set(logs.map(log => log.action)))];
 
@@ -209,7 +223,7 @@ const AuditLogs = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredLogs.map((log) => (
+                    {paginatedLogs.map((log) => (
                       <TableRow key={log.id}>
                         <TableCell className="font-mono text-xs text-slate-600 whitespace-nowrap">
                           {formatTimestamp(log.created_at)}
@@ -239,6 +253,73 @@ const AuditLogs = () => {
                     ))}
                   </TableBody>
                 </Table>
+              </div>
+            )}
+
+            {/* Pagination Footer Controls */}
+            {filteredLogs.length > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-4 border-t border-slate-200 text-xs text-slate-600">
+                <div className="flex items-center gap-2">
+                  <span>Tampilkan:</span>
+                  <Select value={pageSize.toString()} onValueChange={(v) => setPageSize(Number(v))}>
+                    <SelectTrigger className="h-8 w-20 text-xs font-semibold bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="15">15</SelectItem>
+                      <SelectItem value="30">30</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                      <SelectItem value="100">100</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <span>baris • Menampilkan <strong>{filteredLogs.length > 0 ? startIndex + 1 : 0}</strong> - <strong>{endIndex}</strong> dari <strong>{filteredLogs.length}</strong> Audit Log</span>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-2 text-xs font-semibold"
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    title="Halaman Pertama"
+                  >
+                    <ChevronsLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-2.5 text-xs font-semibold"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" /> Sebelum
+                  </Button>
+
+                  <span className="px-3 py-1 font-bold text-slate-800 bg-slate-100 rounded border border-slate-200">
+                    Halaman {currentPage} dari {totalPages}
+                  </span>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-2.5 text-xs font-semibold"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Berikut <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-2 text-xs font-semibold"
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                    title="Halaman Terakhir"
+                  >
+                    <ChevronsRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
