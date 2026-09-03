@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
-import { UserCheck, Search, Plus, Download, Upload, RotateCcw, Trash, Edit, CheckCircle2, Clock, Users, FileSpreadsheet } from 'lucide-react';
+import { UserCheck, Search, Plus, Download, Upload, RotateCcw, Trash, Edit, CheckCircle2, Clock, Users, FileSpreadsheet, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { formatTpsLabel } from '@/utils/tpsFormatter';
 
 interface VoterManagementProps {
@@ -30,6 +30,10 @@ export const VoterManagement = ({ selectedTpsCode, userRole, userAssignedTpsId, 
   const [isLoading, setIsLoading] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,6 +74,15 @@ export const VoterManagement = ({ selectedTpsCode, userRole, userAssignedTpsId, 
   useEffect(() => {
     fetchVoters();
   }, [selectedTpsId, searchQuery, statusFilter]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedTpsId, searchQuery, statusFilter, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(voters.length / pageSize));
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, voters.length);
+  const paginatedVoters = voters.slice(startIndex, endIndex);
 
   const fetchTps = async () => {
     try {
@@ -395,7 +408,7 @@ export const VoterManagement = ({ selectedTpsCode, userRole, userAssignedTpsId, 
                   </TableCell>
                 </TableRow>
               ) : (
-                voters.map((voter) => (
+                paginatedVoters.map((voter) => (
                   <TableRow key={voter.id} className={voter.status === 'VOTED' ? 'bg-emerald-50/40 hover:bg-emerald-50/70' : 'hover:bg-slate-50'}>
                     <TableCell className="text-center font-mono font-bold text-slate-700">
                       {voter.dpt_number || '-'}
@@ -462,6 +475,73 @@ export const VoterManagement = ({ selectedTpsCode, userRole, userAssignedTpsId, 
             </TableBody>
           </Table>
         </div>
+
+        {/* Pagination Footer Controls */}
+        {!isLoading && voters.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 pt-4 border-t border-slate-200 text-xs text-slate-600">
+            <div className="flex items-center gap-2">
+              <span>Tampilkan:</span>
+              <Select value={pageSize.toString()} onValueChange={(v) => setPageSize(Number(v))}>
+                <SelectTrigger className="h-8 w-20 text-xs font-semibold bg-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                </SelectContent>
+              </Select>
+              <span>baris • Menampilkan <strong>{voters.length > 0 ? startIndex + 1 : 0}</strong> - <strong>{endIndex}</strong> dari <strong>{voters.length}</strong> Pemilih DPT</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2 text-xs font-semibold"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                title="Halaman Pertama"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2.5 text-xs font-semibold"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" /> Sebelum
+              </Button>
+
+              <span className="px-3 py-1 font-bold text-slate-800 bg-slate-100 rounded border border-slate-200">
+                Halaman {currentPage} dari {totalPages}
+              </span>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2.5 text-xs font-semibold"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                Berikut <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-2 text-xs font-semibold"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                title="Halaman Terakhir"
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
 
       {/* Add / Edit Voter Modal */}
