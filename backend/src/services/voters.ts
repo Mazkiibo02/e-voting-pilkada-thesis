@@ -30,11 +30,34 @@ export function maskNik(nik: any): string {
 }
 
 export const VotersService = {
+  updateTpsVoterCount(tpsId: number): void {
+    try {
+      const maleStmt = db.prepare("SELECT COUNT(*) as c FROM voters WHERE tps_id = ? AND gender = 'M'");
+      const femaleStmt = db.prepare("SELECT COUNT(*) as c FROM voters WHERE tps_id = ? AND gender = 'F'");
+      const totalStmt = db.prepare("SELECT COUNT(*) as c FROM voters WHERE tps_id = ?");
+
+      const maleDpt = (maleStmt.get(tpsId) as any)?.c || 0;
+      const femaleDpt = (femaleStmt.get(tpsId) as any)?.c || 0;
+      const total = (totalStmt.get(tpsId) as any)?.c || (maleDpt + femaleDpt);
+
+      db.prepare(`
+        UPDATE tps 
+        SET registered_voters_total = ?, male_dpt = ?, female_dpt = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id = ?
+      `).run(total, maleDpt, femaleDpt, tpsId);
+    } catch (e) {
+      console.error(`Failed to update TPS voter count for tps_id ${tpsId}:`, e);
+    }
+  },
+
   syncPlaceholderVoters(tpsId: number): void {
     try {
       const tpsStmt = db.prepare("SELECT * FROM tps WHERE id = ?");
       const tps = tpsStmt.get(tpsId) as any;
-      if (!tps || !tps.dpt_count || tps.dpt_count <= 0) return;
+      if (!tps) return;
+
+      const totalTarget = Number(tps.registered_voters_total || tps.dpt_count || ((tps.male_dpt || 0) + (tps.female_dpt || 0)) || 0);
+      if (totalTarget <= 0) return;
 
       const countStmt = db.prepare("SELECT COUNT(*) as count FROM voters WHERE tps_id = ?");
       const currentCount = (countStmt.get(tpsId) as any)?.count || 0;
@@ -42,8 +65,7 @@ export const VotersService = {
       // If voters already exist for this TPS, no need to auto-generate placeholders
       if (currentCount > 0) return;
 
-      const totalTarget = Number(tps.dpt_count);
-      const maleTarget = tps.male_count && Number(tps.male_count) > 0 ? Number(tps.male_count) : Math.ceil(totalTarget * 0.5);
+      const maleTarget = tps.male_dpt && Number(tps.male_dpt) > 0 ? Number(tps.male_dpt) : (tps.male_count && Number(tps.male_count) > 0 ? Number(tps.male_count) : Math.ceil(totalTarget * 0.5));
       const electionId = tps.election_id || 1;
       const disabilityCount = tps.disability_count ? Number(tps.disability_count) : 0;
 
@@ -81,9 +103,9 @@ export const VotersService = {
     if (tpsId) {
       this.syncPlaceholderVoters(tpsId);
     } else {
-      // Sync all open TPS that have dpt_count > 0 but empty voters table
+      // Sync all open TPS that have DPT target > 0 but empty voters table
       try {
-        const allTps = db.prepare("SELECT id FROM tps WHERE dpt_count > 0").all() as any[];
+        const allTps = db.prepare("SELECT id FROM tps WHERE registered_voters_total > 0 OR dpt_count > 0 OR male_dpt > 0 OR female_dpt > 0").all() as any[];
         allTps.forEach(t => this.syncPlaceholderVoters(t.id));
       } catch (e) {}
     }
@@ -166,6 +188,7 @@ export const VotersService = {
       status
     );
 
+    this.updateTpsVoterCount(data.tps_id);
     return this.getById(Number(result.lastInsertRowid))!;
   },
 
@@ -222,6 +245,7 @@ export const VotersService = {
 
     const stmt = db.prepare("DELETE FROM voters WHERE id = ?");
     stmt.run(id);
+    this.updateTpsVoterCount(existing.tps_id);
     return true;
   },
 
@@ -230,7 +254,7 @@ export const VotersService = {
       this.syncPlaceholderVoters(tpsId);
     } else {
       try {
-        const allTps = db.prepare("SELECT id FROM tps WHERE dpt_count > 0").all() as any[];
+        const allTps = db.prepare("SELECT id FROM tps WHERE registered_voters_total > 0 OR dpt_count > 0 OR male_dpt > 0 OR female_dpt > 0").all() as any[];
         allTps.forEach(t => this.syncPlaceholderVoters(t.id));
       } catch (e) {}
     }
@@ -244,9 +268,22 @@ export const VotersService = {
     }
 
     const row = db.prepare(query).get(...params) as any;
-    const total = row?.total || 0;
+    let total = row?.total || 0;
+
+    if (tpsId) {
+      const tpsRow = db.prepare("SELECT COALESCE(registered_voters_total, dpt_count, male_dpt + female_dpt, 0) as total FROM tps WHERE id = ?").get(tpsId) as any;
+      if (tpsRow && tpsRow.total > total) {
+        total = tpsRow.total;
+      }
+    } else {
+      const allTpsRow = db.prepare("SELECT SUM(COALESCE(registered_voters_total, dpt_count, male_dpt + female_dpt, 0)) as total FROM tps").get() as any;
+      if (allTpsRow && allTpsRow.total > total) {
+        total = allTpsRow.total;
+      }
+    }
+
     const voted = row?.voted || 0;
-    const registered = total - voted;
+    const registered = Math.max(0, total - voted);
     const percentage = total > 0 ? Math.round((voted / total) * 1000) / 10 : 0;
 
     return { total, voted, registered, percentage };
