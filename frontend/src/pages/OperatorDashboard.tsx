@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from 'sonner';
-import { Shield, Lock, Unlock, LogOut, CheckCircle, XCircle, RotateCcw, Vote, UserCheck, AlertCircle, RefreshCw, Search } from 'lucide-react';
+import { Shield, Lock, Unlock, LogOut, CheckCircle, XCircle, RotateCcw, Vote, UserCheck, AlertCircle, RefreshCw, Search, Monitor } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { unlockBooth, checkBoothStatus, resetBoothSession } from '@/services/boothApi';
 import { VoterManagement } from '@/components/VoterManagement';
 
@@ -228,6 +229,26 @@ export const OperatorDashboard = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="font-semibold border-blue-200 text-blue-700 bg-blue-50 hover:bg-blue-100">
+                  <Monitor className="mr-2 h-4 w-4 text-blue-600" />
+                  Buka Display Booth
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-white border-slate-200">
+                <DropdownMenuItem onClick={() => window.open('/booth/BOOTH-01', '_blank')} className="cursor-pointer font-medium">
+                  Display Bilik 1 (BOOTH-01)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => window.open('/booth/BOOTH-02', '_blank')} className="cursor-pointer font-medium">
+                  Display Bilik 2 (BOOTH-02)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => window.open('/booth/BOOTH-03', '_blank')} className="cursor-pointer font-medium">
+                  Display Bilik 3 (BOOTH-03)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 font-semibold px-3 py-1">
               Role: {user?.role === 'KPPS_OPERATOR' ? 'Operator Bilik' : user?.role || 'KPPS'}
             </Badge>
@@ -331,6 +352,17 @@ export const OperatorDashboard = () => {
                       </Button>
                     </div>
                   )}
+
+                  <div className="mt-3 pt-3 border-t border-slate-100 text-center">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => window.open(`/booth/${booth.id}`, '_blank')}
+                      className="w-full text-slate-500 hover:text-blue-600 hover:bg-blue-50 font-semibold text-xs h-8"
+                    >
+                      <Monitor className="h-3.5 w-3.5 mr-1.5 text-blue-600" /> Buka Layar Tampilan Bilik ({booth.id})
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             );

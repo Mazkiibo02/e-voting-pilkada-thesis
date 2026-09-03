@@ -952,26 +952,6 @@ const AdminDashboard = () => {
                   </div>
                 </DialogContent>
               </Dialog>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="sm" variant="outline" className="font-semibold border-gray-300">
-                    <Vote className="mr-2 h-4 w-4 text-blue-600" />
-                    Buka Display Booth
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-white border-gray-200">
-                  <DropdownMenuItem onClick={() => window.open('/booth/BOOTH-01', '_blank')} className="cursor-pointer">
-                    Display Bilik 1 (BOOTH-01)
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.open('/booth/BOOTH-02', '_blank')} className="cursor-pointer">
-                    Display Bilik 2 (BOOTH-02)
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.open('/booth/BOOTH-03', '_blank')} className="cursor-pointer">
-                    Display Bilik 3 (BOOTH-03)
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
               </>
               )}
             </div>
