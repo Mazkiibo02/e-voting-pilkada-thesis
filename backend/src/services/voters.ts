@@ -56,8 +56,10 @@ export const VotersService = {
       const tps = tpsStmt.get(tpsId) as any;
       if (!tps) return;
 
-      const totalTarget = Number(tps.registered_voters_total || tps.dpt_count || ((tps.male_dpt || 0) + (tps.female_dpt || 0)) || 0);
-      if (totalTarget <= 0) return;
+      let totalTarget = Number(tps.registered_voters_total || tps.dpt_count || ((tps.male_dpt || 0) + (tps.female_dpt || 0)) || 0);
+      if (totalTarget <= 0) {
+        totalTarget = 100;
+      }
 
       const countStmt = db.prepare("SELECT COUNT(*) as count FROM voters WHERE tps_id = ?");
       const currentCount = (countStmt.get(tpsId) as any)?.count || 0;
@@ -90,6 +92,7 @@ export const VotersService = {
           insertStmt.run(electionId, tpsId, dptNum, fullName, address, gender, isDisability, nikMasked);
         }
         db.exec("COMMIT");
+        this.updateTpsVoterCount(tpsId);
       } catch (err) {
         db.exec("ROLLBACK");
         throw err;
@@ -103,9 +106,9 @@ export const VotersService = {
     if (tpsId) {
       this.syncPlaceholderVoters(tpsId);
     } else {
-      // Sync all open TPS that have DPT target > 0 but empty voters table
+      // Sync all TPS in database
       try {
-        const allTps = db.prepare("SELECT id FROM tps WHERE registered_voters_total > 0 OR dpt_count > 0 OR male_dpt > 0 OR female_dpt > 0").all() as any[];
+        const allTps = db.prepare("SELECT id FROM tps").all() as any[];
         allTps.forEach(t => this.syncPlaceholderVoters(t.id));
       } catch (e) {}
     }
@@ -254,7 +257,7 @@ export const VotersService = {
       this.syncPlaceholderVoters(tpsId);
     } else {
       try {
-        const allTps = db.prepare("SELECT id FROM tps WHERE registered_voters_total > 0 OR dpt_count > 0 OR male_dpt > 0 OR female_dpt > 0").all() as any[];
+        const allTps = db.prepare("SELECT id FROM tps").all() as any[];
         allTps.forEach(t => this.syncPlaceholderVoters(t.id));
       } catch (e) {}
     }
@@ -352,6 +355,7 @@ export const VotersService = {
       }
     }
 
+    this.updateTpsVoterCount(tpsId);
     return { importedCount, updatedCount };
   },
 
