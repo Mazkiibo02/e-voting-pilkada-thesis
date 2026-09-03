@@ -31,3 +31,17 @@ export const formatTpsLabel = (
   }
   return numPart;
 };
+
+export const formatPhotoUrl = (url?: string | null): string => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  
+  let pathStr = url.trim();
+  if (!pathStr.startsWith('/')) {
+    pathStr = '/' + pathStr;
+  }
+  if (!pathStr.startsWith('/uploads/')) {
+    pathStr = '/uploads' + pathStr;
+  }
+  return pathStr;
+};

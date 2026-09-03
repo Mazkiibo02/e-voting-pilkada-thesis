@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { WitnessManagement } from '@/components/WitnessManagement';
 import { KppsManagement } from '@/components/KppsManagement';
 import { VoterManagement } from '@/components/VoterManagement';
-import { formatTpsLabel } from '@/utils/tpsFormatter';
+import { formatTpsLabel, formatPhotoUrl } from '@/utils/tpsFormatter';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -1029,7 +1029,7 @@ const AdminDashboard = () => {
                           {cp.photo_url ? (
                             <div className="w-12 h-16 rounded overflow-hidden border border-red-600 shadow-xs bg-white">
                               <img 
-                                src={cp.photo_url.startsWith('http') ? cp.photo_url : `/api${cp.photo_url}`} 
+                                src={formatPhotoUrl(cp.photo_url)} 
                                 alt={cp.candidate_name}
                                 className="w-full h-full object-cover object-top"
                               />
@@ -1425,7 +1425,7 @@ const AdminDashboard = () => {
                   {editingPaslon?.photo_url && !editPaslonPhoto && (
                     <div className="w-16 h-20 rounded border border-red-600 overflow-hidden shrink-0 shadow-xs bg-white">
                       <img 
-                        src={editingPaslon.photo_url.startsWith('http') ? editingPaslon.photo_url : `/api${editingPaslon.photo_url}`} 
+                        src={formatPhotoUrl(editingPaslon.photo_url)} 
                         alt="Current" 
                         className="w-full h-full object-cover object-top"
                       />

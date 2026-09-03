@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { formatPhotoUrl } from "@/utils/tpsFormatter";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -440,7 +441,7 @@ const Homepage = () => {
                         <div className="flex-1 w-full bg-slate-100 relative flex items-center justify-center overflow-hidden">
                           {c.photoUrl ? (
                             <img 
-                              src={`${import.meta.env.VITE_API_BASE_URL}${c.photoUrl}`} 
+                              src={formatPhotoUrl(c.photoUrl)} 
                               alt={getCandidateFullName(c)}
                               className="w-full h-full object-cover object-top"
                               onError={(e) => {
@@ -480,7 +481,7 @@ const Homepage = () => {
                                   </div>
                                   <div className="flex-1 w-full bg-slate-100 relative flex items-center justify-center overflow-hidden">
                                     <img
-                                      src={`${import.meta.env.VITE_API_BASE_URL}${c.photoUrl}`}
+                                      src={formatPhotoUrl(c.photoUrl)}
                                       alt={getCandidateFullName(c)}
                                       className="w-full h-full object-cover object-top"
                                     />

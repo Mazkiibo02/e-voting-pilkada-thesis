@@ -14,6 +14,7 @@ import {
   Clock, 
   ShieldCheck 
 } from "lucide-react";
+import { formatPhotoUrl } from "@/utils/tpsFormatter";
 import { toast } from "sonner";
 
 type UIState = "waiting" | "active" | "confirm" | "success" | "error";
@@ -310,7 +311,7 @@ const BoothVoting = () => {
                       {pair.photoUrl ? (
                         <div className="h-64 sm:h-72 w-full bg-slate-100/80 flex items-center justify-center p-2 overflow-hidden border-b border-gray-100">
                           <img 
-                            src={pair.photoUrl.startsWith('http') ? pair.photoUrl : `/api${pair.photoUrl}`} 
+                            src={formatPhotoUrl(pair.photoUrl)} 
                             alt={`Paslon ${pair.candidateName}`} 
                             className="h-full w-full object-contain rounded-md shadow-xs" 
                           />
@@ -553,7 +554,7 @@ const BoothVoting = () => {
             <div className="p-6 overflow-y-auto space-y-6">
               {modalPair.photoUrl && (
                 <div className="flex justify-center mb-6">
-                  <img src={modalPair.photoUrl.startsWith('http') ? modalPair.photoUrl : `/api${modalPair.photoUrl}`} alt="Paslon" className="h-48 rounded-xl object-contain shadow-md" />
+                  <img src={formatPhotoUrl(modalPair.photoUrl)} alt="Paslon" className="h-48 rounded-xl object-contain shadow-md" />
                 </div>
               )}
               
