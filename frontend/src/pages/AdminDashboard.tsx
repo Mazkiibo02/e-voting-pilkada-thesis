@@ -12,6 +12,7 @@ import { Shield, Users, Vote, LogOut, RotateCcw, Plus, FileSpreadsheet, Download
 import { WitnessManagement } from '@/components/WitnessManagement';
 import { KppsManagement } from '@/components/KppsManagement';
 import { VoterManagement } from '@/components/VoterManagement';
+import { formatTpsLabel } from '@/utils/tpsFormatter';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -1163,9 +1164,9 @@ const AdminDashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {fullTpsList.map((tps) => (
+                    {fullTpsList.map((tps, idx) => (
                       <TableRow key={tps.id}>
-                        <TableCell className="font-bold text-blue-600">{tps.tps_code}</TableCell>
+                        <TableCell className="font-bold text-blue-600">{formatTpsLabel(tps.tps_number, tps.tps_code, undefined, idx)}</TableCell>
                         <TableCell>{tps.address || '-'}</TableCell>
                         <TableCell className="font-semibold">{tps.registered_voters_total ?? 100} Pemilih</TableCell>
                         <TableCell>

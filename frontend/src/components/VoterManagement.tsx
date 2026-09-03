@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
 import { UserCheck, Search, Plus, Download, Upload, RotateCcw, Trash, Edit, CheckCircle2, Clock, Users, FileSpreadsheet } from 'lucide-react';
+import { formatTpsLabel } from '@/utils/tpsFormatter';
 
 interface VoterManagementProps {
   selectedTpsCode?: string;
@@ -326,8 +327,8 @@ export const VoterManagement = ({ selectedTpsCode, userRole, userAssignedTpsId, 
                   {userRole !== 'KPPS' && <SelectItem value="ALL">Semua TPS</SelectItem>}
                   {tpsList
                     .filter(tps => userRole !== 'KPPS' || !userAssignedTpsId || tps.id === userAssignedTpsId)
-                    .map(tps => (
-                      <SelectItem key={tps.id} value={tps.id.toString()}>{tps.tps_code} - {tps.address}</SelectItem>
+                    .map((tps, idx) => (
+                      <SelectItem key={tps.id} value={tps.id.toString()}>{formatTpsLabel(tps.tps_number, tps.tps_code, tps.address, idx)}</SelectItem>
                     ))}
                 </SelectContent>
               </Select>
@@ -482,8 +483,8 @@ export const VoterManagement = ({ selectedTpsCode, userRole, userAssignedTpsId, 
                     <SelectValue placeholder="Pilih TPS" />
                   </SelectTrigger>
                   <SelectContent>
-                    {tpsList.map(tps => (
-                      <SelectItem key={tps.id} value={tps.id.toString()}>{tps.tps_code} - {tps.address}</SelectItem>
+                    {tpsList.map((tps, idx) => (
+                      <SelectItem key={tps.id} value={tps.id.toString()}>{formatTpsLabel(tps.tps_number, tps.tps_code, tps.address, idx)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

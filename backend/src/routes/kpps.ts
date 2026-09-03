@@ -254,7 +254,7 @@ router.get("/export", authenticateToken, requireRole(["ADMIN"]), async (req: Aut
 router.get("/", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OPERATOR"]), async (req: AuthRequest, res: Response) => {
   try {
     const kppsUsers = db.prepare(`
-      SELECT u.id, u.name, u.full_name, u.email, u.role, u.assigned_tps_id, u.nik, u.status, t.tps_code, t.address
+      SELECT u.id, u.name, u.full_name, u.email, u.role, u.assigned_tps_id, u.nik, u.status, t.tps_code, t.tps_number, t.address
       FROM users u
       LEFT JOIN tps t ON u.assigned_tps_id = t.id
       WHERE u.role = 'KPPS'
@@ -310,7 +310,7 @@ router.get("/members", authenticateToken, requireRole(["ADMIN", "KPPS", "KPPS_OP
     let tpsId = req.query.tps_id ? Number(req.query.tps_id) : req.user?.assignedTpsId;
     if (!tpsId && req.user?.role === "ADMIN") {
       const allMembers = db.prepare(`
-        SELECT km.*, t.tps_code 
+        SELECT km.*, t.tps_code, t.tps_number, t.address 
         FROM kpps_members km
         LEFT JOIN tps t ON km.tps_id = t.id
         ORDER BY t.tps_code ASC, km.position ASC
@@ -516,14 +516,14 @@ router.get("/operators", authenticateToken, requireRole(["ADMIN", "KPPS"]), asyn
     
     const operators = tpsId 
       ? db.prepare(`
-          SELECT u.id, u.name, u.full_name, u.email, u.role, u.affiliation, u.assigned_tps_id, u.status, t.tps_code, t.address
+          SELECT u.id, u.name, u.full_name, u.email, u.role, u.affiliation, u.assigned_tps_id, u.status, t.tps_code, t.tps_number, t.address
           FROM users u
           LEFT JOIN tps t ON u.assigned_tps_id = t.id
           WHERE u.role = 'KPPS_OPERATOR' AND u.assigned_tps_id = ?
           ORDER BY t.tps_code ASC, u.id ASC
         `).all(tpsId)
       : db.prepare(`
-          SELECT u.id, u.name, u.full_name, u.email, u.role, u.affiliation, u.assigned_tps_id, u.status, t.tps_code, t.address
+          SELECT u.id, u.name, u.full_name, u.email, u.role, u.affiliation, u.assigned_tps_id, u.status, t.tps_code, t.tps_number, t.address
           FROM users u
           LEFT JOIN tps t ON u.assigned_tps_id = t.id
           WHERE u.role = 'KPPS_OPERATOR'

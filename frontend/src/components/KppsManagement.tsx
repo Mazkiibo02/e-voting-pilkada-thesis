@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
 import { Users, RotateCcw, Shield, Download, Upload, Trash, Edit, FileSpreadsheet, UserPlus, Monitor } from 'lucide-react';
+import { formatTpsLabel } from '@/utils/tpsFormatter';
 
 interface KppsManagementProps {
   selectedTpsCode?: string;
@@ -439,8 +440,8 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
                 {userRole !== 'KPPS' && <SelectItem value="ALL">Semua TPS</SelectItem>}
                 {tpsList
                   .filter(tps => userRole !== 'KPPS' || !userAssignedTpsId || tps.id === userAssignedTpsId)
-                  .map(tps => (
-                    <SelectItem key={tps.id} value={tps.id.toString()}>{tps.tps_code} - {tps.address}</SelectItem>
+                  .map((tps, idx) => (
+                    <SelectItem key={tps.id} value={tps.id.toString()}>{formatTpsLabel(tps.tps_number, tps.tps_code, tps.address, idx)}</SelectItem>
                   ))}
               </SelectContent>
             </Select>
@@ -503,12 +504,12 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredKpps.map(u => (
+                  filteredKpps.map((u, idx) => (
                     <TableRow key={u.id}>
                       <TableCell className="font-bold text-slate-900">{u.full_name || u.name}</TableCell>
                       <TableCell className="font-mono text-slate-600">{u.email}</TableCell>
                       <TableCell className="font-mono font-semibold text-blue-800">{u.nik || '-'}</TableCell>
-                      <TableCell className="font-semibold">{u.tps_code} ({u.address || 'TPS'})</TableCell>
+                      <TableCell className="font-semibold">{formatTpsLabel(u.tps_number, u.tps_code, u.address, idx)}</TableCell>
                       <TableCell>
                         <span className="px-2 py-1 rounded text-xs font-semibold bg-emerald-100 text-emerald-700">
                           {u.status || 'ACTIVE'}
@@ -552,7 +553,7 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredMembers.map(m => (
+                  filteredMembers.map((m, idx) => (
                     <TableRow key={m.id}>
                       <TableCell className="font-bold text-slate-900">{m.full_name}</TableCell>
                       <TableCell>
@@ -562,7 +563,7 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
                       </TableCell>
                       <TableCell className="font-mono text-slate-600">{m.nik || '-'}</TableCell>
                       <TableCell className="font-mono text-slate-600">{m.phone || '-'}</TableCell>
-                      <TableCell className="font-semibold">{m.tps_code || `TPS ID ${m.tps_id}`}</TableCell>
+                      <TableCell className="font-semibold">{formatTpsLabel(m.tps_number, m.tps_code, m.address, idx)}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="sm" onClick={() => {
                           setMemberForm({
@@ -625,7 +626,7 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredOperators.map(op => (
+                  filteredOperators.map((op, idx) => (
                     <TableRow key={op.id}>
                       <TableCell className="font-bold text-slate-900">{op.full_name || op.name}</TableCell>
                       <TableCell className="font-mono text-blue-700 font-semibold">{op.email}</TableCell>
@@ -635,7 +636,7 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
                         </span>
                       </TableCell>
                       <TableCell className="text-slate-600 font-medium">{op.affiliation || 'Operator Bilik'}</TableCell>
-                      <TableCell className="font-semibold">{op.tps_code} ({op.address || 'TPS'})</TableCell>
+                      <TableCell className="font-semibold">{formatTpsLabel(op.tps_number, op.tps_code, op.address, idx)}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="sm" onClick={() => handleDelete(op.id)}>
                           <Trash className="h-4 w-4 text-red-500" />
@@ -691,8 +692,8 @@ export const KppsManagement = ({ selectedTpsCode, userRole, userAssignedTpsId }:
                   <SelectValue placeholder="Pilih TPS" />
                 </SelectTrigger>
                 <SelectContent>
-                  {tpsList.map(tps => (
-                    <SelectItem key={tps.id} value={tps.id.toString()}>{tps.tps_code} - {tps.address}</SelectItem>
+                  {tpsList.map((tps, idx) => (
+                    <SelectItem key={tps.id} value={tps.id.toString()}>{formatTpsLabel(tps.tps_number, tps.tps_code, tps.address, idx)}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

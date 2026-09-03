@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
 import { Users, RotateCcw, Shield, Upload, Download, Trash, Edit } from 'lucide-react';
+import { formatTpsLabel } from '@/utils/tpsFormatter';
 
 interface WitnessManagementProps {
   selectedTpsCode?: string;
@@ -198,8 +199,8 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ALL">Semua TPS</SelectItem>
-                {tpsList.map(tps => (
-                  <SelectItem key={tps.id} value={tps.id.toString()}>{tps.tps_code} - {tps.address}</SelectItem>
+                {tpsList.map((tps, idx) => (
+                  <SelectItem key={tps.id} value={tps.id.toString()}>{formatTpsLabel(tps.tps_number, tps.tps_code, tps.address, idx)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -214,24 +215,28 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
               type="file" 
               accept=".xlsx, .xls" 
               className="hidden" 
-              ref={fileInputRef}
-              onChange={handleImport}
+              ref={fileInputRef} 
+              onChange={handleImport} 
             />
             <Button size="sm" variant="outline" className="font-semibold text-green-600 border-green-200 hover:bg-green-50" onClick={() => fileInputRef.current?.click()} disabled={isImporting}>
-              {isImporting ? <RotateCcw className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
-              Import via Excel
+              {isImporting ? <RotateCcw className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+              Import Excel
             </Button>
           </div>
+
+          <Button size="sm" variant="outline" className="font-semibold text-slate-600 border-slate-300 hover:bg-slate-100" onClick={handleExport}>
+            <Download className="mr-2 h-4 w-4" /> Export Excel
+          </Button>
         </div>
 
-        <div className="rounded-md border mt-4 overflow-hidden">
+        <div className="rounded-md border overflow-hidden">
           <Table>
             <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>Nama</TableHead>
+                <TableHead>Nama Saksi</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
-                <TableHead>Afiliasi</TableHead>
+                <TableHead>Afiliasi Paslon</TableHead>
                 <TableHead>TPS</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
@@ -239,10 +244,12 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
             <TableBody>
               {filteredWitnesses.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-4 text-slate-500">Belum ada data saksi untuk TPS ini.</TableCell>
+                  <TableCell colSpan={6} className="text-center py-4 text-slate-500">
+                    Belum ada data akun Saksi. Klik tombol "Auto-Generate Akun Saksi" atau "Import Excel".
+                  </TableCell>
                 </TableRow>
               ) : (
-                filteredWitnesses.map(w => (
+                filteredWitnesses.map((w, idx) => (
                   <TableRow key={w.id}>
                     <TableCell>{w.full_name}</TableCell>
                     <TableCell>{w.email}</TableCell>
@@ -252,7 +259,7 @@ export const WitnessManagement = ({ selectedTpsCode }: WitnessManagementProps) =
                       </span>
                     </TableCell>
                     <TableCell>{w.affiliation || '-'}</TableCell>
-                    <TableCell>{w.tps_code}</TableCell>
+                    <TableCell className="font-semibold">{formatTpsLabel(w.tps_number, w.tps_code, w.address, idx)}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="sm" onClick={() => { setEditUser(w); setIsEditModalOpen(true); }}>
                         <Edit className="h-4 w-4 text-slate-600" />
