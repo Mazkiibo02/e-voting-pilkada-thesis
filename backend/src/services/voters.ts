@@ -263,12 +263,12 @@ export const VotersService = {
     let total = row?.total || 0;
 
     if (tpsId) {
-      const tpsRow = db.prepare("SELECT COALESCE(registered_voters_total, dpt_count, male_dpt + female_dpt, 0) as total FROM tps WHERE id = ?").get(tpsId) as any;
+      const tpsRow = db.prepare("SELECT COALESCE(registered_voters_total, male_dpt + female_dpt, 0) as total FROM tps WHERE id = ?").get(tpsId) as any;
       if (tpsRow && tpsRow.total > total) {
         total = tpsRow.total;
       }
     } else {
-      const allTpsRow = db.prepare("SELECT SUM(COALESCE(registered_voters_total, dpt_count, male_dpt + female_dpt, 0)) as total FROM tps").get() as any;
+      const allTpsRow = db.prepare("SELECT SUM(COALESCE(registered_voters_total, male_dpt + female_dpt, 0)) as total FROM tps").get() as any;
       if (allTpsRow && allTpsRow.total > total) {
         total = allTpsRow.total;
       }
