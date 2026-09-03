@@ -105,12 +105,6 @@ export const VotersService = {
   getAll(tpsId?: number, search?: string, status?: string): Voter[] {
     if (tpsId) {
       this.syncPlaceholderVoters(tpsId);
-    } else {
-      // Sync all TPS in database
-      try {
-        const allTps = db.prepare("SELECT id FROM tps").all() as any[];
-        allTps.forEach(t => this.syncPlaceholderVoters(t.id));
-      } catch (e) {}
     }
 
     let query = `
@@ -255,11 +249,6 @@ export const VotersService = {
   getStats(tpsId?: number) {
     if (tpsId) {
       this.syncPlaceholderVoters(tpsId);
-    } else {
-      try {
-        const allTps = db.prepare("SELECT id FROM tps").all() as any[];
-        allTps.forEach(t => this.syncPlaceholderVoters(t.id));
-      } catch (e) {}
     }
 
     let query = "SELECT COUNT(*) as total, SUM(CASE WHEN status = 'VOTED' THEN 1 ELSE 0 END) as voted FROM voters WHERE 1=1";
