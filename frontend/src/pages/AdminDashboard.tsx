@@ -41,13 +41,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 const SearchableComboBox = ({ options, value, onChange, placeholder }: any) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -139,19 +132,6 @@ const AdminDashboard = () => {
   const [isDisability, setIsDisability] = useState<boolean>(false);
   const [isGeneratingToken, setIsGeneratingToken] = useState(false);
   const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false);
-
-  // TPS Pagination state
-  const [tpsCurrentPage, setTpsCurrentPage] = useState<number>(1);
-  const [tpsPageSize, setTpsPageSize] = useState<number>(10);
-
-  useEffect(() => {
-    setTpsCurrentPage(1);
-  }, [fullTpsList.length, tpsPageSize]);
-
-  const tpsTotalPages = Math.max(1, Math.ceil(fullTpsList.length / tpsPageSize));
-  const tpsStartIndex = (tpsCurrentPage - 1) * tpsPageSize;
-  const tpsEndIndex = Math.min(tpsStartIndex + tpsPageSize, fullTpsList.length);
-  const paginatedTpsList = fullTpsList.slice(tpsStartIndex, tpsEndIndex);
 
   // Form states
   const [isTpsModalOpen, setIsTpsModalOpen] = useState(false);
@@ -395,6 +375,19 @@ const AdminDashboard = () => {
   };
 
   const [fullTpsList, setFullTpsList] = useState<any[]>([]);
+
+  // TPS Pagination state
+  const [tpsCurrentPage, setTpsCurrentPage] = useState<number>(1);
+  const [tpsPageSize, setTpsPageSize] = useState<number>(10);
+
+  useEffect(() => {
+    setTpsCurrentPage(1);
+  }, [fullTpsList.length, tpsPageSize]);
+
+  const tpsTotalPages = Math.max(1, Math.ceil(fullTpsList.length / tpsPageSize));
+  const tpsStartIndex = (tpsCurrentPage - 1) * tpsPageSize;
+  const tpsEndIndex = Math.min(tpsStartIndex + tpsPageSize, fullTpsList.length);
+  const paginatedTpsList = fullTpsList.slice(tpsStartIndex, tpsEndIndex);
   const [editingTps, setEditingTps] = useState<any>(null);
   const [editTpsLocation, setEditTpsLocation] = useState("");
   const [editTpsMaleDpt, setEditTpsMaleDpt] = useState("");
